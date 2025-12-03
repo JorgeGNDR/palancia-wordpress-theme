@@ -1,0 +1,511 @@
+/*
+Theme Name: Palancia Retro Shop
+Author: Tú
+Version: 4.0
+Text Domain: palancia-retro-shop
+*/
+
+/* ===== RESET BÁSICO ===== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #ffffff;
+  color: #000000;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Quitar subrayado al hacer focus, ya lo controlaremos con estilos propios */
+a:focus {
+  outline: none;
+}
+
+/* ===== HEADER ===== */
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 2rem; /* Reducir altura del header */
+  background-color: #233549; /* Fondo azul "palancia" */
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+.site-header .logo {
+  text-align: center;
+}
+
+.site-header .logo img {
+  max-height: 60px;
+  width: auto;
+}
+
+.site-header .header-cart {
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.site-header .header-cart a {
+  text-decoration: none;
+  font-size: 1.3rem;
+}
+
+/* Estilos para el ícono de carrito en el header */
+
+.header-cart .cart-icon {
+  width: 32px; /* Aumentar el tamaño del ícono */
+  height: auto;
+  display: inline-block;
+  vertical-align: middle; /* Centrar en altura */
+  filter: brightness(0) invert(1); /* Convertir el ícono a blanco */
+}
+
+/* Estilos para el contador de artículos en el carrito */
+
+.header-cart .cart-count {
+  font-size: 14px; /* Tamaño del texto */
+  color: white; /* Color blanco para el texto */
+  background-color: #233549; /* Fondo azul "palancia" */
+  border-radius: 50%; /* Forma circular */
+  padding: 2px 6px; /* Espaciado interno */
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%); /* Posicionamiento */
+}
+
+/* Contenedor principal */
+
+.site-main {
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== HOME: GRID DE PRODUCTOS ===== */
+
+.home-products {
+  padding: 2rem 2.5rem 3rem;
+}
+
+.home-products-container {
+  display: grid;
+  grid-template-columns: 2fr 6fr 2fr; /* Columnas izquierda (filtros), grid, derecha (vacío) */
+  gap: 0px; /* Margen entre columnas */
+  padding: 0px;
+  align-items: start;
+}
+
+/* Filtros (HOME y PRODUCTO comparten estilos) */
+
+.product-filters,
+.prs-product-left-nav {
+  width: 100%;
+  font-size: 14px;
+  font-weight: 700;
+  background-color: transparent;
+  padding: 15px;
+  border: none;
+  border-radius: 5px;
+}
+
+.product-filters h2,
+.prs-product-left-nav h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.product-filters ul,
+.prs-product-left-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.product-filters li,
+.prs-product-left-nav li {
+  margin-bottom: 8px;
+}
+
+.product-filters a,
+.prs-product-left-nav a {
+  text-decoration: none;
+  color: #333;
+  text-align: right;
+  display: block;
+  font-weight: 700;
+  margin-right: 0;
+  transition: color 0.3s ease;
+  font-family: "TASA Orbiter", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.product-filters a:hover {
+  color: #4f5d6d; /* Azul "palancia" clarito al pasar el ratón */
+}
+
+/* Resaltar la categoría activa */
+.product-filters a[style="color: #4f5d6d;"] {
+  font-weight: bold;
+  color: #4f5d6d;
+}
+
+.home-products-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 6 productos por fila */
+  column-gap: 0; /* Sin margen horizontal entre productos */
+  row-gap: 24px; /* 30px de margen vertical entre filas */
+}
+
+/* Producto en la home */
+
+.product-item {
+  position: relative;
+  display: block;
+  text-align: center;
+  border: none;
+  border-radius: 0; /* Sin bordes redondeados */
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.product-item img {
+  width: 100%;
+  height: auto;
+  display: block; /* Asegura que la imagen ocupe todo el espacio */
+  transition: opacity 0.3s; /* Transición para el efecto de difuminado */
+}
+
+.product-item:hover img {
+  opacity: 0.3; /* Mayor opacidad para el efecto de difuminado blanco */
+}
+
+.product-overlay {
+  color: #000; /* Texto negro */
+  font-family: "TASA Orbiter", sans-serif; /* Tipografía estilo Impact */
+  font-weight: bold; /* Texto en negrita */
+  padding: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centrar el texto */
+  width: 100%;
+  text-align: center;
+  opacity: 0; /* Ocultar inicialmente */
+  transition: opacity 0.3s; /* Transición para el overlay */
+}
+
+.product-item:hover .product-overlay {
+  opacity: 1; /* Mostrar el overlay al pasar el ratón */
+}
+
+/* Overlay con el nombre del producto */
+
+.product-overlay span {
+  color: #000;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ===== RESPONSIVE HOME ===== */
+
+@media (max-width: 1024px) {
+  .home-products {
+    padding: 1.5rem 1.5rem 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-products {
+    padding: 1rem;
+  }
+
+  .home-products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+}
+
+/* ===== PÁGINA DE PRODUCTO INDIVIDUAL ===== */
+
+/* Layout general de producto: 3 columnas */
+
+.prs-product-page {
+  max-width: 1380px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 140px minmax(0, 640px) 300px; /* filtro / imagen / info */
+  gap: 2rem;
+  padding: 2.5rem 3rem 3rem;
+}
+
+/* ==== COLUMNA centro (IMAGEN PRINCIPAL) ==== */
+
+.prs-product-gallery-wrapper {
+  width: 100%;
+}
+
+.prs-product-gallery {
+  position: relative;
+  width: 100%;
+  max-width: 640px;      /* más grande, rollo Palace */
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;   /* Mantener proporción cuadrada */
+}
+
+.prs-product-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.prs-product-slide.is-active {
+  opacity: 1;
+}
+
+.prs-product-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Botones de navegación: franja alta, dentro de la imagen */
+.prs-product-nav {
+  position: absolute;
+  top: 0;
+  bottom: 0;          /* ocupa toda la altura de la imagen */
+  width: 3rem;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Flechas pegadas al borde interior de la imagen */
+.prs-prev { left: 0; }
+.prs-next { right: 0; }
+
+/* Sin cambio de color al pasar el ratón */
+.prs-product-nav:hover {
+  background: transparent;
+}
+
+/* ==== COLUMNA DERECHA (TEXTO) ==== */
+
+.prs-product-info {
+  max-width: 320px;
+  text-align: left;
+}
+
+/* Título */
+.prs-product-info .product_title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+/* Precio */
+.prs-product-info .price {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Descripción (lista Palace) */
+.prs-product-long-description {
+  margin: 0 0 1.2rem;
+  padding: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.prs-product-long-description ul {
+  list-style: disc;
+  padding-left: 1.1rem;
+}
+
+.prs-product-long-description li {
+  margin: 0.15rem 0;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+/* Botón ADD TO CART */
+.prs-product-info .cart {
+  margin: 1rem 0 2rem;
+}
+
+.prs-product-info .single_add_to_cart_button {
+  background: black;
+  color: white;
+  padding: 0.8rem 1.8rem;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  border-radius: 0;
+}
+
+/* Enlaces informativos */
+.prs-product-info .extra-links a {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  text-decoration: underline;
+}
+
+/* Ocultar galería nativa WooCommerce */
+.woocommerce-product-gallery,
+.woocommerce-product-gallery__wrapper,
+.woocommerce-product-gallery .flex-control-nav,
+.woocommerce-product-gallery__trigger {
+  display: none !important;
+}
+
+/* Desactivar tabs, relacionados, sidebars */
+.woocommerce-tabs,
+.related,
+.upsells,
+.woocommerce-sidebar {
+  display: none !important;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .prs-product-page {
+    grid-template-columns: 1fr;
+    padding: 2rem;
+  }
+
+  .prs-prev { left: 0.5rem; }
+  .prs-next { right: 0.5rem; }
+}
+
+/* ===== LIMPIEZA DE ELEMENTOS WOOCOMMERCE ===== */
+
+/* Ocultar galería nativa de WooCommerce por si algo se cuela */
+.woocommerce-product-gallery,
+.woocommerce-product-gallery__wrapper,
+.woocommerce-product-gallery .flex-control-nav,
+.woocommerce-product-gallery__trigger {
+  display: none !important;
+}
+
+/* Ocultar tabs y secciones inferiores si alguna se genera */
+.woocommerce-tabs,
+.upsells,
+.related {
+  display: none !important;
+}
+
+/* Ocultar sidebar de WooCommerce por si aparece */
+.woocommerce-sidebar,
+.woocommerce .widget-area,
+.woocommerce-page .widget-area {
+  display: none !important;
+}
+
+.prs-product-extra {
+  grid-column: 1 / -1;   /* ocupa todo el ancho debajo si algún día lo usas */
+  margin-top: 2rem;
+}
+
+/* ============================
+   ADAPTACIONES RESPONSIVE MOVILES
+   ============================ */
+
+@media (max-width: 1024px) {
+  .prs-product-page {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Galería arriba, info debajo, menú al final (o al principio si cambias order) */
+  .prs-product-left-nav {
+    order: 3;           /* aparece abajo; pon -1 si lo quieres arriba del todo */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+  }
+
+  .prs-product-left-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+  }
+
+  .prs-product-left-nav li {
+    margin-bottom: 0;
+  }
+
+  /* Flechas más pegadas a la imagen en móvil */
+  .prs-prev { left: 0.5rem; }
+  .prs-next { right: 0.5rem; }
+}
+
+/* ===== MODO ZOOM PRODUCTO ===== */
+
+body.prs-zoom-open {
+  overflow: hidden; /* que no se mueva el fondo */
+}
+
+.prs-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  z-index: 9999;
+  overflow-y: auto;
+  padding: 2rem 0 3rem;
+}
+
+.prs-zoom-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.prs-zoom-inner img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 1.5rem;
+}
+
+.prs-zoom-close {
+  position: fixed;
+  top: 1.5rem;
+  right: 2rem;
+  font-size: 1.8rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
