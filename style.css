@@ -4,59 +4,54 @@ Author: Tú
 Version: 4.0
 Text Domain: palancia-retro-shop
 */
-@font-face {
-  font-family: "Akony";
-  src: url("fonts/AKONY.woff2") format("woff2"),
-       url("fonts/AKONY.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
-}
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@600&display=swap');
 
 /* ============================================
-   TIPOGRAFÍA AKONY PARA ELEMENTOS PALANCIA
+   TIPOGRAFÍA PARA ELEMENTOS PALANCIA (GOOGLE SANS FLEX 600)
    ============================================ */
 
 /* Filtros home y producto */
 .product-filters a,
 .prs-product-left-nav a {
-  font-family: "Akony", sans-serif;
-  font-weight: 700;
+  font-family: "Google Sans Flex", sans-serif;
+  font-weight: 600;
   letter-spacing: 0.05em;
 }
 
-/* Overlay del producto en el grid */
+/* Overlay del nombre en el grid */
 .product-overlay span {
-  font-family: "Akony", sans-serif;
-  font-weight: 700;
+  font-family: "Google Sans Flex", sans-serif;
+  font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 /* Título del producto */
 .prs-product-info .product_title {
-  font-family: "Akony", sans-serif;
-  font-weight: 800;
+  font-family: "Google Sans Flex", sans-serif;
+  font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 /* Precio */
 .prs-product-info .price {
-  font-family: "Akony", sans-serif;
-  font-weight: 700;
+  font-family: "Google Sans Flex", sans-serif;
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 
-/* Botón “ADD TO CART” */
+/* Botón ADD TO CART */
 .prs-product-info .single_add_to_cart_button {
-  font-family: "Akony", sans-serif;
-  font-weight: 700;
+  font-family: "Google Sans Flex", sans-serif;
+  font-weight: 600;
   letter-spacing: 0.12em;
 }
 
-/* Enlaces del panel derecho estilo Palace */
+/* Links "informativos" tipo Palace */
 .prs-product-info .extra-links a {
-  font-family: "Akony", sans-serif;
+  font-family: "Google Sans Flex", sans-serif;
+  font-weight: 600;
   letter-spacing: 0.03em;
 }
 
