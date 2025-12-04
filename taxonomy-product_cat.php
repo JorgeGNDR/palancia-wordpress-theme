@@ -44,8 +44,8 @@ $product_categories = get_terms( [
     'hide_empty' => true,
 ] );
 
-// Orden personalizado: ALL, TOPS, BOTTOMS, ACCESORIES primero
-$priority_order   = [ 'all', 'tops', 'bottoms', 'accesories' ]; // slugs en minúsculas
+// Orden personalizado: TODO, TOPS, BOTTOMS, ACCESORIOS primero
+$priority_order   = [ 'todo', 'tops', 'bottoms', 'accesorios' ]; // slugs en minúsculas
 $final_categories = [];
 
 // 1. Primero las prioritarias
@@ -65,6 +65,7 @@ foreach ( $product_categories as $cat ) {
 }
 
 $product_categories = $final_categories;
+
 ?>
 
 <section class="home-products">

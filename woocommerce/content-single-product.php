@@ -17,35 +17,34 @@ if ( post_password_required() ) {
 	<aside class="prs-product-left-nav">
 		<ul>
 			<?php
-			// Obtener categorías
-			$product_categories = get_terms([
+			// Obtener categorías para los filtros (igual que en la home)
+			$product_categories = get_terms( [
 				'taxonomy'   => 'product_cat',
 				'hide_empty' => true,
-			]);
+			] );
 
-			// Orden personalizado: ALL, TOPS, BOTTOMS, ACCESORIES primero
-			$priority_order = ['all', 'tops', 'bottoms', 'accesories']; // Slugs en minúsculas
-
+			// Orden personalizado: TODO, TOPS, BOTTOMS, ACCESORIOS primero
+			$priority_order   = [ 'todo', 'tops', 'bottoms', 'accesorios' ]; // slugs en minúsculas
 			$final_categories = [];
 
-			// 1. Meter primero las categorías prioritarias
-			foreach ($priority_order as $slug) {
-				foreach ($product_categories as $cat) {
-					if (strtolower($cat->slug) === $slug) {
+			// 1. Primero las prioritarias
+			foreach ( $priority_order as $slug ) {
+				foreach ( $product_categories as $cat ) {
+					if ( strtolower( $cat->slug ) === $slug ) {
 						$final_categories[] = $cat;
 					}
 				}
 			}
 
-			// 2. Meter el resto de categorías sin duplicar
-			foreach ($product_categories as $cat) {
-				if (!in_array($cat, $final_categories, true)) {
+			// 2. Luego el resto sin duplicar
+			foreach ( $product_categories as $cat ) {
+				if ( ! in_array( $cat, $final_categories, true ) ) {
 					$final_categories[] = $cat;
 				}
 			}
 
-			// Sustituimos product_categories por final_categories para el foreach de abajo
 			$product_categories = $final_categories;
+
 
 
 			 // $product_categories ya viene de get_terms() con tu orden

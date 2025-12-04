@@ -4,6 +4,61 @@ Author: Tú
 Version: 4.0
 Text Domain: palancia-retro-shop
 */
+@font-face {
+  font-family: "Akony";
+  src: url("fonts/AKONY.woff2") format("woff2"),
+       url("fonts/AKONY.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* ============================================
+   TIPOGRAFÍA AKONY PARA ELEMENTOS PALANCIA
+   ============================================ */
+
+/* Filtros home y producto */
+.product-filters a,
+.prs-product-left-nav a {
+  font-family: "Akony", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* Overlay del producto en el grid */
+.product-overlay span {
+  font-family: "Akony", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Título del producto */
+.prs-product-info .product_title {
+  font-family: "Akony", sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Precio */
+.prs-product-info .price {
+  font-family: "Akony", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Botón “ADD TO CART” */
+.prs-product-info .single_add_to_cart_button {
+  font-family: "Akony", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+/* Enlaces del panel derecho estilo Palace */
+.prs-product-info .extra-links a {
+  font-family: "Akony", sans-serif;
+  letter-spacing: 0.03em;
+}
 
 /* ===== RESET BÁSICO ===== */
 
@@ -154,19 +209,18 @@ a:focus {
   font-weight: 700;
   margin-right: 0;
   transition: color 0.3s ease;
-  font-family: "TASA Orbiter", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
 }
 
 .product-filters a:hover {
-  color: #4f5d6d; /* Azul "palancia" clarito al pasar el ratón */
+  color: #919aa4; /* Azul "palancia" clarito al pasar el ratón */
 }
 
 /* Resaltar la categoría activa */
-.product-filters a[style="color: #4f5d6d;"] {
+.product-filters a[style="color: #919aa4;"] {
   font-weight: bold;
-  color: #4f5d6d;
+  color: #919aa4;
 }
 
 .home-products-grid {
@@ -201,7 +255,6 @@ a:focus {
 
 .product-overlay {
   color: #000; /* Texto negro */
-  font-family: "TASA Orbiter", sans-serif; /* Tipografía estilo Impact */
   font-weight: bold; /* Texto en negrita */
   padding: 10px;
   position: absolute;
