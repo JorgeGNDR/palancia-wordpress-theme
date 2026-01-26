@@ -25,8 +25,9 @@
   </div>
 
   <div class="header-cart">
-    <a href="<?php echo wc_get_cart_url(); ?>">
-      <img src="<?php echo get_template_directory_uri(); ?>/assets/icons/carrito.png" alt="Carrito" class="cart-icon">
+    <a href="<?php echo wc_get_cart_url(); ?>" aria-label="Ir al carrito">
+      <span class="cart-icon" aria-hidden="true"></span>
+      <span class="screen-reader-text">Carrito</span>
       <span class="cart-count">
         <?php echo WC()->cart->get_cart_contents_count(); ?>
       </span>

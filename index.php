@@ -7,8 +7,8 @@ get_header();
 ?>
 
 <div style="padding:3rem; text-align:center;">
-    <h2>El tema está funcionando.</h2>
-    <p>Ahora puedes crear tu front-page.php, header.php, etc.</p>
+    <h2>GNDR.</h2>
+    <p></p>
 </div>
 
 <?php

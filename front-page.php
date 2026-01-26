@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 /**
- * Plantilla Home: galería de productos con filtros
+ * Plantilla Home: galeria de productos con filtros
  */
 
 get_header();
@@ -11,23 +11,20 @@ if ( ! class_exists('WooCommerce') ) {
     exit;
 }
 
-// Query de productos
-$args = [
-    'post_type'      => 'product',
-    'posts_per_page' => 60,
-    'post_status'    => 'publish',
-];
-
-$loop = new WP_Query($args);
-
-// Obtener categorías para los filtros (igual que en la home)
+// Obtener categorias para los filtros (igual que en la home)
 $product_categories = get_terms( [
     'taxonomy'   => 'product_cat',
     'hide_empty' => true,
 ] );
 
-// Orden personalizado: TODO, TOPS, BOTTOMS, ACCESORIOS primero
-$priority_order   = [ 'todo', 'tops', 'bottoms', 'accesorios' ]; // slugs en minúsculas
+// Excluir categorias que ya no deben mostrarse en el menu
+$excluded_slugs   = [ 'tops', 'bottoms', 'accesorios' ];
+$product_categories = array_values( array_filter( $product_categories, function ( $cat ) use ( $excluded_slugs ) {
+    return ! in_array( strtolower( $cat->slug ), $excluded_slugs, true );
+} ) );
+
+// Orden personalizado solicitado
+$priority_order   = [ 'todo', 'chaquetas', 'chalecos', 'sudaderas', 'jerseis', 'tracksuits', 'pantalones', 'camisetas', 'bolsos', 'gafas', 'gorras' ]; // slugs en minusculas
 $final_categories = [];
 
 // 1. Primero las prioritarias
@@ -69,28 +66,13 @@ $product_categories = $final_categories;
 
     <!-- Grid de productos -->
     <div class="home-products-grid">
-      <?php if ( $loop->have_posts() ) : ?>
-        <?php while ( $loop->have_posts() ) : $loop->the_post(); 
-          global $product;
-          $thumb_id = get_post_thumbnail_id();
-          $img = wp_get_attachment_image_src( $thumb_id, 'large' );
-          $img_url = $img ? $img[0] : wc_placeholder_img_src();
-          $url = get_permalink();
-        ?>
-          <a href="<?php echo esc_url( $url ); ?>" class="product-item">
-            <img src="<?php echo esc_url($img_url); ?>" alt="<?php the_title_attribute(); ?>">
-            <div class="product-overlay">
-              <span><?php the_title(); ?></span>
-            </div>
-          </a>
-        <?php endwhile; ?>
-        <?php wp_reset_postdata(); ?>
-      <?php else : ?>
-        <p>No hay productos todavía.</p>
-      <?php endif; ?>
+      <?php
+      $grid_html = prs_render_products_grid();
+      echo $grid_html ? $grid_html : '<p>No hay productos todavia.</p>';
+      ?>
     </div>
 
-    <!-- Columna vacía para centrar el grid -->
+    <!-- Columna vacia para centrar el grid -->
     <div class="empty-column"></div>
   </div>
 </section>

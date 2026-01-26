@@ -1,61 +1,79 @@
-/*
+﻿/*
 Theme Name: Palancia Retro Shop
-Author: Tú
+Author: TÃº
 Version: 4.0
 Text Domain: palancia-retro-shop
 */
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=TASA+Orbiter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
 
+@font-face {
+    font-family: 'n Nande Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('n Nande Regular'), url('fonts/Nande-q2BYr.woff') format('woff');
+    }
 /* ============================================
-   TIPOGRAFÍA PARA ELEMENTOS PALANCIA (GOOGLE SANS FLEX 600)
+   TIPOGRAFÃA PARA ELEMENTOS PALANCIA
    ============================================ */
 
 /* Filtros home y producto */
 .product-filters a,
 .prs-product-left-nav a {
-  font-family: "Google Sans Flex", sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  font-family: "n Nande Regular", sans-serif;
+  letter-spacing: normal;
+  font-size: 1.2rem;
 }
 
 /* Overlay del nombre en el grid */
 .product-overlay span {
-  font-family: "Google Sans Flex", sans-serif;
-  font-weight: 600;
+  font-family: "n Nande Regular", sans-serif;
+  font-weight: 400;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
-/* Título del producto */
+.product-overlay .product-title {
+  display: block;
+}
+
+.product-overlay .product-price {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+/* TÃ­tulo del producto */
 .prs-product-info .product_title {
-  font-family: "Google Sans Flex", sans-serif;
-  font-weight: 600;
+  font-family: "n Nande Regular", sans-serif;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 /* Precio */
 .prs-product-info .price {
-  font-family: "Google Sans Flex", sans-serif;
-  font-weight: 600;
+  font-family: "n Nande Regular", sans-serif;
   letter-spacing: 0.02em;
 }
 
-/* Botón ADD TO CART */
+/* BotÃ³n ADD TO CART */
 .prs-product-info .single_add_to_cart_button {
-  font-family: "Google Sans Flex", sans-serif;
-  font-weight: 600;
+  font-family: "n Nande Regular", sans-serif;
   letter-spacing: 0.12em;
 }
 
-/* Links "informativos" tipo Palace */
+/* Links "informativos" */
 .prs-product-info .extra-links a {
-  font-family: "Google Sans Flex", sans-serif;
-  font-weight: 600;
+  font-family: "n Nande Regular", sans-serif;
   letter-spacing: 0.03em;
 }
 
-/* ===== RESET BÁSICO ===== */
+/* ===== RESET BÃSICO ===== */
 
 *,
 *::before,
@@ -92,9 +110,9 @@ a:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 2rem; /* Reducir altura del header */
-  background-color: #233549; /* Fondo azul "palancia" */
-  border-bottom: 1px solid #eee;
+  padding: 0 2.5rem; /* Reducir altura del header */
+  background-color: #ffffff;/*#233549; Fondo azul "palancia" */  
+  border-bottom: none;
   position: relative;
 }
 
@@ -103,7 +121,7 @@ a:focus {
 }
 
 .site-header .logo img {
-  max-height: 60px;
+  max-height: 100px;
   width: auto;
 }
 
@@ -119,7 +137,7 @@ a:focus {
   font-size: 1.3rem;
 }
 
-/* Estilos para el ícono de carrito en el header */
+/* Estilos para el i­cono de carrito en el header */
 
 .header-cart .cart-icon {
   width: 32px; /* Aumentar el tamaño del ícono */
@@ -150,10 +168,22 @@ a:focus {
   padding: 0;
 }
 
+/* Alinear espaciado de cabecera en ficha de producto con el resto */
+.single-product .site-header {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.single-product .site-main {
+  padding-top: 0;
+}
+.single-product .prs-product-page {
+  padding-top: 0;
+}
+
 /* ===== HOME: GRID DE PRODUCTOS ===== */
 
 .home-products {
-  padding: 2rem 2.5rem 3rem;
+  padding: 0rem 2.5rem 2rem;
 }
 
 .home-products-container {
@@ -168,11 +198,12 @@ a:focus {
 
 .product-filters,
 .prs-product-left-nav {
+  grid-column: 1;
   width: 100%;
   font-size: 14px;
   font-weight: 700;
   background-color: transparent;
-  padding: 15px;
+  padding: 15px; 
   border: none;
   border-radius: 5px;
 }
@@ -192,13 +223,13 @@ a:focus {
 
 .product-filters li,
 .prs-product-left-nav li {
-  margin-bottom: 8px;
+  margin-bottom: 3px;
 }
 
 .product-filters a,
 .prs-product-left-nav a {
   text-decoration: none;
-  color: #333;
+  color: #233549; /* Azul "palancia" */
   text-align: right;
   display: block;
   font-weight: 700;
@@ -208,15 +239,18 @@ a:focus {
   font-style: normal;
 }
 
-.product-filters a:hover {
+.product-filters a:hover,
+.prs-product-left-nav a:hover {
   color: #919aa4; /* Azul "palancia" clarito al pasar el ratón */
 }
 
 /* Resaltar la categoría activa */
-.product-filters a[style="color: #919aa4;"] {
-  font-weight: bold;
-  color: #919aa4;
+.product-filters a.active,
+.prs-product-left-nav a.active {
+  font-weight: 800;
+  color: #919aa4; /* Azul "palancia" clarito */
 }
+
 
 .home-products-grid {
   display: grid;
@@ -241,7 +275,7 @@ a:focus {
   width: 100%;
   height: auto;
   display: block; /* Asegura que la imagen ocupe todo el espacio */
-  transition: opacity 0.3s; /* Transición para el efecto de difuminado */
+  transition: opacity 0.3s; /* TransiciÃ³n para el efecto de difuminado */
 }
 
 .product-item:hover img {
@@ -250,7 +284,7 @@ a:focus {
 
 .product-overlay {
   color: #000; /* Texto negro */
-  font-weight: bold; /* Texto en negrita */
+  font-weight: 400;
   padding: 10px;
   position: absolute;
   top: 50%;
@@ -274,50 +308,97 @@ a:focus {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   text-align: center;
+  font-weight: 400;
 }
 
-/* ===== RESPONSIVE HOME ===== */
 
-@media (max-width: 1024px) {
-  .home-products {
-    padding: 1.5rem 1.5rem 3rem;
+/* Ajuste general para Nande: peso y suavizado */
+.product-filters a,
+.prs-product-left-nav a,
+.product-overlay span,
+.product-overlay .product-title,
+.product-overlay .product-price,
+.prs-product-info .product_title,
+.prs-product-info .price,
+.prs-product-info .single_add_to_cart_button,
+.prs-product-info .extra-links a {
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive tablet: 4 columnas aprox */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .home-products-container {
+    display: block;
+  }
+  .home-products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
   }
 }
 
+/* Responsive móvil */
 @media (max-width: 768px) {
-  .home-products {
-    padding: 1rem;
+  .home-products-container,
+  .prs-product-page {
+    display: block;
   }
 
   .home-products-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .product-item {
+    position: relative;
+  }
+
+  .product-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Overlay se convierte en bloque bajo la imagen */
+  .product-overlay {
+    position: static;
+    opacity: 1;
+    transform: none;
+    padding: 0.5rem 0;
+  }
+
+  .product-overlay span {
+    font-size: 0.9rem;
   }
 }
 
-/* ===== PÁGINA DE PRODUCTO INDIVIDUAL ===== */
+/* ===== PÃGINA DE PRODUCTO INDIVIDUAL ===== */
 
 /* Layout general de producto: 3 columnas */
 
 .prs-product-page {
-  max-width: 1380px;
-  margin: 0 auto;
+  margin: 0;
+  padding: 0 2.5rem 4rem;
   display: grid;
-  grid-template-columns: 140px minmax(0, 640px) 300px; /* filtro / imagen / info */
-  gap: 2rem;
-  padding: 2.5rem 3rem 3rem;
+  grid-template-columns: 2fr 4fr 2fr 2fr; /* filtro / imagen / info / carrito */ 
+  gap: 0;
+  align-items: flex-start;
 }
 
 /* ==== COLUMNA centro (IMAGEN PRINCIPAL) ==== */
 
 .prs-product-gallery-wrapper {
+  grid-column: 2;
   width: 100%;
 }
 
 .prs-product-gallery {
   position: relative;
   width: 100%;
-  max-width: 640px;      /* más grande, rollo Palace */
+  max-width: none;
   margin: 0 auto;
   aspect-ratio: 1 / 1;   /* Mantener proporción cuadrada */
 }
@@ -326,7 +407,7 @@ a:focus {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.3s ease;
 }
 
 .prs-product-slide.is-active {
@@ -367,11 +448,13 @@ a:focus {
 /* ==== COLUMNA DERECHA (TEXTO) ==== */
 
 .prs-product-info {
-  max-width: 320px;
+  grid-column: 3;
+  max-width: none;
+  padding: 2rem 0 2rem 2rem;
   text-align: left;
 }
 
-/* Título */
+/* TÃ­tulo */
 .prs-product-info .product_title {
   font-size: 1.6rem;
   font-weight: 800;
@@ -387,7 +470,7 @@ a:focus {
   margin-bottom: 1rem;
 }
 
-/* Descripción (lista Palace) */
+/* Descripcion */
 .prs-product-long-description {
   margin: 0 0 1.2rem;
   padding: 0;
@@ -407,7 +490,7 @@ a:focus {
   letter-spacing: 0.03em;
 }
 
-/* Botón ADD TO CART */
+/* BotÃ³n ADD TO CART */
 .prs-product-info .cart {
   margin: 1rem 0 2rem;
 }
@@ -430,47 +513,15 @@ a:focus {
   text-decoration: underline;
 }
 
-/* Ocultar galería nativa WooCommerce */
-.woocommerce-product-gallery,
-.woocommerce-product-gallery__wrapper,
-.woocommerce-product-gallery .flex-control-nav,
-.woocommerce-product-gallery__trigger {
-  display: none !important;
-}
 
-/* Desactivar tabs, relacionados, sidebars */
-.woocommerce-tabs,
-.related,
-.upsells,
-.woocommerce-sidebar {
-  display: none !important;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1024px) {
-  .prs-product-page {
-    grid-template-columns: 1fr;
-    padding: 2rem;
-  }
-
-  .prs-prev { left: 0.5rem; }
-  .prs-next { right: 0.5rem; }
-}
 
 /* ===== LIMPIEZA DE ELEMENTOS WOOCOMMERCE ===== */
 
-/* Ocultar galería nativa de WooCommerce por si algo se cuela */
+/* Ocultar galerÃ­a nativa de WooCommerce por si algo se cuela */
 .woocommerce-product-gallery,
 .woocommerce-product-gallery__wrapper,
 .woocommerce-product-gallery .flex-control-nav,
 .woocommerce-product-gallery__trigger {
-  display: none !important;
-}
-
-/* Ocultar tabs y secciones inferiores si alguna se genera */
-.woocommerce-tabs,
-.upsells,
-.related {
   display: none !important;
 }
 
@@ -480,44 +531,19 @@ a:focus {
 .woocommerce-page .widget-area {
   display: none !important;
 }
-
-.prs-product-extra {
-  grid-column: 1 / -1;   /* ocupa todo el ancho debajo si algún día lo usas */
-  margin-top: 2rem;
+/* Desactivar tabs, relacionados, sidebars */
+.woocommerce-tabs,
+.related,
+.upsells,
+.woocommerce-sidebar {
+  display: none !important;
 }
 
-/* ============================
-   ADAPTACIONES RESPONSIVE MOVILES
-   ============================ */
 
-@media (max-width: 1024px) {
-  .prs-product-page {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding: 2rem 1.5rem;
-  }
 
-  /* Galería arriba, info debajo, menú al final (o al principio si cambias order) */
-  .prs-product-left-nav {
-    order: 3;           /* aparece abajo; pon -1 si lo quieres arriba del todo */
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem 1.5rem;
-  }
-
-  .prs-product-left-nav ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem 1.5rem;
-  }
-
-  .prs-product-left-nav li {
-    margin-bottom: 0;
-  }
-
-  /* Flechas más pegadas a la imagen en móvil */
-  .prs-prev { left: 0.5rem; }
-  .prs-next { right: 0.5rem; }
+.prs-product-extra {
+  grid-column: 1 / -1;   /* ocupa todo el ancho debajo si algÃºn dÃ­a lo usas */
+  margin-top: 2rem;
 }
 
 /* ===== MODO ZOOM PRODUCTO ===== */
@@ -556,4 +582,298 @@ body.prs-zoom-open {
   background: none;
   border: none;
   cursor: pointer;
+}
+
+/* ===== CART PAGE ===== */
+.pal-cart-wrapper {
+  max-width: 1080px;
+  margin: 40px auto 20px;
+  padding: 0 20px;
+}
+
+.pal-cart-item {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 24px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.pal-cart-thumb img {
+  width: 110px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.pal-cart-main {
+  flex: 1;
+}
+
+.pal-cart-title {
+  font-family: "Inria Sans", sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+.pal-cart-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.pal-cart-title a:hover {
+  text-decoration: underline;
+}
+
+.pal-cart-meta {
+  margin-top: 6px;
+  font-family: "Inria Sans", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.8rem;
+}
+
+.pal-cart-meta .variation,
+.pal-cart-meta .wc-item-meta {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pal-cart-meta .wc-item-meta li,
+.pal-cart-meta .variation dt,
+.pal-cart-meta .variation dd {
+  display: inline;
+  margin: 0;
+}
+
+.pal-cart-meta .variation dt::after {
+  content: ": ";
+}
+
+.pal-cart-meta .variation dd {
+  margin-right: 6px;
+}
+
+.pal-cart-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  min-width: 160px;
+}
+
+.pal-cart-remove {
+  background: #000;
+  color: #fff;
+  text-transform: uppercase;
+  font-family: "Inria Sans", sans-serif;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  padding: 10px 14px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.pal-cart-remove:hover {
+  color: #fff;
+  opacity: 0.9;
+}
+
+.pal-cart-price {
+  font-family: "Inria Sans", sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-size: 1rem;
+}
+
+.pal-cart-price--mobile {
+  display: none;
+  margin-top: 10px;
+}
+
+.pal-cart-summary {
+  max-width: 480px;
+  margin: 30px auto 60px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 20px;
+}
+
+.pal-cart-subtotal {
+  font-family: "Inria Sans", sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pal-cart-subtotal .amount {
+  font-size: 1rem;
+}
+
+.pal-cart-terms {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: "Inria Sans", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+}
+
+.pal-cart-terms input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #000;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  position: relative;
+  cursor: pointer;
+}
+
+.pal-cart-terms input[type="checkbox"]:checked {
+  background: #000;
+}
+
+.pal-cart-terms input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background: #fff;
+}
+
+.pal-cart-terms a {
+  color: #000;
+}
+
+.pal-cart-checkout {
+  display: inline-block;
+  background: #000;
+  color: #fff;
+  padding: 12px 32px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: "Inria Sans", sans-serif;
+  font-weight: 800;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.pal-cart-checkout:hover {
+  color: #fff;
+  opacity: 0.9;
+}
+
+.pal-cart-checkout.is-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.pal-cart-note {
+  font-family: "Inria Sans", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #7a7a7a;
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pal-cart-note .note-secondary {
+  font-size: 0.7rem;
+}
+
+.pal-cart-hidden-actions {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .pal-cart-wrapper {
+    padding: 0 16px;
+  }
+
+  .pal-cart-item {
+    flex-direction: column;
+  }
+
+  .pal-cart-thumb img {
+    width: 140px;
+  }
+
+  .pal-cart-right {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pal-cart-price {
+    text-align: right;
+  }
+
+  .pal-cart-price--mobile {
+    display: block;
+  }
+
+.pal-cart-price:not(.pal-cart-price--mobile) {
+    display: none;
+  }
+
+  .pal-cart-remove {
+    padding: 10px 16px;
+  }
+}
+
+/* ===== WOOCOMMERCE NOTICES ===== */
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+  border: 1px solid #111;
+  background: #f8f8f8;
+  color: #111;
+  border-radius: 0;
+  font-family: "Inria Sans", sans-serif;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+
+.woocommerce-message::before,
+.woocommerce-info::before,
+.woocommerce-error::before {
+  color: #111;
+}
+
+
+/* Override carrito icon color: azul Palancia */
+.header-cart .cart-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  vertical-align: middle;
+  background-color: #233549;
+  -webkit-mask-image: url('assets/icons/carrito.png');
+  mask-image: url('assets/icons/carrito.png');
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  filter: none;
 }

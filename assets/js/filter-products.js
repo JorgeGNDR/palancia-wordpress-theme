@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loadProducts(slug);
 
       let newUrl;
-      if (!slug || slug === 'all') {
+      if (!slug || slug === 'todo') {
         newUrl = `/`;
       } else {
         newUrl = `/collections/${encodeURIComponent(slug)}/`;
