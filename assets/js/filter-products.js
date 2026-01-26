@@ -2,6 +2,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const categoryLinks = document.querySelectorAll('.product-filters a');
   const productsGrid = document.querySelector('.home-products-grid');
 
+  // --- Menú filtro móvil ---
+  const mobileBtn = document.getElementById('mobile-filter-toggle');
+  const mobileMenu = document.getElementById('mobile-filter-menu');
+  if (mobileBtn && mobileMenu) {
+    mobileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      mobileMenu.classList.toggle('open');
+    });
+    // Cerrar menú al hacer click fuera
+    document.addEventListener('click', (e) => {
+      if (!mobileMenu.contains(e.target) && !mobileBtn.contains(e.target)) {
+        mobileMenu.classList.remove('open');
+      }
+    });
+    // Cerrar menú al seleccionar una categoría
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+      });
+    });
+  }
+
   // Solo actuamos en páginas con filtros + grid (home y taxonomy-product_cat)
   if (!categoryLinks.length || !productsGrid) return;
 

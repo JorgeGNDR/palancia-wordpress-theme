@@ -63,7 +63,7 @@ function prs_cleanup_single_summary_hooks() {
     remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
     remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
 
-    // Quitar descripciÃ³n corta por defecto (excerpt)
+    // Quitar descripción corta por defecto (excerpt)
     remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
 
     // Quitar tabs, upsells y relacionados de abajo
@@ -71,15 +71,15 @@ function prs_cleanup_single_summary_hooks() {
     remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_upsell_display', 15 );
     remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
 
-    // Quitar breadcrumbs (Inicio / CategorÃ­a / Producto)
+    // Quitar breadcrumbs (Inicio / Categoría / Producto)
     remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
 
-    // Quitar sidebar de WooCommerce (Buscar, PÃ¡ginas, Archivos, CategorÃ­as)
+    // Quitar sidebar de WooCommerce (Buscar, Páginas, Archivos, Categorías)
     remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
 }
 add_action( 'init', 'prs_cleanup_single_summary_hooks' );
 
-// Mostrar talla debajo del tÃ­tulo (atributo pa_talla)
+// Mostrar talla debajo del título (atributo pa_talla)
 function prs_show_product_size() {
     global $product;
 
@@ -96,7 +96,7 @@ function prs_show_product_size() {
 }
 add_action( 'woocommerce_single_product_summary', 'prs_show_product_size', 6 );
 
-// DescripciÃ³n larga en el resumen, como texto simple
+// Descripción larga en el resumen, como texto simple
 function prs_product_long_description() {
     global $post;
 
@@ -112,22 +112,22 @@ function prs_product_long_description() {
 
     echo '<div class="prs-product-long-description">' . $content . '</div>';
 }
-// La ponemos justo despuÃ©s de talla, antes de precio
+// La ponemos justo después de talla, antes de precio
 add_action( 'woocommerce_single_product_summary', 'prs_product_long_description', 7 );
 
 
-// ------------ GALERÃA PERSONALIZADA ------------ //
+// ------------ GALERÍA PERSONALIZADA ------------ //
 
-// Sustituir galerÃ­a nativa por la nuestra
+// Sustituir galería nativa por la nuestra
 function prs_override_wc_gallery() {
-    // Elimina la galerÃ­a por defecto de WooCommerce
+    // Elimina la galería por defecto de WooCommerce
     remove_action( 'woocommerce_before_single_product_summary', 'woocommerce_show_product_images', 20 );
-    // AÃ±ade nuestra galerÃ­a en el mismo hook
+    // Añade nuestra galería en el mismo hook
     add_action( 'woocommerce_before_single_product_summary', 'prs_custom_product_gallery', 20 );
 }
 add_action( 'init', 'prs_override_wc_gallery' );
 
-// GalerÃ­a centrada, sin miniaturas, con flechas y loop
+// Galería centrada, sin miniaturas, con flechas y loop
 function prs_custom_product_gallery() {
     if ( ! is_product() ) return;
 
@@ -301,7 +301,7 @@ function prs_render_products_grid( $category_slug = '', $max_products = 60 ) {
     return $html;
 }
 
-// Manejar solicitudes AJAX para filtrar productos por categorÃ­a
+// Manejar solicitudes AJAX para filtrar productos por categoría
 function prs_filter_products_by_category() {
     // Verificar nonce y permisos
     check_ajax_referer( 'prs_filter_nonce', 'security' );
@@ -346,7 +346,7 @@ function prs_checkout_honeypot_field( $checkout ) {
         [
             'type'  => 'text',
             'class' => [ 'prs-hp' ],
-            'label' => __( 'No rellenar', 'palancia-retro-shop' ),
+            'label' => __( 'No rellenar', 'palancia-shop' ),
         ],
         ''
     );
@@ -356,7 +356,7 @@ add_action( 'woocommerce_after_checkout_billing_form', 'prs_checkout_honeypot_fi
 
 function prs_checkout_honeypot_validate() {
     if ( ! empty( $_POST['prs_hp_field'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- campo honeypot
-        wc_add_notice( __( 'No se ha podido procesar el pedido. Intentalo de nuevo.', 'palancia-retro-shop' ), 'error' );
+        wc_add_notice( __( 'No se ha podido procesar el pedido. Inténtalo de nuevo.', 'palancia-shop' ), 'error' );
     }
 }
 add_action( 'woocommerce_checkout_process', 'prs_checkout_honeypot_validate' );
@@ -374,8 +374,9 @@ function prs_render_custom_cart() {
         return;
     }
 
-	$terms_page_id = wc_get_page_id( 'terms' );
-	$terms_url     = $terms_page_id > 0 ? get_permalink( $terms_page_id ) : '';
+	$terms_page_id  = wc_get_page_id( 'terms' );
+	$terms_url      = $terms_page_id > 0 ? get_permalink( $terms_page_id ) : '';
+	$requires_terms = ! empty( $terms_url );
 
 	echo '<div class="pal-cart-wrapper">';
 	foreach ( $cart_items as $cart_item_key => $cart_item ) {
@@ -443,14 +444,16 @@ function prs_render_custom_cart() {
     wc_cart_totals_subtotal_html();
     echo '</span></div>';
 
-	if ( $terms_url ) {
+	if ( $requires_terms ) {
 		echo '<label class="pal-cart-terms">';
 		echo '<input type="checkbox" id="pal-cart-terms">';
 		echo '<span>' . esc_html__( 'I agree to the', 'woocommerce' ) . ' <a href="' . esc_url( $terms_url ) . '" target="_blank" rel="noopener">' . esc_html__( 'terms and conditions', 'woocommerce' ) . '</a></span>';
 		echo '</label>';
 	}
 
-	echo '<a href="' . esc_url( wc_get_checkout_url() ) . '" class="button pal-cart-checkout is-disabled" aria-disabled="true">' . esc_html__( 'Checkout', 'woocommerce' ) . '</a>';
+	$checkout_classes = 'button pal-cart-checkout' . ( $requires_terms ? ' is-disabled' : '' );
+	$checkout_aria    = $requires_terms ? 'true' : 'false';
+	echo '<a href="' . esc_url( wc_get_checkout_url() ) . '" class="' . esc_attr( $checkout_classes ) . '" aria-disabled="' . esc_attr( $checkout_aria ) . '">' . esc_html__( 'Checkout', 'woocommerce' ) . '</a>';
 	echo '<div class="pal-cart-note"><span>' . esc_html__( 'Limited to 1 per size / item', 'woocommerce' ) . '</span><span class="note-secondary">' . esc_html__( '* Some exceptions apply', 'woocommerce' ) . '</span></div>';
 	echo '</div>'; // pal-cart-summary
 
@@ -459,7 +462,12 @@ function prs_render_custom_cart() {
 		const palTerms = document.getElementById('pal-cart-terms');
 		const palCheckout = document.querySelector('.pal-cart-checkout');
 		const toggleCheckout = () => {
-			if (!palTerms || !palCheckout) return;
+			if (!palCheckout) return;
+			if (!palTerms) {
+				palCheckout.classList.remove('is-disabled');
+				palCheckout.setAttribute('aria-disabled', 'false');
+				return;
+			}
 			if (palTerms.checked) {
 				palCheckout.classList.remove('is-disabled');
 				palCheckout.setAttribute('aria-disabled', 'false');
@@ -514,3 +522,6 @@ add_filter( 'woocommerce_is_sold_individually', '__return_true', 10, 2 );
 
 // Suprimir mensaje de "añadido al carrito"
 add_filter( 'wc_add_to_cart_message_html', '__return_empty_string' );
+
+//Activar Application Passwords
+add_filter( 'wp_is_application_passwords_available', '__return_true' );

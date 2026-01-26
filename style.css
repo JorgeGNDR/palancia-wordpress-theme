@@ -1,8 +1,7 @@
 ﻿/*
-Theme Name: Palancia Retro Shop
-Author: TÃº
-Version: 4.0
-Text Domain: palancia-retro-shop
+Theme Name: Palancia Web Shop
+Author: GNDR
+Text Domain: palancia-shop
 */
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=TASA+Orbiter:wght@400;500;600;700;800&display=swap');
@@ -10,6 +9,7 @@ Text Domain: palancia-retro-shop
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Object+Sans:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
 
 @font-face {
     font-family: 'n Nande Regular';
@@ -18,7 +18,7 @@ Text Domain: palancia-retro-shop
     src: local('n Nande Regular'), url('fonts/Nande-q2BYr.woff') format('woff');
     }
 /* ============================================
-   TIPOGRAFÃA PARA ELEMENTOS PALANCIA
+   TIPOGRAFÍA PARA ELEMENTOS PALANCIA
    ============================================ */
 
 /* Filtros home y producto */
@@ -48,7 +48,7 @@ Text Domain: palancia-retro-shop
   font-weight: 400;
 }
 
-/* TÃ­tulo del producto */
+/* Título del producto */
 .prs-product-info .product_title {
   font-family: "n Nande Regular", sans-serif;
   letter-spacing: 0.05em;
@@ -61,7 +61,7 @@ Text Domain: palancia-retro-shop
   letter-spacing: 0.02em;
 }
 
-/* BotÃ³n ADD TO CART */
+/* Botón ADD TO CART */
 .prs-product-info .single_add_to_cart_button {
   font-family: "n Nande Regular", sans-serif;
   letter-spacing: 0.12em;
@@ -73,13 +73,19 @@ Text Domain: palancia-retro-shop
   letter-spacing: 0.03em;
 }
 
-/* ===== RESET BÃSICO ===== */
+/* ===== RESET BÁSICO ===== */
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
+/* Evita que el layout “salte” al aparecer/desaparecer la scrollbar */
+html {
+  overflow-y: scroll;           /* fallback universal */
+  scrollbar-gutter: stable;     /* navegadores modernos */
+}
+
 
 body {
   margin: 0;
@@ -108,16 +114,20 @@ a:focus {
 
 .site-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 0 2.5rem; /* Reducir altura del header */
-  background-color: #ffffff;/*#233549; Fondo azul "palancia" */  
+  padding: var(--adminbar-height) var(--side-padding) 0;
+  background-color: #ffffff;
   border-bottom: none;
   position: relative;
+  height: calc(var(--header-height) + var(--adminbar-height));
 }
 
+
 .site-header .logo {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 .site-header .logo img {
@@ -137,15 +147,6 @@ a:focus {
   font-size: 1.3rem;
 }
 
-/* Estilos para el i­cono de carrito en el header */
-
-.header-cart .cart-icon {
-  width: 32px; /* Aumentar el tamaño del ícono */
-  height: auto;
-  display: inline-block;
-  vertical-align: middle; /* Centrar en altura */
-  filter: brightness(0) invert(1); /* Convertir el ícono a blanco */
-}
 
 /* Estilos para el contador de artículos en el carrito */
 
@@ -161,37 +162,51 @@ a:focus {
   transform: translate(50%, -50%); /* Posicionamiento */
 }
 
+@media (max-width: 768px) {
+  :root {
+    --header-height: 76px;
+  }
+
+  .site-header {
+    align-items: center;
+    justify-content: center;
+    padding: var(--adminbar-height) 1rem 0;
+    border-bottom: none;
+    box-shadow: none;
+  }
+
+  .site-header .logo img {
+    max-height: 52px;
+    width: auto;
+    height: auto;
+  }
+
+  .site-header .header-cart {
+    right: 1rem;
+  }
+}
+
 /* Contenedor principal */
 
 .site-main {
   margin: 0;
   padding: 0;
-}
-
-/* Alinear espaciado de cabecera en ficha de producto con el resto */
-.single-product .site-header {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-.single-product .site-main {
-  padding-top: 0;
-}
-.single-product .prs-product-page {
-  padding-top: 0;
+  display: block;
 }
 
 /* ===== HOME: GRID DE PRODUCTOS ===== */
 
 .home-products {
-  padding: 0rem 2.5rem 2rem;
+  padding: 0rem var(--side-padding) 2rem;
 }
 
 .home-products-container {
   display: grid;
   grid-template-columns: 2fr 6fr 2fr; /* Columnas izquierda (filtros), grid, derecha (vacío) */
-  gap: 0px; /* Margen entre columnas */
+  gap: 24px; /* Margen entre columnas */
   padding: 0px;
-  align-items: start;
+  align-items: start; 
+  min-height: auto;
 }
 
 /* Filtros (HOME y PRODUCTO comparten estilos) */
@@ -203,9 +218,28 @@ a:focus {
   font-size: 14px;
   font-weight: 700;
   background-color: transparent;
-  padding: 15px; 
   border: none;
   border-radius: 5px;
+}
+
+:root {
+  --header-height: 100px;
+  --side-padding: 2.5rem;
+  --adminbar-height: 0px;
+}
+body.admin-bar {
+  --adminbar-height: 32px;
+}
+@media (max-width: 782px) {
+  body.admin-bar {
+    --adminbar-height: 46px;
+  }
+}
+
+.product-filters,
+.prs-product-left-nav {
+  position: sticky;
+  top: calc(var(--header-height) + var(--adminbar-height));
 }
 
 .product-filters h2,
@@ -246,7 +280,9 @@ a:focus {
 
 /* Resaltar la categoría activa */
 .product-filters a.active,
-.prs-product-left-nav a.active {
+.product-filters a.is-active,
+.prs-product-left-nav a.active,
+.prs-product-left-nav a.is-active {
   font-weight: 800;
   color: #919aa4; /* Azul "palancia" clarito */
 }
@@ -275,7 +311,7 @@ a:focus {
   width: 100%;
   height: auto;
   display: block; /* Asegura que la imagen ocupe todo el espacio */
-  transition: opacity 0.3s; /* TransiciÃ³n para el efecto de difuminado */
+  transition: opacity 0.3s; /* Transición para el efecto de difuminado */
 }
 
 .product-item:hover img {
@@ -375,17 +411,19 @@ a:focus {
   }
 }
 
-/* ===== PÃGINA DE PRODUCTO INDIVIDUAL ===== */
+/* ===== PÁGINA DE PRODUCTO INDIVIDUAL ===== */
 
 /* Layout general de producto: 3 columnas */
 
 .prs-product-page {
   margin: 0;
-  padding: 0 2.5rem 4rem;
+  padding: 0 var(--side-padding) 4rem;
   display: grid;
   grid-template-columns: 2fr 4fr 2fr 2fr; /* filtro / imagen / info / carrito */ 
-  gap: 0;
+  gap: 24px; /* Margen entre columnas */
   align-items: flex-start;
+  min-height: auto;
+  
 }
 
 /* ==== COLUMNA centro (IMAGEN PRINCIPAL) ==== */
@@ -454,7 +492,7 @@ a:focus {
   text-align: left;
 }
 
-/* TÃ­tulo */
+/* Título */
 .prs-product-info .product_title {
   font-size: 1.6rem;
   font-weight: 800;
@@ -490,7 +528,7 @@ a:focus {
   letter-spacing: 0.03em;
 }
 
-/* BotÃ³n ADD TO CART */
+/* Botón ADD TO CART */
 .prs-product-info .cart {
   margin: 1rem 0 2rem;
 }
@@ -517,7 +555,7 @@ a:focus {
 
 /* ===== LIMPIEZA DE ELEMENTOS WOOCOMMERCE ===== */
 
-/* Ocultar galerÃ­a nativa de WooCommerce por si algo se cuela */
+/* Ocultar galería nativa de WooCommerce por si algo se cuela */
 .woocommerce-product-gallery,
 .woocommerce-product-gallery__wrapper,
 .woocommerce-product-gallery .flex-control-nav,
@@ -542,7 +580,7 @@ a:focus {
 
 
 .prs-product-extra {
-  grid-column: 1 / -1;   /* ocupa todo el ancho debajo si algÃºn dÃ­a lo usas */
+  grid-column: 1 / -1;   /* ocupa todo el ancho debajo si algún día lo usas */
   margin-top: 2rem;
 }
 
@@ -876,4 +914,135 @@ body.prs-zoom-open {
   -webkit-mask-size: contain;
   mask-size: contain;
   filter: none;
+}
+
+/* ===== FOOTER ===== */
+.site-footer {
+  background-color: #f5f5f5;
+  padding: 1.5rem 2.5rem;
+  text-align: center;
+  font-family: "Object Sans", sans-serif;
+  font-size: 0.9rem;
+  color: #233549;
+}
+.site-footer .footer-container {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.site-footer p {
+  margin: 0;
+}
+.site-footer .footer-navigation ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+.site-footer .footer-navigation a {
+  color: #555555;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+.site-footer .footer-navigation a:hover {
+  color: #000000;
+}
+/* Responsive footer */
+@media (max-width: 600px) {
+  .site-footer .footer-navigation ul {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+
+
+
+/* Neutralizar empuje de la admin bar de WordPress */
+html {
+  margin-top: 0 !important;
+}
+body.admin-bar {
+  margin-top: 0 !important;
+}
+
+/* =============================
+   Menú filtro móvil categorías
+   ============================= */
+@media (max-width: 900px) {
+  .mobile-filter-btn {
+    position: fixed;
+    top: calc(var(--adminbar-height) + 16px);
+    left: 16px;
+    z-index: 1001;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    width: 34px;
+    height: 34px;
+    color: #233549;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .mobile-filter-icon {
+    font-size: 28px;
+    line-height: 1;
+    font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 0, "opsz" 28;
+  }
+  .mobile-filter-menu {
+    position: fixed;
+    top: calc(var(--adminbar-height) + var(--header-height));
+    left: 16px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    padding: 16px 0;
+    min-width: 180px;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    animation: fadeIn 0.2s;
+  }
+  .mobile-filter-menu.open {
+    display: flex;
+  }
+  .mobile-filter-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .mobile-filter-menu li {
+    margin: 0;
+    padding: 0;
+  }
+  .mobile-filter-menu a {
+    display: block;
+    padding: 10px 24px;
+    color: #222;
+    text-decoration: none;
+    font-family: "n Nande Regular", sans-serif;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+  }
+  .mobile-filter-menu a:last-child {
+    border-bottom: none;
+  }
+  .mobile-filter-menu a:hover {
+    background: #f5f5f5;
+  }
+  /* Ocultar aside de filtros en móvil */
+  .product-filters {
+    display: none;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

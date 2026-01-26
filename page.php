@@ -4,13 +4,13 @@
  *
  * Renderiza el contenido de páginas (incluye las de WooCommerce como /cart).
  *
- * @package palancia-retro-shop
+ * @package palancia-shop
  */
 
 get_header();
 ?>
 
-<main id="primary" class="site-main" style="padding: 40px 0;">
+<section id="primary" class="page-content" style="padding: 40px 0;">
 	<div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
 		<?php
 		if ( have_posts() ) {
@@ -26,7 +26,7 @@ get_header();
 		}
 		?>
 	</div>
-</main>
+</section>
 
 <?php
 get_footer();

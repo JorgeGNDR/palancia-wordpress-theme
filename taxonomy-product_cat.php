@@ -64,6 +64,24 @@ $product_categories = $final_categories;
 <section class="home-products">
   <div class="home-products-container">
 
+    <!-- Botón menú filtro móvil -->
+    <button id="mobile-filter-toggle" class="mobile-filter-btn" aria-label="Filtrar categorías">
+        <span class="mobile-filter-icon material-symbols-outlined" aria-hidden="true">menu</span>
+    </button>
+    <nav id="mobile-filter-menu" class="mobile-filter-menu">
+      <ul>
+        <?php foreach ( $product_categories as $category ) : ?>
+          <?php $cat_link = get_term_link( $category ); ?>
+          <li>
+            <a href="<?php echo esc_url( $cat_link ); ?>"
+               data-category-slug="<?php echo esc_attr( $category->slug ); ?>">
+              <?php echo esc_html( $category->name ); ?>
+            </a>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </nav>
+
     <!-- Columna de filtros -->
     <aside class="product-filters">
       <ul>
@@ -96,4 +114,3 @@ $product_categories = $final_categories;
 
 <?php
 get_footer();
-
