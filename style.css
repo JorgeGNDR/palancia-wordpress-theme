@@ -9,7 +9,8 @@ Text Domain: palancia-shop
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Object+Sans:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Object+Sans:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&display=swap');
+
 
 @font-face {
     font-family: 'n Nande Regular';
@@ -24,15 +25,16 @@ Text Domain: palancia-shop
 /* Filtros home y producto */
 .product-filters a,
 .prs-product-left-nav a {
-  font-family: "n Nande Regular", sans-serif;
+  font-family: var(--font-brand);
+  font-weight: 900;
   letter-spacing: normal;
   font-size: 1.2rem;
 }
 
 /* Overlay del nombre en el grid */
 .product-overlay span {
-  font-family: "n Nande Regular", sans-serif;
-  font-weight: 400;
+  font-family: var(--font-body);
+  font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -50,26 +52,30 @@ Text Domain: palancia-shop
 
 /* Título del producto */
 .prs-product-info .product_title {
-  font-family: "n Nande Regular", sans-serif;
+  font-family: var(--font-brand);
+  font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 /* Precio */
 .prs-product-info .price {
-  font-family: "n Nande Regular", sans-serif;
+  font-family: var(--font-body);
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 
 /* Botón ADD TO CART */
 .prs-product-info .single_add_to_cart_button {
-  font-family: "n Nande Regular", sans-serif;
+  font-family: var(--font-body);
+  font-weight: 600;
   letter-spacing: 0.12em;
 }
 
 /* Links "informativos" */
 .prs-product-info .extra-links a {
-  font-family: "n Nande Regular", sans-serif;
+  font-family: var(--font-body);
+  font-weight: 400;
   letter-spacing: 0.03em;
 }
 
@@ -86,9 +92,16 @@ html {
   scrollbar-gutter: stable;     /* navegadores modernos */
 }
 
+html,
+body {
+  height: 100%;
+}
 
 body {
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #ffffff;
   color: #000000;
@@ -163,26 +176,10 @@ a:focus {
 }
 
 @media (max-width: 768px) {
-  :root {
-    --header-height: 76px;
-  }
-
-  .site-header {
-    align-items: center;
-    justify-content: center;
-    padding: var(--adminbar-height) 1rem 0;
-    border-bottom: none;
-    box-shadow: none;
-  }
-
   .site-header .logo img {
-    max-height: 52px;
+    max-height: 72px;
     width: auto;
     height: auto;
-  }
-
-  .site-header .header-cart {
-    right: 1rem;
   }
 }
 
@@ -192,6 +189,7 @@ a:focus {
   margin: 0;
   padding: 0;
   display: block;
+  flex: 1 0 auto;
 }
 
 /* ===== HOME: GRID DE PRODUCTOS ===== */
@@ -226,6 +224,9 @@ a:focus {
   --header-height: 100px;
   --side-padding: 2.5rem;
   --adminbar-height: 0px;
+  /* Fuente anterior guardada para referencia */
+  --font-brand: "n Nande Regular", sans-serif;
+  --font-body: "Object Sans", sans-serif;
 }
 body.admin-bar {
   --adminbar-height: 32px;
@@ -266,7 +267,8 @@ body.admin-bar {
   color: #233549; /* Azul "palancia" */
   text-align: right;
   display: block;
-  font-weight: 700;
+  font-family: var(--font-brand);
+  font-weight: 900;
   margin-right: 0;
   transition: color 0.3s ease;
   font-optical-sizing: auto;
@@ -278,13 +280,13 @@ body.admin-bar {
   color: #919aa4; /* Azul "palancia" clarito al pasar el ratón */
 }
 
-/* Resaltar la categoría activa */
+/* Mantener la categoría activa sin cambio de color */
 .product-filters a.active,
 .product-filters a.is-active,
 .prs-product-left-nav a.active,
 .prs-product-left-nav a.is-active {
-  font-weight: 800;
-  color: #919aa4; /* Azul "palancia" clarito */
+  font-weight: 900;
+  color: #233549;
 }
 
 
@@ -293,6 +295,17 @@ body.admin-bar {
   grid-template-columns: repeat(6, 1fr); /* 6 productos por fila */
   column-gap: 0; /* Sin margen horizontal entre productos */
   row-gap: 24px; /* 30px de margen vertical entre filas */
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --side-padding: 1.5rem;
+  }
+
+  .home-products-container {
+    grid-template-columns: 1.5fr 8fr 0.5fr;
+    gap: 16px;
+  }
 }
 
 /* Producto en la home */
@@ -344,11 +357,11 @@ body.admin-bar {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   text-align: center;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 
-/* Ajuste general para Nande: peso y suavizado */
+/* Ajuste general: suavizado tipográfico */
 .product-filters a,
 .prs-product-left-nav a,
 .product-overlay span,
@@ -358,7 +371,6 @@ body.admin-bar {
 .prs-product-info .price,
 .prs-product-info .single_add_to_cart_button,
 .prs-product-info .extra-links a {
-  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -377,6 +389,14 @@ body.admin-bar {
 
 /* Responsive móvil */
 @media (max-width: 768px) {
+  :root {
+    --side-padding: 0.75rem;
+  }
+
+  .home-products {
+    padding: 0 var(--side-padding) 1.5rem;
+  }
+
   .home-products-container,
   .prs-product-page {
     display: block;
@@ -385,7 +405,7 @@ body.admin-bar {
   .home-products-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .product-item {
@@ -495,7 +515,7 @@ body.admin-bar {
 /* Título */
 .prs-product-info .product_title {
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
@@ -504,8 +524,9 @@ body.admin-bar {
 /* Precio */
 .prs-product-info .price {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 400;
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 /* Descripcion */
@@ -514,6 +535,8 @@ body.admin-bar {
   padding: 0;
   font-size: 0.85rem;
   line-height: 1.4;
+  font-family: var(--font-body);
+  font-weight: 400;
 }
 
 .prs-product-long-description ul {
@@ -524,23 +547,63 @@ body.admin-bar {
 .prs-product-long-description li {
   margin: 0.15rem 0;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.03em;
 }
 
 /* Botón ADD TO CART */
 .prs-product-info .cart {
   margin: 1rem 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
 .prs-product-info .single_add_to_cart_button {
-  background: black;
-  color: white;
-  padding: 0.8rem 1.8rem;
+  background: #fff;
+  color: #233549;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid #233549;
+  border-radius: 999px;
   text-transform: uppercase;
-  font-size: 0.9rem;
+  font-size: 0;
   letter-spacing: 0.1em;
-  border-radius: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.prs-product-info .single_add_to_cart_button::before {
+  content: "add_shopping_cart";
+  font-family: "Material Symbols Outlined";
+  font-size: 22px;
+  line-height: 1;
+  font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 0, "opsz" 24;
+  color: #233549;
+  transition: transform 0.25s ease;
+}
+
+.prs-product-info .single_add_to_cart_button:hover {
+  box-shadow: 0 6px 16px rgba(35,53,73,0.18);
+  transform: translateY(-1px);
+}
+
+.prs-product-info .single_add_to_cart_button:hover::before {
+  animation: cart-pop 0.35s ease;
+}
+
+.prs-product-info .single_add_to_cart_button:active {
+  transform: translateY(0);
+}
+
+@keyframes cart-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1); }
 }
 
 /* Enlaces informativos */
@@ -972,10 +1035,38 @@ body.admin-bar {
    Menú filtro móvil categorías
    ============================= */
 @media (max-width: 900px) {
+  :root {
+    --header-height: 88px;
+  }
+
+  .site-header {
+    display: grid;
+    grid-template-columns: 56px 1fr 56px;
+    align-items: center;
+    justify-content: center;
+    padding: var(--adminbar-height) 1rem 0;
+    border-bottom: none;
+    box-shadow: none;
+  }
+
+  .site-header .logo {
+    justify-self: center;
+  }
+
+  .site-header .logo a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .site-header .header-cart {
+    position: static;
+    transform: none;
+    justify-self: end;
+  }
+
   .mobile-filter-btn {
-    position: fixed;
-    top: calc(var(--adminbar-height) + 16px);
-    left: 16px;
+    position: static;
     z-index: 1001;
     background: transparent;
     border: none;
@@ -988,6 +1079,7 @@ body.admin-bar {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    justify-self: start;
   }
   .mobile-filter-icon {
     font-size: 28px;
@@ -996,16 +1088,19 @@ body.admin-bar {
   }
   .mobile-filter-menu {
     position: fixed;
-    top: calc(var(--adminbar-height) + var(--header-height));
-    left: 16px;
+    top: 0;
+    left: 0;
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    padding: 16px 0;
-    min-width: 180px;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
     z-index: 1000;
     display: none;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     animation: fadeIn 0.2s;
   }
   .mobile-filter-menu.open {
@@ -1015,6 +1110,11 @@ body.admin-bar {
     list-style: none;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
   .mobile-filter-menu li {
     margin: 0;
@@ -1022,12 +1122,14 @@ body.admin-bar {
   }
   .mobile-filter-menu a {
     display: block;
-    padding: 10px 24px;
+    padding: 8px 0;
     color: #222;
     text-decoration: none;
     font-family: "n Nande Regular", sans-serif;
-    font-size: 1.1rem;
-    border-bottom: 1px solid #eee;
+    font-size: 1.2rem;
+    letter-spacing: 0.04em;
+    text-align: center;
+    border-bottom: none;
     transition: background 0.2s;
   }
   .mobile-filter-menu a:last-child {
@@ -1039,6 +1141,13 @@ body.admin-bar {
   /* Ocultar aside de filtros en móvil */
   .product-filters {
     display: none;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-filter-btn,
+  .mobile-filter-menu {
+    display: none !important;
   }
 }
 
