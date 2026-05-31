@@ -708,6 +708,28 @@ body.admin-bar {
   transform: translateY(0);
 }
 
+.prs-product-info .stock.out-of-stock {
+  width: 100%;
+  min-height: 44px;
+  margin: 0 0 1.4rem;
+  padding: 0 0.9rem;
+  border: 1px solid #233549;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #233549;
+  background: #ffffff;
+  font-family: var(--font-nav);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: default;
+  user-select: none;
+}
+
 /* Enlaces informativos */
 .prs-product-info .extra-links a {
   display: block;
@@ -1343,6 +1365,12 @@ body.prs-zoom-open {
     order: 3;
     margin: 0 0 0.7rem;
     justify-content: center;
+  }
+
+  .prs-product-info .stock.out-of-stock {
+    order: 3;
+    max-width: 18rem;
+    margin: 0 0 0.7rem;
   }
 
   .prs-product-info .extra-links {
