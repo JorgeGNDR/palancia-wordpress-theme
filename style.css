@@ -571,28 +571,33 @@ body.admin-bar {
   grid-column: 3;
   width: 100%;
   max-width: var(--nav-column-width);
-  padding: 2rem 0 2rem 2rem;
+  padding: 1.4rem 0 2rem 1.4rem;
   text-align: left;
   justify-self: start;
+  font-family: var(--font-body);
+  color: #111111;
 }
 
 /* Título */
 .prs-product-info .product_title {
-  font-size: 1.6rem;
+  font-size: clamp(1.05rem, 1.35vw, 1.45rem);
+  line-height: 1.08;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
-  font-family: var(--font-brand);
-  font-weight: 500;
+  letter-spacing: 0.015em;
+  margin: 0 0 0.6rem;
+  font-family: var(--font-nav);
+  font-weight: 700;
 }
 
 /* Precio */
 .prs-product-info .price {
-  font-size: 1rem;
+  font-size: 0.92rem;
+  line-height: 1.2;
   font-weight: 600;
-  margin-bottom: 1rem;
-  text-align: center;
+  margin: 0 0 0.75rem;
+  text-align: left;
   color: #233549;
+  font-family: var(--font-body);
 }
 
 .prs-product-info .price .woocommerce-Price-amount,
@@ -601,36 +606,53 @@ body.admin-bar {
   color: #233549;
 }
 
+.prs-product-size {
+  margin: 0.9rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: #3f4d5e;
+  font-family: var(--font-body);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.prs-product-size span {
+  color: #111111;
+}
+
 /* icon moved into the add-to-cart button */
 
 /* Descripcion */
 .prs-product-long-description {
-  margin: 0 0 1.2rem;
+  margin: 1.4rem 0 0;
   padding: 0;
-  font-size: 0.85rem;
-  line-height: 1.4;
+  font-size: 0.78rem;
+  line-height: 1.5;
   font-family: var(--font-body);
   font-weight: 400;
+  color: #202020;
 }
 
 .prs-product-long-description ul {
   list-style: disc;
-  padding-left: 1.1rem;
+  padding-left: 1rem;
+  margin: 0;
 }
 
 .prs-product-long-description li {
-  margin: 0.15rem 0;
-  text-transform: uppercase;
+  margin: 0.22rem 0;
+  text-transform: none;
   font-weight: 400;
-  letter-spacing: 0.03em;
+  letter-spacing: 0;
 }
 
 /* Botón ADD TO CART */
 .prs-product-info .cart {
-  margin: 1rem 0 2rem;
+  margin: 0 0 1.4rem;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 12px;
 }
 
@@ -638,9 +660,9 @@ body.admin-bar {
   background: transparent !important;
   background-image: none !important;
   color: #233549 !important;
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
   padding: 0 !important;
   border: none !important;
   border-radius: 0 !important;
@@ -663,8 +685,8 @@ body.admin-bar {
 .prs-product-info .single_add_to_cart_button::before,
 .prs-product-info .single_add_to_cart_button::after {
   content: "";
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   line-height: 1;
   position: absolute;
   top: 50%;
@@ -694,7 +716,6 @@ body.admin-bar {
 }
 
 .prs-product-info .single_add_to_cart_button:hover {
-  box-shadow: 0 6px 16px rgba(35,53,73,0.18);
   transform: translateY(-1px);
 }
 
@@ -715,9 +736,15 @@ body.admin-bar {
 /* Enlaces informativos */
 .prs-product-info .extra-links a {
   display: block;
-  margin-bottom: 0.4rem;
-  font-size: 0.8rem;
-  text-decoration: underline;
+  margin-bottom: 0.35rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: #3f4d5e;
+  font-family: var(--font-body);
+  font-weight: 500;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 
@@ -1297,31 +1324,33 @@ body.prs-zoom-open {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.2rem;
+    gap: 0;
   }
 
   .prs-product-info .product_title {
-    font-size: 1.5rem;
-    line-height: 1.15;
-    margin: 0;
+    font-size: 1.18rem;
+    line-height: 1.12;
+    margin: 0 0 0.5rem;
     order: 1;
   }
 
   .prs-product-size {
     order: 5;
     display: block;
-    font-size: 0.78rem;
+    margin: 0.6rem auto 0;
+    font-size: 0.7rem;
+    line-height: 1.35;
     text-transform: uppercase;
     color: #233549;
   }
 
   .prs-product-long-description {
     order: 4;
-    margin: 0.45rem auto 0;
-    max-width: 92%;
+    margin: 0.65rem auto 0;
+    max-width: 34rem;
     text-align: left;
-    font-size: 0.82rem;
-    line-height: 1.35;
+    font-size: 0.78rem;
+    line-height: 1.48;
   }
 
   .prs-product-long-description ul {
@@ -1330,13 +1359,15 @@ body.prs-zoom-open {
 
   .prs-product-info .price {
     order: 2;
-    margin: 0.15rem 0 0.2rem;
-    font-size: 0.95rem;
+    margin: 0 0 0.5rem;
+    font-size: 0.88rem;
+    text-align: center;
   }
 
   .prs-product-info .cart {
     order: 3;
-    margin: 0.2rem 0 0.7rem;
+    margin: 0 0 0.7rem;
+    justify-content: center;
   }
 
   .prs-product-info .extra-links {
