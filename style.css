@@ -5,6 +5,7 @@ Text Domain: palancia-shop
 */
 @import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Object+Sans:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@500;600;700&display=swap');
 
 
 @font-face {
@@ -206,7 +207,7 @@ a:focus {
   border: none;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 
 :root {
@@ -218,6 +219,7 @@ a:focus {
   --product-card-max-width: 178px;
   --font-brand: "n Nande Regular", sans-serif;
   --font-body: "Object Sans", sans-serif;
+  --font-nav: "Archivo Expanded", "Object Sans", sans-serif;
 }
 body.admin-bar {
   --adminbar-height: 32px;
@@ -256,16 +258,16 @@ body.admin-bar {
 .prs-product-left-nav a {
   text-decoration: none;
   color: #111111;
-  text-align: left;
+  text-align: right;
   display: block;
-  font-family: var(--font-body);
-  font-weight: 400;
+  font-family: var(--font-nav);
+  font-weight: 600;
   margin-right: 0;
   transition: color 0.18s ease, opacity 0.18s ease;
   font-style: normal;
-  letter-spacing: 0.01em;
-  font-size: 0.82rem;
-  line-height: 1.28;
+  letter-spacing: 0.015em;
+  font-size: 0.92rem;
+  line-height: 1.32;
   opacity: 1;
   text-transform: uppercase;
 }
@@ -280,7 +282,7 @@ body.admin-bar {
 .product-filters a.is-active,
 .prs-product-left-nav a.is-active {
   color: #233549;
-  font-weight: 400;
+  font-weight: 700;
   opacity: 1;
   text-decoration: none;
 }
@@ -318,7 +320,7 @@ body.admin-bar {
 
   .product-filters a,
   .prs-product-left-nav a {
-    text-align: left;
+    text-align: right;
   }
 }
 
@@ -1454,10 +1456,10 @@ body.admin-bar {
     padding: 4px 0;
     color: #111;
     text-decoration: none;
-    font-family: var(--font-body);
-    font-size: 1rem;
-    font-weight: 400;
-    letter-spacing: 0.01em;
+    font-family: var(--font-nav);
+    font-size: 1.08rem;
+    font-weight: 600;
+    letter-spacing: 0.015em;
     text-transform: uppercase;
     text-align: center;
     border-bottom: none;
