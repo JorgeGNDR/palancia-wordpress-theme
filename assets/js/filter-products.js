@@ -30,20 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const { ajaxUrl, nonce } = prsFilterProducts;
   let currentCategory = '';
-  let currentSize = '';
 
   const updateActiveLinks = () => {
     filterLinks.forEach((link) => {
       const catSlug = link.getAttribute('data-category-slug');
-      const sizeSlug = link.getAttribute('data-size-slug');
 
       link.classList.remove('is-active');
 
       if (catSlug && catSlug === currentCategory) {
-        link.classList.add('is-active');
-      }
-
-      if (sizeSlug && sizeSlug === currentSize) {
         link.classList.add('is-active');
       }
     });
@@ -54,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
       action: 'prs_filter_products',
       security: nonce,
       category_slug: currentCategory === 'todo' ? '' : currentCategory,
-      size_slug: currentSize,
     });
 
     fetch(ajaxUrl, {
@@ -73,10 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const path = window.location.pathname;
   const match = path.match(/\/collections\/([^/]+)\/?/);
-  const urlParams = new URLSearchParams(window.location.search);
 
   currentCategory = match ? decodeURIComponent(match[1]) : 'todo';
-  currentSize = urlParams.get('size') || '';
 
   updateActiveLinks();
 
@@ -85,27 +76,17 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
 
       const catSlug = link.getAttribute('data-category-slug');
-      const sizeSlug = link.getAttribute('data-size-slug');
 
-      if (catSlug) {
-        if (catSlug === currentCategory) return;
-        currentCategory = catSlug;
-      } else if (sizeSlug) {
-        currentSize = sizeSlug === currentSize ? '' : sizeSlug;
-      }
+      if (!catSlug || catSlug === currentCategory) return;
+      currentCategory = catSlug;
 
       updateActiveLinks();
       loadProducts();
 
-      let newUrl = !currentCategory || currentCategory === 'todo'
+      const newUrl = !currentCategory || currentCategory === 'todo'
         ? '/'
         : `/collections/${encodeURIComponent(currentCategory)}/`;
-
-      if (currentSize) {
-        newUrl += `?size=${encodeURIComponent(currentSize)}`;
-      }
-
-      window.history.pushState({ category: currentCategory, size: currentSize }, '', newUrl);
+      window.history.pushState({ category: currentCategory }, '', newUrl);
     });
   });
 
