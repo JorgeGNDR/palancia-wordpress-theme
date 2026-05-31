@@ -660,22 +660,24 @@ body.admin-bar {
   background: #ffffff !important;
   background-image: none !important;
   color: #233549 !important;
-  width: 44px;
+  width: 100%;
   height: 44px;
-  min-width: 44px;
-  padding: 0 !important;
+  min-width: 0;
+  padding: 0 0.9rem !important;
   border: 1px solid #233549 !important;
   border-radius: 0 !important;
   text-transform: uppercase;
-  font-size: 0 !important;
-  line-height: 0;
-  text-indent: -9999px;
-  overflow: hidden;
-  letter-spacing: 0.1em;
+  font-size: 0.68rem !important;
+  line-height: 1;
+  text-indent: 0;
+  overflow: visible;
+  letter-spacing: 0.08em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  font-family: var(--font-nav);
+  font-weight: 600;
   transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
   box-shadow: none !important;
   appearance: none;
@@ -684,46 +686,13 @@ body.admin-bar {
 
 .prs-product-info .single_add_to_cart_button::before,
 .prs-product-info .single_add_to_cart_button::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background: #233549;
-  transition: background-color 0.18s ease, opacity 0.18s ease, transform 0.22s ease;
-  opacity: 1;
-}
-
-.prs-product-info .single_add_to_cart_button::before {
-  width: 18px;
-  height: 2px;
-  transform: translate(-50%, -50%);
-}
-
-.prs-product-info .single_add_to_cart_button::after {
-  width: 2px;
-  height: 18px;
-  transform: translate(-50%, -50%);
+  content: none;
 }
 
 .prs-product-info .single_add_to_cart_button.is-added {
   background: #233549 !important;
   border-color: #233549 !important;
-}
-
-.prs-product-info .single_add_to_cart_button.is-added::before {
-  width: 10px;
-  height: 2px;
-  background: #ffffff;
-  transform: translate(-68%, -18%) rotate(45deg);
-  transform-origin: center;
-}
-
-.prs-product-info .single_add_to_cart_button.is-added::after {
-  width: 18px;
-  height: 2px;
-  background: #ffffff;
-  transform: translate(-28%, -40%) rotate(-45deg);
-  transform-origin: center;
+  color: #ffffff !important;
 }
 
 .prs-product-info .single_add_to_cart_button:hover {
