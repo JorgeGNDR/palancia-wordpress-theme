@@ -657,17 +657,17 @@ body.admin-bar {
 }
 
 .prs-product-info .single_add_to_cart_button {
-  background: #ffffff !important;
+  background: #000000 !important;
   background-image: none !important;
-  color: #233549 !important;
+  color: #ffffff !important;
   width: 100%;
   height: 44px;
   min-width: 0;
-  padding: 0 0.9rem !important;
-  border: 1px solid #233549 !important;
+  padding: 10px 14px !important;
+  border: none !important;
   border-radius: 0 !important;
   text-transform: uppercase;
-  font-size: 0.68rem !important;
+  font-size: 0.8rem !important;
   line-height: 1;
   text-indent: 0;
   overflow: visible;
@@ -676,9 +676,9 @@ body.admin-bar {
   align-items: center;
   justify-content: center;
   position: relative;
-  font-family: var(--font-nav);
-  font-weight: 600;
-  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  font-family: "Inria Sans", sans-serif;
+  font-weight: 700;
+  transition: opacity 0.18s ease, transform 0.18s ease;
   box-shadow: none !important;
   appearance: none;
   -webkit-appearance: none;
@@ -690,18 +690,17 @@ body.admin-bar {
 }
 
 .prs-product-info .single_add_to_cart_button.is-added {
-  background: #233549 !important;
-  border-color: #233549 !important;
+  background: #000000 !important;
   color: #ffffff !important;
 }
 
 .prs-product-info .single_add_to_cart_button:hover {
   transform: translateY(-1px);
-  background: #f6f8fa !important;
+  opacity: 0.9;
 }
 
 .prs-product-info .single_add_to_cart_button.is-added:hover {
-  background: #233549 !important;
+  background: #000000 !important;
 }
 
 .prs-product-info .single_add_to_cart_button:active {
@@ -713,15 +712,15 @@ body.admin-bar {
   min-height: 44px;
   margin: 0 0 1.4rem;
   padding: 0 0.9rem;
-  border: 1px solid #233549;
+  border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #233549;
-  background: #ffffff;
-  font-family: var(--font-nav);
-  font-size: 0.68rem;
-  font-weight: 600;
+  color: #ffffff;
+  background: #000000;
+  font-family: "Inria Sans", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
   line-height: 1;
   letter-spacing: 0.08em;
   text-align: center;
