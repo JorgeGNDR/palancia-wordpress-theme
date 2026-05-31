@@ -1308,12 +1308,16 @@ body.prs-zoom-open {
   }
 
   .prs-product-size {
-    display: none;
+    order: 5;
+    display: block;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    color: #233549;
   }
 
   .prs-product-long-description {
-    order: 2;
-    margin: 0.25rem auto 0;
+    order: 4;
+    margin: 0.45rem auto 0;
     max-width: 92%;
     text-align: left;
     font-size: 0.82rem;
@@ -1325,18 +1329,18 @@ body.prs-zoom-open {
   }
 
   .prs-product-info .price {
-    order: 3;
+    order: 2;
     margin: 0.15rem 0 0.2rem;
     font-size: 0.95rem;
   }
 
   .prs-product-info .cart {
-    order: 4;
+    order: 3;
     margin: 0.2rem 0 0.7rem;
   }
 
   .prs-product-info .extra-links {
-    order: 5;
+    order: 6;
   }
 }
 
@@ -1354,7 +1358,7 @@ body.admin-bar {
 /* =============================
    Menú filtro móvil categorías
    ============================= */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   :root {
     --header-height: 96px;
   }
@@ -1484,7 +1488,7 @@ body.admin-bar {
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 769px) {
   .mobile-filter-btn,
   .mobile-filter-menu {
     display: none !important;

@@ -114,7 +114,7 @@ function prs_show_product_size() {
         echo '<div class="prs-product-size"><span>Talla:</span> ' . esc_html( $tallas ) . '</div>';
     }
 }
-add_action( 'woocommerce_single_product_summary', 'prs_show_product_size', 6 );
+add_action( 'woocommerce_single_product_summary', 'prs_show_product_size', 36 );
 
 // Descripción larga en el resumen, como texto simple
 function prs_product_long_description() {
@@ -132,8 +132,8 @@ function prs_product_long_description() {
 
     echo '<div class="prs-product-long-description">' . $content . '</div>';
 }
-// La ponemos justo después de talla, antes de precio
-add_action( 'woocommerce_single_product_summary', 'prs_product_long_description', 7 );
+// La ponemos debajo del precio y el botón de añadir al carrito.
+add_action( 'woocommerce_single_product_summary', 'prs_product_long_description', 35 );
 
 
 // ------------ GALERÍA PERSONALIZADA ------------ //
