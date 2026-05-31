@@ -28,47 +28,31 @@ while ( have_posts() ) :
 		<aside class="prs-product-left-nav">
 			<ul>
 				<?php
-				$product_categories = get_terms([
-					'taxonomy'   => 'product_cat',
-					'hide_empty' => true,
-				]);
-
-				$excluded_slugs = [ 'tops', 'bottoms', 'accesorios' ];
-
-				$product_categories = array_values(array_filter(
-					$product_categories,
-					function ( $cat ) use ( $excluded_slugs ) {
-						return ! in_array( strtolower( $cat->slug ), $excluded_slugs, true );
-					}
-				));
-
-				$priority_order = [ 'todo', 'chaquetas', 'chalecos', 'sudaderas', 'jerseis', 'tracksuits', 'pantalones', 'camisetas', 'bolsos', 'gafas', 'gorras' ];
-				$final_categories = [];
-
-				foreach ( $priority_order as $slug ) {
-					foreach ( $product_categories as $cat ) {
-						if ( strtolower( $cat->slug ) === $slug ) {
-							$final_categories[] = $cat;
-						}
-					}
-				}
-
-				foreach ( $product_categories as $cat ) {
-					if ( ! in_array( $cat, $final_categories, true ) ) {
-						$final_categories[] = $cat;
-					}
-				}
+				// Recuperamos la talla si venía en la URL (aunque estemos en single product)
+				$current_size_slug = isset( $_GET['size'] ) ? sanitize_text_field( $_GET['size'] ) : '';
+				$final_categories = prs_get_sorted_product_categories();
 
 				foreach ( $final_categories as $cat ) :
 					$url = ( strtolower( $cat->slug ) === 'todo' )
 						? home_url( '/' )
 						: get_term_link( $cat );
+
+					if ( is_wp_error( $url ) ) {
+						continue;
+					}
+
+					if ( ! empty( $current_size_slug ) ) {
+						$url = add_query_arg( 'size', $current_size_slug, $url );
+					}
 					?>
 					<li>
 						<a href="<?php echo esc_url( $url ); ?>" data-category-slug="<?php echo esc_attr( $cat->slug ); ?>">
 							<?php echo esc_html( $cat->name ); ?>
 						</a>
 					</li>
+					<?php if ( 'palancia-merch' === $cat->slug ) : ?>
+						<li class="filter-divider" aria-hidden="true"></li>
+					<?php endif; ?>
 				<?php endforeach; ?>
 			</ul>
 		</aside>

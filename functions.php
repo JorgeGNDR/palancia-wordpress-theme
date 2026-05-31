@@ -10,6 +10,14 @@ function prs_enqueue_assets() {
         filemtime( get_stylesheet_directory() . '/style.css' )
     );
 
+    // Material Symbols (icons)
+    wp_enqueue_style(
+        'palancia-material-symbols',
+        'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu,shopping_bag,add_shopping_cart,add&display=swap',
+        [],
+        null
+    );
+
     // JS del slider solo en ficha de producto
     if ( is_product() ) {
         wp_enqueue_script(
@@ -19,16 +27,28 @@ function prs_enqueue_assets() {
             filemtime( get_stylesheet_directory() . '/assets/js/product-gallery.js' ),
             true
         );
+
+        wp_enqueue_script(
+            'prs-add-to-cart-feedback',
+            get_stylesheet_directory_uri() . '/assets/js/add-to-cart-feedback.js',
+            [],
+            filemtime( get_stylesheet_directory() . '/assets/js/add-to-cart-feedback.js' ),
+            true
+        );
     }
 }
 add_action( 'wp_enqueue_scripts', 'prs_enqueue_assets' );
 
 // Encolar el script de filtrado de productos con AJAX
 function prs_enqueue_filter_script() {
+    if ( ! is_front_page() && ! is_tax( 'product_cat' ) ) {
+        return;
+    }
+
     wp_enqueue_script(
         'prs-filter-products',
         get_stylesheet_directory_uri() . '/assets/js/filter-products.js',
-        ['jquery'],
+        [],
         filemtime( get_stylesheet_directory() . '/assets/js/filter-products.js' ),
         true
     );
@@ -134,6 +154,22 @@ function prs_custom_product_gallery() {
     global $product;
     if ( ! $product ) return;
 
+    $prev_url = '';
+    $next_url = '';
+    $ordered_ids = prs_get_home_ordered_product_ids();
+    $current_id  = $product->get_id();
+    $total_ids   = count( $ordered_ids );
+
+    if ( $total_ids > 1 ) {
+        $current_index = array_search( $current_id, $ordered_ids, true );
+        if ( $current_index !== false ) {
+            $prev_index = ( $current_index - 1 + $total_ids ) % $total_ids;
+            $next_index = ( $current_index + 1 ) % $total_ids;
+            $prev_url   = get_permalink( $ordered_ids[ $prev_index ] );
+            $next_url   = get_permalink( $ordered_ids[ $next_index ] );
+        }
+    }
+
     $image_ids = [];
     $featured = $product->get_image_id();
     if ( $featured ) $image_ids[] = $featured;
@@ -141,8 +177,16 @@ function prs_custom_product_gallery() {
     $gallery = $product->get_gallery_image_ids();
     if ( $gallery ) $image_ids = array_merge($image_ids, $gallery);
 
-    echo '<div class="prs-product-gallery-wrapper">';
-    echo '<div class="prs-product-gallery" data-total="'.count($image_ids).'">';
+    if ( empty( $image_ids ) ) {
+        $placeholder_url = wc_placeholder_img_src( 'large' );
+        echo '<div class="prs-product-gallery" data-total="1" data-prev-url="' . esc_url( $prev_url ) . '" data-next-url="' . esc_url( $next_url ) . '">';
+        echo '<div class="prs-product-slide is-active" data-index="0">';
+        echo '<img src="' . esc_url( $placeholder_url ) . '" alt="' . esc_attr( $product->get_name() ) . '">';
+        echo '</div></div>';
+        return;
+    }
+
+    echo '<div class="prs-product-gallery" data-total="' . count( $image_ids ) . '" data-prev-url="' . esc_url( $prev_url ) . '" data-next-url="' . esc_url( $next_url ) . '">';
 
     foreach ($image_ids as $i => $id) {
         echo '<div class="prs-product-slide '.($i === 0 ? 'is-active' : '').'" data-index="'.$i.'">';
@@ -151,18 +195,151 @@ function prs_custom_product_gallery() {
     }
 
     if (count($image_ids) > 1) {
-        echo '<button class="prs-product-nav prs-prev">&lsaquo;</button>';
-        echo '<button class="prs-product-nav prs-next">&rsaquo;</button>';
+        echo '<button class="prs-product-nav prs-prev" type="button">&lsaquo;</button>';
+        echo '<button class="prs-product-nav prs-next" type="button">&rsaquo;</button>';
     }
 
     echo '</div>';
-    echo '</div>';
+
+    if ( count( $image_ids ) > 1 ) {
+        echo '<div class="prs-product-dots" aria-label="Galería de producto">';
+        foreach ( $image_ids as $i => $id ) {
+            $active = $i === 0 ? ' is-active' : '';
+            echo '<button class="prs-product-dot' . $active . '" type="button" aria-label="Ver imagen ' . ( $i + 1 ) . '" data-index="' . $i . '"></button>';
+        }
+        echo '</div>';
+    }
 }
 
 
 // Orden de categorias y renderizado de productos en bloques por categoria y precio
 function prs_get_product_category_order() {
-    return [ 'chaquetas', 'chalecos', 'sudaderas', 'jerseis', 'tracksuits', 'pantalones', 'camisetas', 'bolsos', 'gafas', 'gorras' ];
+    return [ 'palancia-merch', 'chaquetas', 'chalecos', 'sudaderas', 'jerseis', 'tracksuits', 'pantalones', 'camisetas', 'bolsos', 'gafas', 'gorras'];
+}
+
+/**
+ * Obtiene las categorías de producto filtradas y ordenadas según prioridad.
+ * Centraliza la lógica usada en Home, Archivo y Single Product.
+ */
+function prs_get_sorted_product_categories() {
+    // 1. Obtener todas las categorías no vacías
+    $product_categories = get_terms( [
+        'taxonomy'   => 'product_cat',
+        'hide_empty' => true,
+    ] );
+
+    if ( is_wp_error( $product_categories ) || empty( $product_categories ) ) {
+        return [];
+    }
+
+    // 2. Excluir categorías
+    $excluded_slugs = [ 'tops', 'bottoms', 'accesorios' ];
+    $product_categories = array_filter( $product_categories, function ( $cat ) use ( $excluded_slugs ) {
+        return ! in_array( strtolower( $cat->slug ), $excluded_slugs, true );
+    } );
+
+    // 3. Ordenar según prioridad
+    $priority_order = prs_get_product_category_order(); // Reutilizamos la función que ya tenías
+
+    // Función auxiliar para ordenar objetos según un array de slugs
+    $sorted = [];
+    $lookup = [];
+
+    // Indexar categorías por slug para búsqueda rápida
+    foreach ( $product_categories as $cat ) {
+        $lookup[ strtolower( $cat->slug ) ] = $cat;
+    }
+
+    // 1. PALANCIA MERCH primero
+    if ( isset( $lookup['palancia-merch'] ) ) {
+        $sorted[] = $lookup['palancia-merch'];
+        unset( $lookup['palancia-merch'] );
+    }
+
+    // 2. Asegurar que 'todo' va después (usando la real si existe, o una fake si no)
+    if ( isset( $lookup['todo'] ) ) {
+        $sorted[] = $lookup['todo'];
+        unset( $lookup['todo'] );
+    } else {
+        $sorted[] = (object) [
+            'term_id' => 0,
+            'name'    => 'Todo',
+            'slug'    => 'todo',
+        ];
+    }
+
+    // Añadir las prioritarias en orden
+    foreach ( $priority_order as $slug ) {
+        if ( isset( $lookup[ $slug ] ) ) {
+            $sorted[] = $lookup[ $slug ];
+            unset( $lookup[ $slug ] );
+        }
+    }
+
+    // Añadir el resto (si hubiera alguna categoría nueva no listada en prioridad)
+    foreach ( $lookup as $cat ) {
+        $sorted[] = $cat;
+    }
+
+    return $sorted;
+}
+
+function prs_get_home_ordered_product_ids() {
+    $ids  = [];
+    $seen = [];
+
+    $base_args = [
+        'post_type'      => 'product',
+        'post_status'    => 'publish',
+        'posts_per_page' => -1,
+        'meta_key'       => '_price',
+        'orderby'        => 'meta_value_num',
+        'order'          => 'DESC',
+        'fields'         => 'ids',
+    ];
+
+    foreach ( prs_get_product_category_order() as $slug ) {
+        $term = get_term_by( 'slug', $slug, 'product_cat' );
+        if ( ! $term || is_wp_error( $term ) ) {
+            continue;
+        }
+
+        $args = $base_args;
+        $args['tax_query'] = [
+            [
+                'taxonomy' => 'product_cat',
+                'field'    => 'slug',
+                'terms'    => $slug,
+            ],
+        ];
+
+        $query = new WP_Query( $args );
+        if ( ! empty( $query->posts ) ) {
+            foreach ( $query->posts as $post_id ) {
+                if ( isset( $seen[ $post_id ] ) ) {
+                    continue;
+                }
+                $seen[ $post_id ] = true;
+                $ids[]            = $post_id;
+            }
+        }
+        wp_reset_postdata();
+    }
+
+    // Rellenar con el resto de productos en orden de precio
+    $query = new WP_Query( $base_args );
+    if ( ! empty( $query->posts ) ) {
+        foreach ( $query->posts as $post_id ) {
+            if ( isset( $seen[ $post_id ] ) ) {
+                continue;
+            }
+            $seen[ $post_id ] = true;
+            $ids[]            = $post_id;
+        }
+    }
+    wp_reset_postdata();
+
+    return $ids;
 }
 
 function prs_render_product_card( $post_id ) {
@@ -171,7 +348,8 @@ function prs_render_product_card( $post_id ) {
     $img_url    = $img ? $img[0] : wc_placeholder_img_src();
     $url        = get_permalink( $post_id );
     $title_attr = the_title_attribute( [ 'echo' => false, 'post' => $post_id ] );
-    $price_html = function_exists( 'wc_get_product' ) ? wc_get_product( $post_id )->get_price_html() : '';
+    $product    = function_exists( 'wc_get_product' ) ? wc_get_product( $post_id ) : false;
+    $price_html = $product ? $product->get_price_html() : '';
 
     $html  = '<a href="' . esc_url( $url ) . '" class="product-item">';
     $html .= '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title_attr ) . '">';
@@ -186,20 +364,40 @@ function prs_render_product_card( $post_id ) {
     return $html;
 }
 
-function prs_render_products_grid( $category_slug = '', $max_products = 60 ) {
+function prs_render_products_grid( $category_slug = '', $max_products = 0, $size_slug = '' ) {
     $category_slug = strtolower( $category_slug );
     $html          = '';
     $printed       = 0;
     $seen_ids      = [];
+    $limit         = (int) $max_products;
+    $is_unlimited  = $limit <= 0;
 
     $base_args = [
         'post_type'      => 'product',
         'post_status'    => 'publish',
-        'posts_per_page' => $max_products,
+        'posts_per_page' => $is_unlimited ? -1 : $limit,
         'meta_key'       => '_price',
         'orderby'        => 'meta_value_num',
         'order'          => 'DESC',
     ];
+
+    // Helper para aplicar filtro de talla a los argumentos
+    $apply_size_filter = function( $args ) use ( $size_slug ) {
+        if ( ! empty( $size_slug ) ) {
+            if ( ! isset( $args['tax_query'] ) ) {
+                $args['tax_query'] = [];
+            }
+            if ( count( $args['tax_query'] ) > 0 ) {
+                $args['tax_query']['relation'] = 'AND';
+            }
+            $args['tax_query'][] = [
+                'taxonomy' => 'pa_talla',
+                'field'    => 'slug',
+                'terms'    => $size_slug,
+            ];
+        }
+        return $args;
+    };
 
     // Cuando hay categoria concreta (diferente a TODO), solo ese bloque ordenado por precio
     if ( $category_slug && $category_slug !== 'todo' ) {
@@ -211,11 +409,15 @@ function prs_render_products_grid( $category_slug = '', $max_products = 60 ) {
                 'terms'    => $category_slug,
             ],
         ];
+        $args = $apply_size_filter( $args );
 
         $loop = new WP_Query( $args );
 
         if ( $loop->have_posts() ) {
-            while ( $loop->have_posts() && $printed < $max_products ) {
+            while ( $loop->have_posts() ) {
+                if ( ! $is_unlimited && $printed >= $limit ) {
+                    break;
+                }
                 $loop->the_post();
                 $post_id = get_the_ID();
 
@@ -235,9 +437,11 @@ function prs_render_products_grid( $category_slug = '', $max_products = 60 ) {
 
     // TODO / sin categoria: recorrer categorias en orden y dentro cada una por precio descendente
     foreach ( prs_get_product_category_order() as $slug ) {
-        $remaining = $max_products - $printed;
-        if ( $remaining <= 0 ) {
-            break;
+        if ( ! $is_unlimited ) {
+            $remaining = $limit - $printed;
+            if ( $remaining <= 0 ) {
+                break;
+            }
         }
 
         $term = get_term_by( 'slug', $slug, 'product_cat' );
@@ -246,7 +450,9 @@ function prs_render_products_grid( $category_slug = '', $max_products = 60 ) {
         }
 
         $args = $base_args;
-        $args['posts_per_page'] = $remaining;
+        if ( ! $is_unlimited ) {
+            $args['posts_per_page'] = $remaining;
+        }
         $args['tax_query']      = [
             [
                 'taxonomy' => 'product_cat',
@@ -254,11 +460,15 @@ function prs_render_products_grid( $category_slug = '', $max_products = 60 ) {
                 'terms'    => $slug,
             ],
         ];
+        $args = $apply_size_filter( $args );
 
         $loop = new WP_Query( $args );
 
         if ( $loop->have_posts() ) {
-            while ( $loop->have_posts() && $printed < $max_products ) {
+            while ( $loop->have_posts() ) {
+                if ( ! $is_unlimited && $printed >= $limit ) {
+                    break;
+                }
                 $loop->the_post();
                 $post_id = get_the_ID();
 
@@ -275,14 +485,20 @@ function prs_render_products_grid( $category_slug = '', $max_products = 60 ) {
     }
 
     // Si faltan productos (categorias no listadas), rellenar por precio descendente sin perder el orden ya impreso
-    if ( $printed < $max_products ) {
+    if ( $is_unlimited || $printed < $limit ) {
         $args                   = $base_args;
-        $args['posts_per_page'] = $max_products;
+        if ( ! $is_unlimited ) {
+            $args['posts_per_page'] = $limit;
+        }
+        $args = $apply_size_filter( $args );
 
         $loop = new WP_Query( $args );
 
         if ( $loop->have_posts() ) {
-            while ( $loop->have_posts() && $printed < $max_products ) {
+            while ( $loop->have_posts() ) {
+                if ( ! $is_unlimited && $printed >= $limit ) {
+                    break;
+                }
                 $loop->the_post();
                 $post_id = get_the_ID();
 
@@ -306,8 +522,17 @@ function prs_filter_products_by_category() {
     // Verificar nonce y permisos
     check_ajax_referer( 'prs_filter_nonce', 'security' );
 
+    // Limpiar TODOS los niveles de buffer para asegurar que no va ningún BOM o espacio
+    while ( ob_get_level() > 0 ) {
+        ob_end_clean();
+    }
+
     $category_slug = isset($_POST['category_slug'])
         ? sanitize_title( wp_unslash( $_POST['category_slug'] ) )
+        : '';
+
+    $size_slug = isset($_POST['size_slug'])
+        ? sanitize_title( wp_unslash( $_POST['size_slug'] ) )
         : '';
 
     // TODO => mostrar todo en orden de categorias y precio
@@ -315,7 +540,7 @@ function prs_filter_products_by_category() {
         $category_slug = '';
     }
 
-    $html = prs_render_products_grid( $category_slug );
+    $html = prs_render_products_grid( $category_slug, 0, $size_slug );
 
     if ( $html ) {
         echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escapado dentro de los helpers
@@ -340,7 +565,7 @@ add_filter( 'woocommerce_checkout_fields', 'prs_checkout_slim_fields' );
 
 // Honeypot simple para bots en checkout
 function prs_checkout_honeypot_field( $checkout ) {
-    echo '<div class="prs-checkout-hp" style="position:absolute;left:-9999px;visibility:hidden;">';
+    echo '<div class="prs-checkout-hp" aria-hidden="true">';
     woocommerce_form_field(
         'prs_hp_field',
         [
@@ -370,7 +595,17 @@ function prs_render_custom_cart() {
     $cart_items = WC()->cart->get_cart();
 
     if ( WC()->cart->is_empty() ) {
-        wc_get_template( 'cart/cart-empty.php' );
+        $zero_price = wc_price( 0 );
+
+        echo '<div class="pal-cart-empty">';
+        echo '<div class="pal-cart-empty-title">Order Summary</div>';
+        echo '<div class="pal-cart-empty-message">Your cart is empty</div>';
+        echo '<div class="pal-cart-summary-list">';
+        echo '<div class="pal-cart-summary-row"><span>Subtotal</span><span>' . $zero_price . '</span></div>';
+        echo '<div class="pal-cart-summary-row"><span>Taxes</span><span>' . $zero_price . '</span></div>';
+        echo '<div class="pal-cart-summary-row is-total"><span>Total</span><span>' . $zero_price . '</span></div>';
+        echo '</div>';
+        echo '</div>';
         return;
     }
 
@@ -525,3 +760,35 @@ add_filter( 'wc_add_to_cart_message_html', '__return_empty_string' );
 
 //Activar Application Passwords
 add_filter( 'wp_is_application_passwords_available', '__return_true' );
+
+// ---------- Contact form handler ----------
+function prs_handle_contact_form() {
+    if ( ! isset( $_POST['prs_contact_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['prs_contact_nonce'] ) ), 'prs_contact_form' ) ) {
+        wp_die( 'Invalid request.' );
+    }
+
+    $name    = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+    $email   = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+    $message = isset( $_POST['message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) : '';
+
+    $referer = wp_get_referer();
+    $redirect_base = $referer ? $referer : home_url( '/contact' );
+
+    if ( empty( $name ) || empty( $message ) || ! is_email( $email ) ) {
+        wp_safe_redirect( add_query_arg( 'contact', 'error', $redirect_base ) );
+        exit;
+    }
+
+    $to      = get_option( 'admin_email' );
+    $subject = 'Contacto web: ' . $name;
+    $body    = "Nombre: {$name}\nEmail: {$email}\n\n{$message}";
+    $headers = [ 'Reply-To: ' . $name . ' <' . $email . '>' ];
+
+    $sent = wp_mail( $to, $subject, $body, $headers );
+
+    wp_safe_redirect( add_query_arg( 'contact', $sent ? 'success' : 'error', $redirect_base ) );
+    exit;
+}
+
+add_action( 'admin_post_prs_contact', 'prs_handle_contact_form' );
+add_action( 'admin_post_nopriv_prs_contact', 'prs_handle_contact_form' );

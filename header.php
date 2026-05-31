@@ -7,7 +7,6 @@
 <head>
   <meta charset="<?php bloginfo('charset'); ?>">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=menu,shopping_bag,add_shopping_cart">
   <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
@@ -15,7 +14,7 @@
 <header class="site-header">
   <?php if ( is_front_page() || is_tax( 'product_cat' ) ) : ?>
     <button id="mobile-filter-toggle" class="mobile-filter-btn" aria-label="Filtrar categorías">
-      <span class="mobile-filter-icon material-symbols-outlined" aria-hidden="true">menu</span>
+      <span class="mobile-filter-icon" aria-hidden="true"></span>
     </button>
   <?php endif; ?>
   <div class="logo">
@@ -38,6 +37,7 @@
     <?php $cart_count = WC()->cart ? WC()->cart->get_cart_contents_count() : 0; ?>
     <div class="header-cart">
       <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" aria-label="Ir al carrito">
+        <span class="cart-count-inline"><?php echo esc_html( $cart_count ); ?></span>
         <span class="cart-icon" aria-hidden="true"></span>
         <span class="screen-reader-text">Carrito</span>
       </a>
