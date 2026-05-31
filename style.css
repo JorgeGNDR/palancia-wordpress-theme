@@ -285,9 +285,7 @@ body.admin-bar {
   color: #233549;
   font-weight: 700;
   opacity: 1;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.22em;
+  text-decoration: none;
 }
 
 .home-products-grid {
@@ -1478,9 +1476,7 @@ body.admin-bar {
   .mobile-filter-menu a.is-active {
     opacity: 1;
     color: #233549;
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.24em;
+    text-decoration: none;
   }
   /* Ocultar aside de filtros en móvil */
   .product-filters {
