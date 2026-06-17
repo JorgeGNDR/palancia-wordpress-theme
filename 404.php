@@ -1,7 +1,14 @@
-<?php get_header(); ?>
-<div style="padding:3rem; text-align:center;">
+<?php
+get_header();
+?>
+
+<section class="page-content">
+  <div class="container">
     <h2>Error 404</h2>
-    <p>Me parece que te has perdido eh. Tranqui, por lo menos no tienes un tatuaje de saturno en el tobillo...🪐</p>
-    <a href="<?php echo esc_url( home_url( '/' ) ); ?>">Volver</a>
-</div>
-<?php get_footer(); ?>
+    <p>No encontramos esa página.</p>
+    <a class="pal-cart-checkout" href="<?php echo esc_url( home_url( '/' ) ); ?>">Volver</a>
+  </div>
+</section>
+
+<?php
+get_footer();

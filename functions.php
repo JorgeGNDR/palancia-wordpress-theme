@@ -350,11 +350,15 @@ function prs_render_product_card( $post_id ) {
     $title_attr = the_title_attribute( [ 'echo' => false, 'post' => $post_id ] );
     $product    = function_exists( 'wc_get_product' ) ? wc_get_product( $post_id ) : false;
     $price_html = $product ? $product->get_price_html() : '';
+    $stock_text = $product && ! $product->is_in_stock() ? __( 'Sold out', 'palancia-shop' ) : '';
 
     $html  = '<a href="' . esc_url( $url ) . '" class="product-item">';
     $html .= '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title_attr ) . '">';
     $html .= '<div class="product-overlay">';
     $html .= '<span class="product-title">' . esc_html( get_the_title( $post_id ) ) . '</span>';
+    if ( $stock_text ) {
+        $html .= '<span class="product-stock">' . esc_html( $stock_text ) . '</span>';
+    }
     if ( $price_html ) {
         $html .= '<span class="product-price">' . wp_kses_post( $price_html ) . '</span>';
     }
