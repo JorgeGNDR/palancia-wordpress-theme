@@ -543,25 +543,27 @@ button { cursor: pointer; }
   grid-column: 2;
   align-self: start;
   justify-self: center;
-  width: min(100%, 680px);
-  max-width: 680px;
+  width: min(100%, 620px);
+  max-width: 620px;
   margin-top: 1rem;
   padding-top: 0.25rem;
   color: var(--ink);
+  text-align: center;
 }
 
 .prs-product-info .product_title {
-  margin: 0 0 0.7rem;
-  font: 800 clamp(1.45rem, 3vw, 3.6rem)/0.82 var(--font-nav);
-  letter-spacing: -0.04em;
+  max-width: 560px;
+  margin: 0 auto 0.65rem;
+  font: 800 clamp(1.35rem, 2.1vw, 2.55rem)/0.88 var(--font-nav);
+  letter-spacing: -0.045em;
   text-transform: uppercase;
 }
 
 .prs-product-info .price,
 .prs-product-size {
-  margin: 0 0 0.8rem;
+  margin: 0 auto 0.65rem;
   color: var(--accent);
-  font: 800 0.9rem/1.2 var(--font-body);
+  font: 800 clamp(0.74rem, 0.82vw, 0.86rem)/1.2 var(--font-body);
   text-transform: uppercase;
 }
 
@@ -572,9 +574,11 @@ button { cursor: pointer; }
 .prs-product-size span { color: var(--ink); }
 
 .prs-product-long-description {
-  margin: 1rem 0 0;
+  max-width: 520px;
+  margin: 0.9rem auto 0;
   color: var(--ink);
-  font: 600 0.86rem/1.5 var(--font-body);
+  font: 600 clamp(0.76rem, 0.82vw, 0.84rem)/1.48 var(--font-body);
+  text-align: left;
 }
 
 .prs-product-long-description ul {
@@ -586,7 +590,7 @@ button { cursor: pointer; }
 
 .prs-product-info .cart {
   display: block;
-  margin: 0 0 1rem;
+  margin: 0 auto 1rem;
   max-width: 360px;
 }
 
@@ -596,14 +600,14 @@ button { cursor: pointer; }
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 46px;
-  padding: 0.8rem 1rem !important;
+  min-height: 40px;
+  padding: 0.68rem 1rem !important;
   border: var(--rule) !important;
   border-radius: 0 !important;
   background: var(--ink) !important;
   color: var(--paper) !important;
-  font: 800 0.68rem/1 var(--font-nav) !important;
-  letter-spacing: 0.03em;
+  font: 800 clamp(0.58rem, 0.62vw, 0.66rem)/1 var(--font-nav) !important;
+  letter-spacing: 0.015em;
   text-transform: uppercase;
   box-shadow: none !important;
   appearance: none;
@@ -1172,11 +1176,12 @@ button { cursor: pointer; }
   }
 
   .prs-product-info .product_title {
-    font-size: clamp(1.55rem, 8vw, 3rem);
+    font-size: clamp(1.35rem, 6.2vw, 2.25rem);
+    line-height: 0.9;
   }
 
   .prs-product-long-description {
-    font-size: 0.84rem;
+    font-size: 0.8rem;
   }
 
   .woocommerce-message,
