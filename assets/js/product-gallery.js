@@ -7,16 +7,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const dots = [...gallery.parentElement.querySelectorAll('.prs-product-dot')];
   let current = 0;
+  let activeScale = 1;
+  let activeTranslate = { x: 0, y: 0 };
 
-  const show = (i) => {
-    slides[current].classList.remove('is-active');
-    const prevImg = slides[current].querySelector('img');
-    if (prevImg) {
-      prevImg.style.transform = '';
-      prevImg.style.transition = '';
+  const getDistance = (t1, t2) => {
+    const dx = t2.clientX - t1.clientX;
+    const dy = t2.clientY - t1.clientY;
+    return Math.hypot(dx, dy);
+  };
+
+  const resetActiveImage = () => {
+    const img = slides[current]?.querySelector('img');
+    if (img) {
+      img.style.transform = '';
+      img.style.transition = '';
     }
     activeScale = 1;
     activeTranslate = { x: 0, y: 0 };
+  };
+
+  const show = (i) => {
+    slides[current].classList.remove('is-active');
+    resetActiveImage();
     current = (i + slides.length) % slides.length;
     slides[current].classList.add('is-active');
     dots.forEach((dot, idx) => dot.classList.toggle('is-active', idx === current));
@@ -32,31 +44,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 160);
   };
 
-  const nextBtn = document.querySelector('.prs-next');
-  const prevBtn = document.querySelector('.prs-prev');
-
-  nextBtn?.addEventListener('click', (e) => {
-    e.stopPropagation(); // que no dispare el zoom
+  document.querySelector('.prs-next')?.addEventListener('click', (e) => {
+    e.stopPropagation();
     animateHorizontal('left', current + 1);
   });
 
-  prevBtn?.addEventListener('click', (e) => {
+  document.querySelector('.prs-prev')?.addEventListener('click', (e) => {
     e.stopPropagation();
     animateHorizontal('right', current - 1);
   });
 
-  // Asegurar primera imagen activa
-  slides.forEach((s, i) => s.classList.toggle('is-active', i === 0));
-  dots.forEach((dot, idx) => {
-    dot.addEventListener('click', () => show(idx));
+  slides.forEach((slide, index) => slide.classList.toggle('is-active', index === 0));
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => show(index));
   });
 
-  // ===== MODO ZOOM AL CLICAR EN LA IMAGEN =====
-
-  const canOpenZoom = window.matchMedia('(pointer: fine)').matches;
-
   const openZoom = () => {
-    // Crear overlay
+    const activeImg = slides[current]?.querySelector('img');
+    if (!activeImg) return;
+
     const overlay = document.createElement('div');
     overlay.className = 'prs-zoom-overlay';
 
@@ -68,47 +74,89 @@ document.addEventListener('DOMContentLoaded', () => {
     const inner = document.createElement('div');
     inner.className = 'prs-zoom-inner';
 
-    // Clonar todas las imágenes de la galería
-    slides.forEach(slide => {
-      const img = slide.querySelector('img');
-      if (!img) return;
-      const clone = img.cloneNode();
-      // Opcional: limpiar srcset/sizes para evitar rarezas
-      clone.removeAttribute('srcset');
-      clone.removeAttribute('sizes');
-      inner.appendChild(clone);
-    });
+    const clone = activeImg.cloneNode();
+    clone.removeAttribute('srcset');
+    clone.removeAttribute('sizes');
+    inner.appendChild(clone);
 
     overlay.appendChild(closeBtn);
     overlay.appendChild(inner);
     document.body.appendChild(overlay);
     document.body.classList.add('prs-zoom-open');
 
+    let zoomScale = 1;
+    let zoomTranslate = { x: 0, y: 0 };
+    let zoomStartDist = 0;
+    let zoomStartScale = 1;
+    let zoomStartMid = { x: 0, y: 0 };
+    let zoomStartTranslate = { x: 0, y: 0 };
+
+    const applyZoom = () => {
+      clone.style.transform = `translate(${zoomTranslate.x}px, ${zoomTranslate.y}px) scale(${zoomScale})`;
+    };
+
     const close = () => {
       document.body.classList.remove('prs-zoom-open');
       overlay.remove();
     };
 
-    // Cerrar al clicar en la X
     closeBtn.addEventListener('click', close);
-    
-    // Cerrar al clicar en cualquier parte de la pantalla de zoom
     overlay.addEventListener('click', close);
-    inner.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
+    inner.addEventListener('click', (e) => e.stopPropagation());
 
+    inner.addEventListener(
+      'touchstart',
+      (e) => {
+        if (e.touches.length !== 2) return;
+        e.preventDefault();
+        zoomStartDist = getDistance(e.touches[0], e.touches[1]);
+        zoomStartScale = zoomScale;
+        zoomStartMid = {
+          x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+        };
+        zoomStartTranslate = { ...zoomTranslate };
+      },
+      { passive: false }
+    );
+
+    inner.addEventListener(
+      'touchmove',
+      (e) => {
+        if (e.touches.length !== 2 || !zoomStartDist) return;
+        e.preventDefault();
+        const dist = getDistance(e.touches[0], e.touches[1]);
+        const mid = {
+          x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+        };
+
+        zoomScale = Math.min(4, Math.max(1, (zoomStartScale * dist) / zoomStartDist));
+        zoomTranslate = {
+          x: zoomStartTranslate.x + mid.x - zoomStartMid.x,
+          y: zoomStartTranslate.y + mid.y - zoomStartMid.y,
+        };
+        applyZoom();
+      },
+      { passive: false }
+    );
+
+    inner.addEventListener('touchend', () => {
+      zoomStartDist = 0;
+      if (zoomScale < 1.02) {
+        zoomScale = 1;
+        zoomTranslate = { x: 0, y: 0 };
+        applyZoom();
+      }
+    });
   };
 
-  // Abrir zoom al hacer clic en la imagen
   gallery.addEventListener('click', (e) => {
-    if (!canOpenZoom) return;
-    if (e.target.tagName.toLowerCase() === 'img') {
+    if (e.target?.tagName?.toLowerCase() === 'img') {
       openZoom();
     }
   });
 
-  // ===== SWIPE + PINCH (MÓVIL) =====
   let startX = 0;
   let startY = 0;
   let isPinching = false;
@@ -116,30 +164,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let pinchStartScale = 1;
   let pinchStartMid = { x: 0, y: 0 };
   let pinchStartTranslate = { x: 0, y: 0 };
-  let activeScale = 1;
-  let activeTranslate = { x: 0, y: 0 };
   let pinchImg = null;
   let recentPinch = false;
   const swipeThreshold = 50;
-
-  const getDistance = (t1, t2) => {
-    const dx = t2.clientX - t1.clientX;
-    const dy = t2.clientY - t1.clientY;
-    return Math.hypot(dx, dy);
-  };
-
-  const resetPinch = () => {
-    if (!pinchImg) return;
-    pinchImg.style.transition = 'transform 0.2s ease';
-    pinchImg.style.transform = 'translate(0px, 0px) scale(1)';
-    activeScale = 1;
-    activeTranslate = { x: 0, y: 0 };
-    window.setTimeout(() => {
-      if (pinchImg) {
-        pinchImg.style.transition = '';
-      }
-    }, 220);
-  };
 
   gallery.addEventListener(
     'touchstart',
@@ -169,40 +196,26 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isPinching || e.touches.length !== 2) return;
       e.preventDefault();
       const dist = getDistance(e.touches[0], e.touches[1]);
-      let scale = (pinchStartScale * dist) / pinchStartDist;
-      if (scale < 1) scale = 1;
-      if (scale > 2.6) scale = 2.6;
       const mid = {
         x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
         y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
       };
-      const dx = mid.x - pinchStartMid.x;
-      const dy = mid.y - pinchStartMid.y;
-      const translateX = pinchStartTranslate.x + dx;
-      const translateY = pinchStartTranslate.y + dy;
+
+      activeScale = Math.min(2.6, Math.max(1, (pinchStartScale * dist) / pinchStartDist));
+      activeTranslate = {
+        x: pinchStartTranslate.x + mid.x - pinchStartMid.x,
+        y: pinchStartTranslate.y + mid.y - pinchStartMid.y,
+      };
+
       if (pinchImg) {
-        pinchImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        pinchImg.style.transform = `translate(${activeTranslate.x}px, ${activeTranslate.y}px) scale(${activeScale})`;
       }
-      activeScale = scale;
-      activeTranslate = { x: translateX, y: translateY };
     },
     { passive: false }
   );
 
-  const navigateWithSwipe = (direction) => {
-    const nextUrl = gallery.dataset.nextUrl;
-    const prevUrl = gallery.dataset.prevUrl;
-    const url = direction === 'up' ? nextUrl : prevUrl;
-    if (!url) return;
-    gallery.classList.add(direction === 'up' ? 'is-swipe-up' : 'is-swipe-down');
-    window.setTimeout(() => {
-      window.location.href = url;
-    }, 180);
-  };
-
   gallery.addEventListener('touchend', (e) => {
     if (isPinching && e.touches.length < 2) {
-      resetPinch();
       isPinching = false;
       recentPinch = true;
       window.setTimeout(() => {
@@ -210,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 300);
       return;
     }
-    if (!e.changedTouches.length || isPinching || recentPinch) return;
+    if (!e.changedTouches.length || isPinching || recentPinch || activeScale > 1.02) return;
 
     const endX = e.changedTouches[0].clientX;
     const endY = e.changedTouches[0].clientY;
@@ -218,27 +231,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const dy = endY - startY;
 
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > swipeThreshold) {
-      if (dx < 0) {
-        animateHorizontal('left', current + 1);
-      } else {
-        animateHorizontal('right', current - 1);
-      }
-      return;
-    }
-
-    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > swipeThreshold) {
-      if (dy < 0) {
-        navigateWithSwipe('up');
-      } else if (dy > 0) {
-        navigateWithSwipe('down');
-      }
+      animateHorizontal(dx < 0 ? 'left' : 'right', dx < 0 ? current + 1 : current - 1);
     }
   });
 
   gallery.addEventListener('touchcancel', () => {
-    if (isPinching) {
-      resetPinch();
-      isPinching = false;
-    }
+    isPinching = false;
   });
 });

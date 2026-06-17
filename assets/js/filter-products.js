@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   const filterLinks = document.querySelectorAll('.product-filters a, .mobile-filter-menu a');
   const productsGrid = document.querySelector('.home-products-grid');
+  const sizeButtons = document.querySelectorAll('[data-size-slug]');
+  const stockButtons = document.querySelectorAll('[data-stock-filter]');
+  const clearButtons = document.querySelectorAll('.product-size-clear');
 
   const mobileBtn = document.getElementById('mobile-filter-toggle');
   const mobileMenu = document.getElementById('mobile-filter-menu');
@@ -30,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const { ajaxUrl, nonce } = prsFilterProducts;
   let currentCategory = '';
+  let currentSizes = new Set();
+  let currentStock = 'show';
 
   const updateActiveLinks = () => {
     filterLinks.forEach((link) => {
@@ -41,6 +46,15 @@ document.addEventListener('DOMContentLoaded', () => {
         link.classList.add('is-active');
       }
     });
+
+    sizeButtons.forEach((button) => {
+      const sizeSlug = button.getAttribute('data-size-slug');
+      button.classList.toggle('is-active', sizeSlug && currentSizes.has(sizeSlug));
+    });
+
+    stockButtons.forEach((button) => {
+      button.classList.toggle('is-active', button.getAttribute('data-stock-filter') === currentStock);
+    });
   };
 
   const loadProducts = () => {
@@ -48,6 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
       action: 'prs_filter_products',
       security: nonce,
       category_slug: currentCategory === 'todo' ? '' : currentCategory,
+      size_slugs: [...currentSizes].join(','),
+      stock_filter: currentStock,
     });
 
     fetch(ajaxUrl, {
@@ -64,10 +80,42 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   };
 
+  const updateUrl = () => {
+    const params = new URLSearchParams();
+    if (currentSizes.size) {
+      params.set('size', [...currentSizes].join(','));
+    }
+    if (currentStock === 'hide') {
+      params.set('soldout', 'hide');
+    }
+
+    const baseUrl = !currentCategory || currentCategory === 'todo'
+      ? '/'
+      : `/collections/${encodeURIComponent(currentCategory)}/`;
+    const query = params.toString();
+    window.history.pushState(
+      {
+        category: currentCategory,
+        size: [...currentSizes],
+        soldout: currentStock,
+      },
+      '',
+      query ? `${baseUrl}?${query}` : baseUrl
+    );
+  };
+
   const path = window.location.pathname;
   const match = path.match(/\/collections\/([^/]+)\/?/);
+  const params = new URLSearchParams(window.location.search);
 
   currentCategory = match ? decodeURIComponent(match[1]) : 'todo';
+  currentSizes = new Set(
+    (params.get('size') || '')
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean)
+  );
+  currentStock = params.get('soldout') === 'hide' ? 'hide' : 'show';
 
   updateActiveLinks();
 
@@ -82,11 +130,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
       updateActiveLinks();
       loadProducts();
+      updateUrl();
+    });
+  });
 
-      const newUrl = !currentCategory || currentCategory === 'todo'
-        ? '/'
-        : `/collections/${encodeURIComponent(currentCategory)}/`;
-      window.history.pushState({ category: currentCategory }, '', newUrl);
+  sizeButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const sizeSlug = button.getAttribute('data-size-slug');
+      if (!sizeSlug) return;
+
+      if (currentSizes.has(sizeSlug)) {
+        currentSizes.delete(sizeSlug);
+      } else {
+        currentSizes.add(sizeSlug);
+      }
+
+      updateActiveLinks();
+      loadProducts();
+      updateUrl();
+    });
+  });
+
+  stockButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      currentStock = button.getAttribute('data-stock-filter') === 'hide' ? 'hide' : 'show';
+      updateActiveLinks();
+      loadProducts();
+      updateUrl();
+    });
+  });
+
+  clearButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      currentSizes.clear();
+      currentStock = 'show';
+      updateActiveLinks();
+      loadProducts();
+      updateUrl();
     });
   });
 

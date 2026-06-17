@@ -1545,3 +1545,220 @@ body.admin-bar {
 .single-product .wc-google-pay-button {
   display: none !important;
 }
+
+/* ===== MOBILE PRODUCT / FILTER REWORK ===== */
+.product-size-filter {
+  margin-top: 2.4rem;
+  padding-top: 1.4rem;
+  border-top: 2px solid #111;
+  font-family: var(--font-nav);
+  text-transform: uppercase;
+}
+
+.product-size-filter-title,
+.product-stock-filter > span,
+.product-size-options > span {
+  display: block;
+  margin: 0 0 0.85rem;
+  color: #111;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.product-stock-filter {
+  margin-bottom: 1.35rem;
+}
+
+.product-stock-actions,
+.product-size-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.product-size-buttons {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.product-stock-actions button,
+.product-size-buttons button,
+.product-size-clear {
+  min-height: 34px;
+  padding: 0.4rem 0.55rem;
+  border: 2px solid #111;
+  border-radius: 0;
+  background: #fff;
+  color: #111;
+  font: 800 0.62rem/1 var(--font-nav);
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.product-stock-actions button.is-active,
+.product-size-buttons button.is-active,
+.product-stock-actions button:hover,
+.product-size-buttons button:hover {
+  background: #111;
+  color: #fff;
+}
+
+.product-size-clear {
+  display: block;
+  width: max-content;
+  margin: 1.25rem 0 0 auto;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  background: #111;
+  color: #fff;
+}
+
+.product-size-clear:hover {
+  background: #233549;
+}
+
+.prs-product-info .single_add_to_cart_button {
+  min-height: 48px;
+  border: 2px solid #111 !important;
+  background: #111 !important;
+  color: #fff !important;
+  font-family: var(--font-nav) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em;
+}
+
+.prs-product-info .single_add_to_cart_button:hover,
+.prs-product-info .single_add_to_cart_button.is-added {
+  background: #fff !important;
+  color: #111 !important;
+  opacity: 1;
+  transform: none;
+}
+
+.single-product .woocommerce-message,
+.single-product .woocommerce-info {
+  display: none !important;
+}
+
+.prs-zoom-overlay {
+  padding: 0;
+  overflow: hidden;
+  cursor: zoom-out;
+}
+
+.prs-zoom-inner {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: default;
+}
+
+.prs-zoom-inner img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+  object-fit: contain;
+  transform-origin: center;
+  will-change: transform;
+  touch-action: none;
+}
+
+@media (max-width: 768px) {
+  .prs-product-page {
+    align-items: stretch;
+    gap: 0.9rem;
+    width: 100%;
+    padding: 0 0.7rem 2.2rem;
+  }
+
+  .prs-product-gallery-wrapper,
+  .prs-product-info,
+  .prs-product-extra {
+    max-width: none;
+    width: 100%;
+  }
+
+  .prs-product-gallery {
+    max-width: none;
+    touch-action: pan-y pinch-zoom;
+  }
+
+  .prs-product-slide img {
+    cursor: zoom-in;
+  }
+
+  .prs-product-info {
+    align-items: stretch;
+    width: 100%;
+    padding: 1rem 0.85rem 1.1rem;
+    border: 2px solid #111;
+    background: #fff;
+    text-align: left;
+  }
+
+  .prs-product-info .product_title,
+  .prs-product-info .price {
+    text-align: left;
+  }
+
+  .prs-product-info .product_title {
+    margin-bottom: 0.6rem;
+    font-size: 1.35rem;
+  }
+
+  .prs-product-long-description {
+    max-width: none;
+    width: 100%;
+    margin-top: 0.8rem;
+    font-size: 0.84rem;
+  }
+
+  .prs-product-info .cart,
+  .prs-product-info .stock.out-of-stock {
+    width: 100%;
+    max-width: none;
+  }
+
+  .mobile-filter-menu {
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: calc(var(--adminbar-height) + 5rem) 1rem 2rem;
+    overflow-y: auto;
+  }
+
+  .mobile-filter-menu ul {
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .mobile-filter-menu a {
+    padding: 0.55rem 0;
+    border-bottom: 2px solid #111;
+    text-align: left;
+  }
+
+  .mobile-filter-menu .product-size-filter {
+    width: 100%;
+    max-width: 26rem;
+    margin: 0 auto;
+    padding: 1.6rem;
+    border: 2px solid #111;
+    background: #fff;
+  }
+
+  .mobile-filter-menu .product-size-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

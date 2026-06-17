@@ -8,6 +8,8 @@
  */
 
 $current_category_slug = isset( $current_category_slug ) ? (string) $current_category_slug : '';
+$current_size_slug     = isset( $current_size_slug ) ? (string) $current_size_slug : ( isset( $_GET['size'] ) ? sanitize_text_field( wp_unslash( $_GET['size'] ) ) : '' );
+$current_stock_filter  = isset( $_GET['soldout'] ) && 'hide' === sanitize_title( wp_unslash( $_GET['soldout'] ) ) ? 'hide' : 'show';
 ?>
 
 <section class="home-products">
@@ -23,7 +25,7 @@ $current_category_slug = isset( $current_category_slug ) ? (string) $current_cat
     <div class="home-products-grid">
       <?php
       $grid_html = function_exists( 'prs_render_products_grid' )
-        ? prs_render_products_grid( $current_category_slug )
+        ? prs_render_products_grid( $current_category_slug, 0, $current_size_slug, $current_stock_filter )
         : '';
 
       echo $grid_html ? $grid_html : '<p>' . esc_html__( 'No hay productos en esta categoria.', 'palancia-shop' ) . '</p>';

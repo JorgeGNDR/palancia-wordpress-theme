@@ -9,6 +9,9 @@
 
 $product_categories    = isset( $product_categories ) && is_array( $product_categories ) ? $product_categories : [];
 $current_category_slug = isset( $current_category_slug ) ? (string) $current_category_slug : '';
+$size_terms            = function_exists( 'prs_get_available_size_terms' ) ? prs_get_available_size_terms() : [];
+$selected_sizes        = isset( $_GET['size'] ) ? array_filter( array_map( 'sanitize_title', explode( ',', sanitize_text_field( wp_unslash( $_GET['size'] ) ) ) ) ) : [];
+$stock_filter          = isset( $_GET['soldout'] ) && 'hide' === sanitize_title( wp_unslash( $_GET['soldout'] ) ) ? 'hide' : 'show';
 ?>
 
 <ul>
@@ -37,3 +40,30 @@ $current_category_slug = isset( $current_category_slug ) ? (string) $current_cat
     </li>
   <?php endforeach; ?>
 </ul>
+
+<?php if ( ! empty( $size_terms ) ) : ?>
+  <div class="product-size-filter" aria-label="<?php echo esc_attr__( 'Filtro por talla', 'palancia-shop' ); ?>">
+    <p class="product-size-filter-title"><?php echo esc_html__( 'Filtro', 'palancia-shop' ); ?></p>
+
+    <div class="product-stock-filter">
+      <span><?php echo esc_html__( 'Sold out', 'palancia-shop' ); ?></span>
+      <div class="product-stock-actions">
+        <button class="<?php echo 'show' === $stock_filter ? 'is-active' : ''; ?>" type="button" data-stock-filter="show"><?php echo esc_html__( 'Show', 'palancia-shop' ); ?></button>
+        <button class="<?php echo 'hide' === $stock_filter ? 'is-active' : ''; ?>" type="button" data-stock-filter="hide"><?php echo esc_html__( 'Hide', 'palancia-shop' ); ?></button>
+      </div>
+    </div>
+
+    <div class="product-size-options">
+      <span><?php echo esc_html__( 'In-stock', 'palancia-shop' ); ?></span>
+      <div class="product-size-buttons">
+        <?php foreach ( $size_terms as $term ) : ?>
+          <button class="<?php echo in_array( $term->slug, $selected_sizes, true ) ? 'is-active' : ''; ?>" type="button" data-size-slug="<?php echo esc_attr( $term->slug ); ?>">
+            <?php echo esc_html( $term->name ); ?>
+          </button>
+        <?php endforeach; ?>
+      </div>
+    </div>
+
+    <button class="product-size-clear" type="button"><?php echo esc_html__( 'Clear', 'palancia-shop' ); ?></button>
+  </div>
+<?php endif; ?>

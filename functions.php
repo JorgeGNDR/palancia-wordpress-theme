@@ -364,8 +364,12 @@ function prs_render_product_card( $post_id ) {
     return $html;
 }
 
-function prs_render_products_grid( $category_slug = '', $max_products = 0, $size_slug = '' ) {
+function prs_render_products_grid( $category_slug = '', $max_products = 0, $size_slug = '', $stock_filter = 'show' ) {
     $category_slug = strtolower( $category_slug );
+    $size_slugs    = is_array( $size_slug )
+        ? array_filter( array_map( 'sanitize_title', $size_slug ) )
+        : array_filter( array_map( 'sanitize_title', explode( ',', (string) $size_slug ) ) );
+    $stock_filter  = sanitize_title( (string) $stock_filter );
     $html          = '';
     $printed       = 0;
     $seen_ids      = [];
@@ -382,8 +386,8 @@ function prs_render_products_grid( $category_slug = '', $max_products = 0, $size
     ];
 
     // Helper para aplicar filtro de talla a los argumentos
-    $apply_size_filter = function( $args ) use ( $size_slug ) {
-        if ( ! empty( $size_slug ) ) {
+    $apply_size_filter = function( $args ) use ( $size_slugs, $stock_filter ) {
+        if ( ! empty( $size_slugs ) ) {
             if ( ! isset( $args['tax_query'] ) ) {
                 $args['tax_query'] = [];
             }
@@ -393,7 +397,17 @@ function prs_render_products_grid( $category_slug = '', $max_products = 0, $size
             $args['tax_query'][] = [
                 'taxonomy' => 'pa_talla',
                 'field'    => 'slug',
-                'terms'    => $size_slug,
+                'terms'    => $size_slugs,
+                'operator' => 'IN',
+            ];
+        }
+        if ( 'hide' === $stock_filter ) {
+            if ( ! isset( $args['meta_query'] ) ) {
+                $args['meta_query'] = [];
+            }
+            $args['meta_query'][] = [
+                'key'   => '_stock_status',
+                'value' => 'instock',
             ];
         }
         return $args;
@@ -517,6 +531,25 @@ function prs_render_products_grid( $category_slug = '', $max_products = 0, $size
     return $html;
 }
 
+function prs_get_available_size_terms() {
+    if ( ! taxonomy_exists( 'pa_talla' ) ) {
+        return [];
+    }
+
+    $terms = get_terms( [
+        'taxonomy'   => 'pa_talla',
+        'hide_empty' => false,
+        'orderby'    => 'menu_order',
+        'order'      => 'ASC',
+    ] );
+
+    if ( is_wp_error( $terms ) || empty( $terms ) ) {
+        return [];
+    }
+
+    return $terms;
+}
+
 // Manejar solicitudes AJAX para filtrar productos por categoría
 function prs_filter_products_by_category() {
     // Verificar nonce y permisos
@@ -531,16 +564,20 @@ function prs_filter_products_by_category() {
         ? sanitize_title( wp_unslash( $_POST['category_slug'] ) )
         : '';
 
-    $size_slug = isset($_POST['size_slug'])
-        ? sanitize_title( wp_unslash( $_POST['size_slug'] ) )
+    $size_slug = isset($_POST['size_slugs'])
+        ? sanitize_text_field( wp_unslash( $_POST['size_slugs'] ) )
         : '';
+
+    $stock_filter = isset($_POST['stock_filter'])
+        ? sanitize_title( wp_unslash( $_POST['stock_filter'] ) )
+        : 'show';
 
     // TODO => mostrar todo en orden de categorias y precio
     if ( $category_slug === 'todo' ) {
         $category_slug = '';
     }
 
-    $html = prs_render_products_grid( $category_slug, 0, $size_slug );
+    $html = prs_render_products_grid( $category_slug, 0, $size_slug, $stock_filter );
 
     if ( $html ) {
         echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escapado dentro de los helpers
