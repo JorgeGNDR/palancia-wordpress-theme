@@ -1560,6 +1560,11 @@ body.admin-bar {
   box-shadow: none;
 }
 
+.product-filters > .product-size-filter,
+.mobile-filter-menu > .product-size-filter {
+  display: none !important;
+}
+
 .product-filter-trigger {
   display: block;
   margin-top: 2.2rem;
@@ -1586,10 +1591,11 @@ body.admin-bar {
 .product-size-filter-modal {
   position: fixed;
   inset: 0;
-  z-index: 10000;
+  z-index: 2147483000;
   display: none;
   place-items: center;
   padding: 1rem;
+  isolation: isolate;
 }
 
 .product-size-filter-modal.is-open {
@@ -1601,6 +1607,11 @@ body.admin-bar {
   inset: 0;
   background: rgba(255, 255, 255, 0.72);
   cursor: pointer;
+  z-index: 0;
+}
+
+.product-size-filter-modal .product-size-filter {
+  z-index: 1;
 }
 
 .product-filter-close {

@@ -9,10 +9,6 @@ $stock_filter   = isset( $_GET['soldout'] ) && 'hide' === sanitize_title( wp_uns
 ?>
 
 <?php if ( ! empty( $size_terms ) ) : ?>
-  <button class="product-filter-trigger" type="button" aria-expanded="false" aria-controls="product-size-filter-modal">
-    <?php echo esc_html__( 'Filtro', 'palancia-shop' ); ?>
-  </button>
-
   <div id="product-size-filter-modal" class="product-size-filter-modal" aria-hidden="true">
     <div class="product-size-filter-backdrop" data-filter-close></div>
     <div class="product-size-filter" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr__( 'Filtro por talla', 'palancia-shop' ); ?>">
