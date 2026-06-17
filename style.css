@@ -164,14 +164,14 @@ button { cursor: pointer; }
 
 .header-cart a {
   display: inline-grid;
-  grid-template-columns: auto 28px;
-  gap: 0.45rem;
+  grid-template-columns: auto 22px;
+  gap: 0.32rem;
   align-items: center;
-  min-height: 42px;
-  padding: 0 0.55rem;
+  min-height: 34px;
+  padding: 0 0.42rem;
   border: var(--rule);
   background: var(--paper);
-  font: 800 0.75rem/1 var(--font-nav);
+  font: 800 0.66rem/1 var(--font-nav);
 }
 
 .header-cart a:hover {
@@ -180,13 +180,13 @@ button { cursor: pointer; }
 }
 
 .cart-count-inline {
-  min-width: 1.2rem;
+  min-width: 1rem;
   text-align: center;
 }
 
 .cart-icon {
-  width: 26px;
-  height: 26px;
+  width: 21px;
+  height: 21px;
   display: block;
   background: currentColor;
   -webkit-mask: url('assets/icons/carrito.png') center / contain no-repeat;
@@ -268,8 +268,8 @@ button { cursor: pointer; }
   border-radius: 0;
   background: transparent;
   color: var(--ink);
-  font: 800 0.78rem/1.1 var(--font-nav);
-  letter-spacing: 0.01em;
+  font: 700 clamp(0.68rem, 0.72vw, 0.86rem)/1.1 var(--font-nav);
+  letter-spacing: -0.02em;
   text-align: right;
   text-transform: uppercase;
   appearance: none;
@@ -1227,6 +1227,6 @@ button { cursor: pointer; }
 
 @media (max-width: 420px) {
   .home-products-grid { gap: 0.42rem; }
-  .header-cart a { grid-template-columns: auto 24px; min-height: 38px; padding: 0 0.45rem; }
-  .cart-icon { width: 23px; height: 23px; }
+  .header-cart a { grid-template-columns: auto 20px; min-height: 32px; padding: 0 0.38rem; }
+  .cart-icon { width: 19px; height: 19px; }
 }
