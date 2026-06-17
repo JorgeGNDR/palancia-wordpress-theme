@@ -4,9 +4,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const sizeButtons = document.querySelectorAll('[data-size-slug]');
   const stockButtons = document.querySelectorAll('[data-stock-filter]');
   const clearButtons = document.querySelectorAll('.product-size-clear');
+  const filterTriggers = document.querySelectorAll('.product-filter-trigger');
+  const filterModal = document.getElementById('product-size-filter-modal');
+  const filterCloseControls = document.querySelectorAll('[data-filter-close]');
 
   const mobileBtn = document.getElementById('mobile-filter-toggle');
   const mobileMenu = document.getElementById('mobile-filter-menu');
+
+  const openFilterModal = () => {
+    if (!filterModal) return;
+    filterModal.classList.add('is-open');
+    filterModal.setAttribute('aria-hidden', 'false');
+    filterTriggers.forEach((trigger) => trigger.setAttribute('aria-expanded', 'true'));
+    document.body.classList.add('product-filter-open');
+  };
+
+  const closeFilterModal = () => {
+    if (!filterModal) return;
+    filterModal.classList.remove('is-open');
+    filterModal.setAttribute('aria-hidden', 'true');
+    filterTriggers.forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
+    document.body.classList.remove('product-filter-open');
+  };
 
   if (mobileBtn && mobileMenu) {
     mobileBtn.addEventListener('click', (e) => {
@@ -15,7 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', (e) => {
-      if (!mobileMenu.contains(e.target) && !mobileBtn.contains(e.target)) {
+      if (
+        !mobileMenu.contains(e.target)
+        && !mobileBtn.contains(e.target)
+        && !filterModal?.contains(e.target)
+      ) {
         mobileMenu.classList.remove('open');
       }
     });
@@ -26,6 +49,24 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  filterTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openFilterModal();
+    });
+  });
+
+  filterCloseControls.forEach((control) => {
+    control.addEventListener('click', closeFilterModal);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeFilterModal();
+    }
+  });
 
   if (!filterLinks.length || !productsGrid || typeof prsFilterProducts === 'undefined') {
     return;

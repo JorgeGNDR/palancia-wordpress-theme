@@ -20,6 +20,7 @@ $current_stock_filter  = isset( $_GET['soldout'] ) && 'hide' === sanitize_title(
 
     <aside class="product-filters" aria-label="<?php echo esc_attr__( 'Filtros de producto', 'palancia-shop' ); ?>">
       <?php include locate_template( 'template-parts/shop-nav.php' ); ?>
+      <?php include locate_template( 'template-parts/size-filter-modal.php' ); ?>
     </aside>
 
     <div class="home-products-grid">

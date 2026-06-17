@@ -1548,14 +1548,83 @@ body.admin-bar {
 
 /* ===== MOBILE PRODUCT / FILTER REWORK ===== */
 .product-size-filter {
-  margin-top: 2.4rem;
-  padding-top: 1.4rem;
-  border-top: 2px solid #111;
+  position: relative;
+  width: min(100% - 2rem, 400px);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  padding: 2.2rem 2rem 2rem;
+  border: 2px solid #111;
+  background: #fff;
   font-family: var(--font-nav);
   text-transform: uppercase;
+  box-shadow: none;
 }
 
-.product-size-filter-title,
+.product-filter-trigger {
+  display: block;
+  margin-top: 2.2rem;
+  padding: 0.35rem 0;
+  border: 0;
+  border-top: 2px solid #111;
+  border-radius: 0;
+  background: transparent;
+  color: #111;
+  font: 800 0.82rem/1.2 var(--font-nav);
+  letter-spacing: 0.02em;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.product-filter-trigger:hover,
+.product-filter-trigger[aria-expanded="true"] {
+  color: #233549;
+}
+
+.product-size-filter-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  place-items: center;
+  padding: 1rem;
+}
+
+.product-size-filter-modal.is-open {
+  display: grid;
+}
+
+.product-size-filter-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+}
+
+.product-filter-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 52px;
+  min-height: 30px;
+  padding: 0 0.65rem;
+  border: 0;
+  border-left: 2px solid #111;
+  border-bottom: 2px solid #111;
+  border-radius: 0;
+  background: #111;
+  color: #fff;
+  font: 800 0.62rem/1 var(--font-nav);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+body.product-filter-open {
+  overflow: hidden;
+}
+
 .product-stock-filter > span,
 .product-size-options > span {
   display: block;
@@ -1749,16 +1818,18 @@ body.admin-bar {
     text-align: left;
   }
 
-  .mobile-filter-menu .product-size-filter {
+  .mobile-filter-menu .product-filter-trigger {
     width: 100%;
     max-width: 26rem;
-    margin: 0 auto;
-    padding: 1.6rem;
-    border: 2px solid #111;
-    background: #fff;
+    margin: 1.2rem auto 0;
   }
 
-  .mobile-filter-menu .product-size-buttons {
+  .product-size-filter {
+    width: min(100% - 1rem, 400px);
+    padding: 2.1rem 1.45rem 1.5rem;
+  }
+
+  .product-size-filter .product-size-buttons {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
