@@ -78,6 +78,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentStock = 'show';
   let activeRequest = null;
 
+  const revealMobileGrid = () => {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+
+    closeFilterModal();
+    mobileMenu?.classList.remove('open');
+  };
+
   const updateActiveLinks = () => {
     filterLinks.forEach((link) => {
       const catSlug = link.getAttribute('data-category-slug');
@@ -192,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentCategory = catSlug;
 
       updateActiveLinks();
+      revealMobileGrid();
       loadProducts();
       updateUrl();
     });
@@ -209,6 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       updateActiveLinks();
+      revealMobileGrid();
       loadProducts();
       updateUrl();
     });
@@ -218,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
       currentStock = button.getAttribute('data-stock-filter') === 'hide' ? 'hide' : 'show';
       updateActiveLinks();
+      revealMobileGrid();
       loadProducts();
       updateUrl();
     });
@@ -228,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentSizes.clear();
       currentStock = 'show';
       updateActiveLinks();
+      revealMobileGrid();
       loadProducts();
       updateUrl();
     });

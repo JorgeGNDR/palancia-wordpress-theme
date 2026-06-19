@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const wrapper = gallery.parentElement;
   const dots = [...wrapper.querySelectorAll('.prs-product-dot')];
-  const coarsePointer = window.matchMedia('(pointer: coarse)');
+  const mobileViewport = window.matchMedia('(max-width: 768px)');
   let current = 0;
   let suppressClickUntil = 0;
 
@@ -160,6 +160,10 @@ document.addEventListener('DOMContentLoaded', () => {
       applyZoom();
       markGesture();
     });
+
+    return {
+      isZoomed: () => scale > 1.02,
+    };
   };
 
   const openProductStrip = () => {
@@ -214,9 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const openSingleImage = (index) => {
-    const source = slides[index]?.querySelector('img');
-    if (!source) return;
-
     const overlay = document.createElement('div');
     overlay.className = 'prs-zoom-overlay is-single';
 
@@ -226,19 +227,20 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn.innerHTML = '&times;';
     closeBtn.setAttribute('aria-label', 'Cerrar imagen');
 
-    const frame = document.createElement('div');
-    frame.className = 'prs-zoom-single-frame';
-    const clone = cloneImage(source);
-    frame.appendChild(clone);
+    const counter = document.createElement('div');
+    counter.className = 'prs-zoom-counter';
+    counter.setAttribute('aria-live', 'polite');
 
     let ignoreCloseUntil = 0;
+    let displayedIndex = index;
+    let frame = null;
+
     const markGesture = () => {
       ignoreCloseUntil = Date.now() + 350;
     };
 
-    installBoundedPinchZoom(frame, clone, markGesture);
-    overlay.appendChild(frame);
     overlay.appendChild(closeBtn);
+    overlay.appendChild(counter);
     document.body.appendChild(overlay);
     document.body.classList.add('prs-zoom-open');
 
@@ -247,8 +249,80 @@ document.addEventListener('DOMContentLoaded', () => {
       overlay.remove();
     };
 
+    const renderImage = (nextIndex, direction = '') => {
+      displayedIndex = (nextIndex + slides.length) % slides.length;
+      const source = slides[displayedIndex]?.querySelector('img');
+      if (!source) return;
+
+      const nextFrame = document.createElement('div');
+      nextFrame.className = `prs-zoom-single-frame${direction ? ` is-entering-${direction}` : ''}`;
+      const clone = cloneImage(source);
+      nextFrame.appendChild(clone);
+
+      const zoom = installBoundedPinchZoom(nextFrame, clone, markGesture);
+      let swipeStart = null;
+
+      nextFrame.addEventListener(
+        'touchstart',
+        (e) => {
+          if (e.touches.length !== 1 || zoom.isZoomed()) {
+            swipeStart = null;
+            return;
+          }
+
+          swipeStart = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+          };
+        },
+        { passive: true }
+      );
+
+      nextFrame.addEventListener(
+        'touchmove',
+        (e) => {
+          if (!swipeStart || e.touches.length !== 1 || zoom.isZoomed()) return;
+
+          const dx = e.touches[0].clientX - swipeStart.x;
+          const dy = e.touches[0].clientY - swipeStart.y;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            e.preventDefault();
+          }
+        },
+        { passive: false }
+      );
+
+      nextFrame.addEventListener(
+        'touchend',
+        (e) => {
+          if (!swipeStart || zoom.isZoomed() || !e.changedTouches.length) return;
+
+          const dx = e.changedTouches[0].clientX - swipeStart.x;
+          const dy = e.changedTouches[0].clientY - swipeStart.y;
+          swipeStart = null;
+
+          if (Math.abs(dx) <= Math.abs(dy) || Math.abs(dx) <= swipeThreshold) return;
+
+          e.preventDefault();
+          markGesture();
+          renderImage(displayedIndex + (dx < 0 ? 1 : -1), dx < 0 ? 'next' : 'previous');
+        },
+        { passive: false }
+      );
+
+      if (frame) {
+        frame.replaceWith(nextFrame);
+      } else {
+        overlay.insertBefore(nextFrame, closeBtn);
+      }
+
+      frame = nextFrame;
+      counter.textContent = `${displayedIndex + 1} / ${slides.length}`;
+      show(displayedIndex);
+    };
+
     overlay.addEventListener('click', (e) => {
-      if (Date.now() < ignoreCloseUntil || e.target === clone) return;
+      if (Date.now() < ignoreCloseUntil || e.target !== overlay) return;
       close();
     });
 
@@ -256,6 +330,8 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
       close();
     });
+
+    renderImage(index);
   };
 
   gallery.addEventListener('click', (e) => {
@@ -263,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!img) return;
     if (Date.now() < suppressClickUntil) return;
 
-    if (coarsePointer.matches) {
+    if (mobileViewport.matches) {
       openSingleImage(current);
       return;
     }

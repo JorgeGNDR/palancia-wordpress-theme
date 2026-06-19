@@ -21,6 +21,13 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.2 - 2026-06-19
+
+- Visor movil a ancho completo con swipe entre imagenes.
+- Zoom y arrastre conservados por imagen dentro del visor.
+- Filtros moviles aplicados al instante mostrando directamente el grid.
+- Corregido el estado visual tactil de las tallas activas.
+
 ### 2.0.0-beta.1 - 2026-06-19
 
 - Primera version controlada del rediseno brutalista responsive.
