@@ -4,15 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const sizeButtons = document.querySelectorAll('[data-size-slug]');
   const stockButtons = document.querySelectorAll('[data-stock-filter]');
   const clearButtons = document.querySelectorAll('.product-size-clear');
+  const applyButtons = document.querySelectorAll('.product-filter-apply');
   const filterTriggers = document.querySelectorAll('.product-filter-trigger');
   const filterModal = document.getElementById('product-size-filter-modal');
   const filterCloseControls = document.querySelectorAll('[data-filter-close]');
 
   const mobileBtn = document.getElementById('mobile-filter-toggle');
   const mobileMenu = document.getElementById('mobile-filter-menu');
+  let resetDraftFilters = () => {};
 
   const openFilterModal = () => {
     if (!filterModal) return;
+    resetDraftFilters();
     filterModal.classList.add('is-open');
     filterModal.setAttribute('aria-hidden', 'false');
     filterTriggers.forEach((trigger) => trigger.setAttribute('aria-expanded', 'true'));
@@ -74,15 +77,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const { ajaxUrl } = prsFilterProducts;
   let currentCategory = '';
-  let currentSizes = new Set();
-  let currentStock = 'show';
+  let appliedSizes = new Set();
+  let draftSizes = new Set();
+  let appliedStock = 'show';
+  let draftStock = 'show';
   let activeRequest = null;
 
-  const revealMobileGrid = () => {
-    if (!window.matchMedia('(max-width: 768px)').matches) return;
-
+  const revealGrid = () => {
     closeFilterModal();
-    mobileMenu?.classList.remove('open');
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      mobileMenu?.classList.remove('open');
+    }
   };
 
   const updateActiveLinks = () => {
@@ -98,12 +103,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sizeButtons.forEach((button) => {
       const sizeSlug = button.getAttribute('data-size-slug');
-      button.classList.toggle('is-active', sizeSlug && currentSizes.has(sizeSlug));
+      button.classList.toggle('is-active', sizeSlug && draftSizes.has(sizeSlug));
     });
 
     stockButtons.forEach((button) => {
-      button.classList.toggle('is-active', button.getAttribute('data-stock-filter') === currentStock);
+      button.classList.toggle('is-active', button.getAttribute('data-stock-filter') === draftStock);
     });
+  };
+
+  resetDraftFilters = () => {
+    draftSizes = new Set(appliedSizes);
+    draftStock = appliedStock;
+    updateActiveLinks();
   };
 
   const loadProducts = () => {
@@ -118,8 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = new URLSearchParams({
       action: 'prs_filter_products',
       category_slug: currentCategory === 'todo' ? '' : currentCategory,
-      size_slugs: [...currentSizes].join(','),
-      stock_filter: currentStock,
+      size_slugs: [...appliedSizes].join(','),
+      stock_filter: appliedStock,
     });
 
     fetch(ajaxUrl, {
@@ -152,10 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const updateUrl = () => {
     const params = new URLSearchParams();
-    if (currentSizes.size) {
-      params.set('size', [...currentSizes].join(','));
+    if (appliedSizes.size) {
+      params.set('size', [...appliedSizes].join(','));
     }
-    if (currentStock === 'hide') {
+    if (appliedStock === 'hide') {
       params.set('soldout', 'hide');
     }
 
@@ -166,8 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.history.pushState(
       {
         category: currentCategory,
-        size: [...currentSizes],
-        soldout: currentStock,
+        size: [...appliedSizes],
+        soldout: appliedStock,
       },
       '',
       query ? `${baseUrl}?${query}` : baseUrl
@@ -179,13 +190,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
 
   currentCategory = match ? decodeURIComponent(match[1]) : 'todo';
-  currentSizes = new Set(
+  appliedSizes = new Set(
     (params.get('size') || '')
       .split(',')
       .map((item) => item.trim())
       .filter(Boolean)
   );
-  currentStock = params.get('soldout') === 'hide' ? 'hide' : 'show';
+  appliedStock = params.get('soldout') === 'hide' ? 'hide' : 'show';
+  draftSizes = new Set(appliedSizes);
+  draftStock = appliedStock;
 
   updateActiveLinks();
 
@@ -199,7 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
       currentCategory = catSlug;
 
       updateActiveLinks();
-      revealMobileGrid();
       loadProducts();
       updateUrl();
     });
@@ -210,35 +222,36 @@ document.addEventListener('DOMContentLoaded', () => {
       const sizeSlug = button.getAttribute('data-size-slug');
       if (!sizeSlug) return;
 
-      if (currentSizes.has(sizeSlug)) {
-        currentSizes.delete(sizeSlug);
+      if (draftSizes.has(sizeSlug)) {
+        draftSizes.delete(sizeSlug);
       } else {
-        currentSizes.add(sizeSlug);
+        draftSizes.add(sizeSlug);
       }
 
       updateActiveLinks();
-      revealMobileGrid();
-      loadProducts();
-      updateUrl();
     });
   });
 
   stockButtons.forEach((button) => {
     button.addEventListener('click', () => {
-      currentStock = button.getAttribute('data-stock-filter') === 'hide' ? 'hide' : 'show';
+      draftStock = button.getAttribute('data-stock-filter') === 'hide' ? 'hide' : 'show';
       updateActiveLinks();
-      revealMobileGrid();
-      loadProducts();
-      updateUrl();
     });
   });
 
   clearButtons.forEach((button) => {
     button.addEventListener('click', () => {
-      currentSizes.clear();
-      currentStock = 'show';
+      draftSizes.clear();
+      draftStock = 'show';
       updateActiveLinks();
-      revealMobileGrid();
+    });
+  });
+
+  applyButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      appliedSizes = new Set(draftSizes);
+      appliedStock = draftStock;
+      revealGrid();
       loadProducts();
       updateUrl();
     });

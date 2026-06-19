@@ -592,6 +592,66 @@ function prs_get_available_size_terms() {
         return [];
     }
 
+    $alpha_sizes = [
+        'XXXXS'    => 0,
+        '4XSMALL'  => 0,
+        'XXXS'     => 1,
+        '3XSMALL'  => 1,
+        'XXS'      => 2,
+        '2XSMALL'  => 2,
+        'XS'       => 3,
+        'XSMALL'   => 3,
+        'S'        => 4,
+        'SMALL'    => 4,
+        'M'        => 5,
+        'MEDIUM'   => 5,
+        'L'        => 6,
+        'LARGE'    => 6,
+        'XL'       => 7,
+        'XLARGE'   => 7,
+        'XXL'      => 8,
+        '2XL'      => 8,
+        'XXLARGE'  => 8,
+        '2XLARGE'  => 8,
+        'XXXL'     => 9,
+        '3XL'      => 9,
+        'XXXLARGE' => 9,
+        '3XLARGE'  => 9,
+        'XXXXL'    => 10,
+        '4XL'      => 10,
+        '4XLARGE'  => 10,
+    ];
+
+    usort(
+        $terms,
+        static function( $first, $second ) use ( $alpha_sizes ) {
+            $get_sort_key = static function( $term ) use ( $alpha_sizes ) {
+                $label = strtoupper( remove_accents( (string) $term->name ) );
+                $key   = preg_replace( '/[^A-Z0-9]/', '', $label );
+
+                if ( isset( $alpha_sizes[ $key ] ) ) {
+                    return [ 0, $alpha_sizes[ $key ], $key ];
+                }
+
+                if ( preg_match( '/^W(\d{2,3})(?:L(\d{2,3}))?$/', $key, $matches ) ) {
+                    return [ 1, (int) $matches[1], isset( $matches[2] ) ? (int) $matches[2] : 0 ];
+                }
+
+                if ( preg_match( '/^(\d+(?:\.\d+)?)$/', $key, $matches ) ) {
+                    return [ 2, (float) $matches[1], $key ];
+                }
+
+                return [ 3, 0, $key ];
+            };
+
+            $first_key  = $get_sort_key( $first );
+            $second_key = $get_sort_key( $second );
+            $comparison = $first_key <=> $second_key;
+
+            return 0 !== $comparison ? $comparison : (int) $first->term_id <=> (int) $second->term_id;
+        }
+    );
+
     return $terms;
 }
 

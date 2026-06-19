@@ -1,7 +1,7 @@
 /*
 Theme Name: Palancia Web Shop
 Author: GNDR
-Version: 2.0.0-beta.2
+Version: 2.0.0-beta.3
 Text Domain: palancia-shop
 */
 
@@ -449,7 +449,8 @@ button { cursor: pointer; }
 
 .product-stock-actions button,
 .product-size-buttons button,
-.product-size-clear {
+.product-size-clear,
+.product-filter-apply {
   min-height: 2.25rem;
   padding: 0.45rem 0.5rem;
   border: var(--rule);
@@ -476,14 +477,29 @@ button { cursor: pointer; }
   }
 }
 
-.product-size-clear {
-  display: block;
-  width: max-content;
-  margin-left: auto;
+.product-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+
+.product-size-clear,
+.product-filter-apply {
   padding-right: 1rem;
   padding-left: 1rem;
+}
+
+.product-filter-apply {
   color: var(--paper);
   background: var(--ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-size-clear:hover,
+  .product-filter-apply:hover {
+    color: var(--ink);
+    background: var(--paper);
+  }
 }
 
 /* Product page */
@@ -1276,6 +1292,11 @@ button { cursor: pointer; }
   }
 
   .product-size-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .product-filter-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  }
 
   .prs-product-page {
     display: flex;

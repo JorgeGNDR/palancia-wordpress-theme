@@ -33,7 +33,10 @@ $stock_filter   = isset( $_GET['soldout'] ) && 'hide' === sanitize_title( wp_uns
         </div>
       </div>
 
-      <button class="product-size-clear" type="button"><?php echo esc_html__( 'Clear', 'palancia-shop' ); ?></button>
+      <div class="product-filter-actions">
+        <button class="product-size-clear" type="button"><?php echo esc_html__( 'Clear', 'palancia-shop' ); ?></button>
+        <button class="product-filter-apply" type="button"><?php echo esc_html__( 'Aplicar filtros', 'palancia-shop' ); ?></button>
+      </div>
     </div>
   </div>
 <?php endif; ?>

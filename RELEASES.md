@@ -21,6 +21,12 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.3 - 2026-06-19
+
+- Tallas agrupadas por formato y ordenadas de forma natural.
+- Seleccion multiple de tallas antes de modificar el grid.
+- Nuevo boton para aplicar explicitamente los filtros seleccionados.
+
 ### 2.0.0-beta.2 - 2026-06-19
 
 - Visor movil a ancho completo con swipe entre imagenes.
