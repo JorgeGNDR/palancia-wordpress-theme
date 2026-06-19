@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentCategory = '';
   let currentSizes = new Set();
   let currentStock = 'show';
+  let activeRequest = null;
 
   const updateActiveLinks = () => {
     filterLinks.forEach((link) => {
@@ -99,6 +100,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const loadProducts = () => {
+    if (activeRequest) {
+      activeRequest.abort();
+    }
+
+    const request = new AbortController();
+    activeRequest = request;
+    productsGrid.classList.add('is-loading');
+
     const body = new URLSearchParams({
       action: 'prs_filter_products',
       security: nonce,
@@ -111,13 +120,27 @@ document.addEventListener('DOMContentLoaded', () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body,
+      signal: request.signal,
     })
-      .then((res) => res.text())
-      .then((html) => {
-        productsGrid.innerHTML = html.trim();
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((response) => {
+        const html = response?.success ? response.data?.html : '';
+        if (!html) throw new Error('Respuesta de filtro no válida');
+        productsGrid.innerHTML = html;
       })
       .catch((err) => {
+        if (err.name === 'AbortError') return;
         console.error('Error filtrando productos:', err);
+        productsGrid.innerHTML = '<p class="prs-products-empty">No se han podido cargar los productos. Inténtalo de nuevo.</p>';
+      })
+      .finally(() => {
+        if (activeRequest === request) {
+          productsGrid.classList.remove('is-loading');
+          activeRequest = null;
+        }
       });
   };
 

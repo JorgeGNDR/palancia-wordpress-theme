@@ -556,14 +556,6 @@ function prs_get_available_size_terms() {
 
 // Manejar solicitudes AJAX para filtrar productos por categoría
 function prs_filter_products_by_category() {
-    // Verificar nonce y permisos
-    check_ajax_referer( 'prs_filter_nonce', 'security' );
-
-    // Limpiar TODOS los niveles de buffer para asegurar que no va ningún BOM o espacio
-    while ( ob_get_level() > 0 ) {
-        ob_end_clean();
-    }
-
     $category_slug = isset($_POST['category_slug'])
         ? sanitize_title( wp_unslash( $_POST['category_slug'] ) )
         : '';
@@ -583,13 +575,13 @@ function prs_filter_products_by_category() {
 
     $html = prs_render_products_grid( $category_slug, 0, $size_slug, $stock_filter );
 
-    if ( $html ) {
-        echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escapado dentro de los helpers
-    } else {
-        echo '<p>No hay productos en esta categoria.</p>';
+    if ( ! $html ) {
+        $html = '<p class="prs-products-empty">' . esc_html__( 'No hay productos con estos filtros.', 'palancia-shop' ) . '</p>';
     }
 
-    wp_die();
+    // Es una consulta publica de solo lectura. Una respuesta JSON evita que WordPress
+    // inserte "-1" en el grid cuando una pagina cacheada contiene un nonce caducado.
+    wp_send_json_success( [ 'html' => $html ] );
 }
 
 add_action( 'wp_ajax_prs_filter_products', 'prs_filter_products_by_category' );
@@ -636,16 +628,13 @@ function prs_render_custom_cart() {
     $cart_items = WC()->cart->get_cart();
 
     if ( WC()->cart->is_empty() ) {
-        $zero_price = wc_price( 0 );
+        $shop_url = home_url( '/' );
 
         echo '<div class="pal-cart-empty">';
-        echo '<div class="pal-cart-empty-title">Order Summary</div>';
-        echo '<div class="pal-cart-empty-message">Your cart is empty</div>';
-        echo '<div class="pal-cart-summary-list">';
-        echo '<div class="pal-cart-summary-row"><span>Subtotal</span><span>' . $zero_price . '</span></div>';
-        echo '<div class="pal-cart-summary-row"><span>Taxes</span><span>' . $zero_price . '</span></div>';
-        echo '<div class="pal-cart-summary-row is-total"><span>Total</span><span>' . $zero_price . '</span></div>';
-        echo '</div>';
+        echo '<div class="pal-cart-empty-index" aria-hidden="true">00</div>';
+        echo '<div class="pal-cart-empty-title">' . esc_html__( 'Tu carrito está vacío', 'palancia-shop' ) . '</div>';
+        echo '<div class="pal-cart-empty-message">' . esc_html__( 'Todavía no has añadido ningún producto.', 'palancia-shop' ) . '</div>';
+        echo '<a class="pal-cart-empty-action" href="' . esc_url( $shop_url ) . '">' . esc_html__( 'Ver productos', 'palancia-shop' ) . '</a>';
         echo '</div>';
         return;
     }

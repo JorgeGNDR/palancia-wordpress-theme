@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const dots = [...wrapper.querySelectorAll('.prs-product-dot')];
   const coarsePointer = window.matchMedia('(pointer: coarse)');
   let current = 0;
+  let suppressClickUntil = 0;
 
   const getDistance = (t1, t2) => {
     const dx = t2.clientX - t1.clientX;
@@ -212,21 +213,59 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
+  const openSingleImage = (index) => {
+    const source = slides[index]?.querySelector('img');
+    if (!source) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'prs-zoom-overlay is-single';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'prs-zoom-close';
+    closeBtn.type = 'button';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.setAttribute('aria-label', 'Cerrar imagen');
+
+    const frame = document.createElement('div');
+    frame.className = 'prs-zoom-single-frame';
+    const clone = cloneImage(source);
+    frame.appendChild(clone);
+
+    let ignoreCloseUntil = 0;
+    const markGesture = () => {
+      ignoreCloseUntil = Date.now() + 350;
+    };
+
+    installBoundedPinchZoom(frame, clone, markGesture);
+    overlay.appendChild(frame);
+    overlay.appendChild(closeBtn);
+    document.body.appendChild(overlay);
+    document.body.classList.add('prs-zoom-open');
+
+    const close = () => {
+      document.body.classList.remove('prs-zoom-open');
+      overlay.remove();
+    };
+
+    overlay.addEventListener('click', (e) => {
+      if (Date.now() < ignoreCloseUntil || e.target === clone) return;
+      close();
+    });
+
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      close();
+    });
+  };
+
   gallery.addEventListener('click', (e) => {
     const img = e.target?.closest?.('img');
     if (!img) return;
+    if (Date.now() < suppressClickUntil) return;
 
     if (coarsePointer.matches) {
-      const rect = gallery.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      if (slides.length > 1 && x < rect.width * 0.33) {
-        animateHorizontal('right', current - 1);
-        return;
-      }
-      if (slides.length > 1 && x > rect.width * 0.67) {
-        animateHorizontal('left', current + 1);
-        return;
-      }
+      openSingleImage(current);
+      return;
     }
 
     openProductStrip();
@@ -255,6 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dy = endY - startY;
 
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > swipeThreshold) {
+      suppressClickUntil = Date.now() + 400;
       animateHorizontal(dx < 0 ? 'left' : 'right', dx < 0 ? current + 1 : current - 1);
     }
   });
