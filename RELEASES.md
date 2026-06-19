@@ -21,6 +21,12 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.4 - 2026-06-19
+
+- Nueva pagina de contacto editorial y responsive con estetica Palancia.
+- Formulario ampliado para producto, pedidos, envios y devoluciones.
+- Estados de envio accesibles y proteccion honeypot contra spam.
+
 ### 2.0.0-beta.3 - 2026-06-19
 
 - Tallas agrupadas por formato y ordenadas de forma natural.

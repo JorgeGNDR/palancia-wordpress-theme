@@ -1,7 +1,7 @@
 /*
 Theme Name: Palancia Web Shop
 Author: GNDR
-Version: 2.0.0-beta.3
+Version: 2.0.0-beta.4
 Text Domain: palancia-shop
 */
 
@@ -1113,8 +1113,7 @@ button { cursor: pointer; }
   padding: clamp(1rem, 3vw, 3rem) var(--side-padding) clamp(3rem, 6vw, 6rem);
 }
 
-.container,
-.prs-contact-inner {
+.container {
   width: min(100%, 48.75rem);
   margin: 0 auto;
 }
@@ -1130,15 +1129,209 @@ button { cursor: pointer; }
   text-transform: uppercase;
 }
 
-.prs-contact-intro,
-.prs-contact-content,
+.prs-contact {
+  padding-top: clamp(1.5rem, 4vw, 4rem);
+}
+
+.prs-contact-inner {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.prs-contact-hero {
+  display: grid;
+  gap: clamp(0.8rem, 2vw, 1.5rem);
+  margin-bottom: clamp(2rem, 6vw, 5rem);
+}
+
+.prs-contact-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--accent);
+  font: 800 var(--step-xs)/1 var(--font-nav);
+  text-transform: uppercase;
+}
+
+.prs-contact-title {
+  max-width: none;
+  margin: 0;
+  font-size: clamp(3.4rem, 12vw, 9.5rem);
+  line-height: 0.75;
+  letter-spacing: -0.095em;
+}
+
+.prs-contact-intro {
+  max-width: 46rem;
+  margin: 0;
+  font: 600 var(--step-lg)/1.25 var(--font-body);
+}
+
+.prs-contact-layout {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.75fr) minmax(0, 1.45fr);
+  gap: clamp(0.8rem, 2vw, 1.5rem);
+  align-items: stretch;
+}
+
+.prs-contact-aside {
+  display: flex;
+  min-width: 0;
+  padding: clamp(1.1rem, 2.5vw, 2rem);
+  flex-direction: column;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.prs-contact-aside-index {
+  margin-bottom: clamp(3rem, 10vw, 8rem);
+  font: 800 var(--step-2xs)/1 var(--font-nav);
+}
+
+.prs-contact-details {
+  display: grid;
+  gap: 1.4rem;
+  margin: auto 0 0;
+}
+
+.prs-contact-details div {
+  min-width: 0;
+}
+
+.prs-contact-details dt {
+  margin-bottom: 0.35rem;
+  color: #a9b3bf;
+  font: 800 var(--step-2xs)/1 var(--font-nav);
+  text-transform: uppercase;
+}
+
+.prs-contact-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font: 700 var(--step-sm)/1.25 var(--font-body);
+  text-transform: uppercase;
+}
+
+.prs-contact-details a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
+.prs-contact-content {
+  margin-top: 1.5rem;
+  font: 600 var(--step-sm)/1.4 var(--font-body);
+}
+
+.prs-contact-main {
+  min-width: 0;
+}
+
 .prs-contact-notice {
-  font: 600 var(--step-md)/1.45 var(--font-body);
+  margin-bottom: 0.8rem;
+  padding: 0.9rem 1rem;
+  border: var(--rule);
+  font: 800 var(--step-xs)/1.3 var(--font-nav);
+  text-transform: uppercase;
+}
+
+.prs-contact-notice.is-success {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.prs-contact-notice.is-error {
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .prs-contact-form {
+  position: relative;
   display: grid;
-  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: var(--rule);
+  background: var(--paper);
+}
+
+.prs-contact-field {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 0.65rem;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(0.9rem, 2vw, 1.35rem);
+  border-bottom: var(--rule);
+}
+
+.prs-contact-field:nth-of-type(odd) {
+  border-right: var(--rule);
+}
+
+.prs-contact-field.is-message {
+  grid-column: 1 / -1;
+  border-right: 0;
+}
+
+.prs-contact-field-index,
+.prs-contact-label {
+  color: var(--muted);
+  font: 800 var(--step-2xs)/1 var(--font-nav);
+  text-transform: uppercase;
+}
+
+.prs-contact-field-body {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.prs-contact-form input,
+.prs-contact-form textarea,
+.prs-contact-form select {
+  width: 100%;
+  min-height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 700 var(--step-md)/1.25 var(--font-body);
+}
+
+.prs-contact-form textarea {
+  min-height: 9rem;
+  resize: vertical;
+}
+
+.prs-contact-form input:focus,
+.prs-contact-form textarea:focus,
+.prs-contact-form select:focus {
+  outline: 0;
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.prs-contact-submit {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 4rem;
+  padding: 1rem 1.35rem;
+  border: 0 !important;
+  background: var(--ink) !important;
+  color: var(--paper) !important;
+  font-size: var(--step-sm) !important;
+}
+
+.prs-contact-submit:hover {
+  background: var(--accent) !important;
+  color: var(--paper) !important;
+}
+
+.prs-contact-hp {
+  position: absolute;
+  left: -9999px;
+  visibility: hidden;
 }
 
 .site-footer {
@@ -1180,6 +1373,10 @@ button { cursor: pointer; }
 @media (max-width: 980px) {
   .home-products-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
+  .prs-contact-layout {
+    grid-template-columns: minmax(12rem, 0.65fr) minmax(0, 1.35fr);
+  }
+
   .prs-product-page {
     grid-template-columns: var(--nav-column-width) minmax(0, 1fr);
   }
@@ -1215,6 +1412,37 @@ button { cursor: pointer; }
   }
 
   .home-products { padding-top: 0.65rem; }
+
+  .prs-contact {
+    padding-top: 1.5rem;
+  }
+
+  .prs-contact-kicker {
+    align-items: flex-end;
+  }
+
+  .prs-contact-title {
+    font-size: clamp(3.2rem, 21vw, 6rem);
+  }
+
+  .prs-contact-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .prs-contact-aside-index {
+    margin-bottom: 4rem;
+  }
+
+  .prs-contact-form {
+    grid-template-columns: 1fr;
+  }
+
+  .prs-contact-field,
+  .prs-contact-field:nth-of-type(odd) {
+    grid-column: 1;
+    border-right: 0;
+  }
+
   .prs-shop-layout { display: block; }
   .product-filters,
   .home-products-spacer,
