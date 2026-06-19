@@ -1,4 +1,46 @@
-﻿<?php
+<?php
+
+function prs_get_theme_version() {
+    static $version = null;
+
+    if ( null === $version ) {
+        $version = wp_get_theme()->get( 'Version' );
+        $version = $version ?: '0.0.0';
+    }
+
+    return $version;
+}
+
+function prs_get_asset_version( $relative_path ) {
+    $absolute_path = get_stylesheet_directory() . '/' . ltrim( $relative_path, '/' );
+    $modified      = file_exists( $absolute_path ) ? filemtime( $absolute_path ) : 0;
+
+    return prs_get_theme_version() . ( $modified ? '.' . $modified : '' );
+}
+
+function prs_output_theme_version_marker() {
+    $version = prs_get_theme_version();
+
+    echo '<meta name="palancia-theme-version" content="' . esc_attr( $version ) . '">' . "\n";
+    echo '<!-- Palancia Web Shop v' . esc_html( $version ) . ' -->' . "\n";
+}
+add_action( 'wp_head', 'prs_output_theme_version_marker', 1 );
+
+function prs_add_theme_version_to_admin_bar( $admin_bar ) {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
+    $admin_bar->add_node( [
+        'id'    => 'prs-theme-version',
+        'title' => 'PALANCIA v' . prs_get_theme_version(),
+        'href'  => admin_url( 'themes.php' ),
+        'meta'  => [
+            'title' => __( 'Version activa del tema Palancia', 'palancia-shop' ),
+        ],
+    ] );
+}
+add_action( 'admin_bar_menu', 'prs_add_theme_version_to_admin_bar', 100 );
 
 // Cargar CSS y JS del tema
 function prs_enqueue_assets() {
@@ -7,7 +49,7 @@ function prs_enqueue_assets() {
         'palancia-retro-shop-style',
         get_stylesheet_uri(),
         [],
-        filemtime( get_stylesheet_directory() . '/style.css' )
+        prs_get_asset_version( 'style.css' )
     );
 
     // Material Symbols (icons)
@@ -24,7 +66,7 @@ function prs_enqueue_assets() {
             'prs-product-gallery',
             get_stylesheet_directory_uri() . '/assets/js/product-gallery.js',
             [],
-            filemtime( get_stylesheet_directory() . '/assets/js/product-gallery.js' ),
+            prs_get_asset_version( 'assets/js/product-gallery.js' ),
             true
         );
 
@@ -32,7 +74,7 @@ function prs_enqueue_assets() {
             'prs-add-to-cart-feedback',
             get_stylesheet_directory_uri() . '/assets/js/add-to-cart-feedback.js',
             [],
-            filemtime( get_stylesheet_directory() . '/assets/js/add-to-cart-feedback.js' ),
+            prs_get_asset_version( 'assets/js/add-to-cart-feedback.js' ),
             true
         );
     }
@@ -49,13 +91,12 @@ function prs_enqueue_filter_script() {
         'prs-filter-products',
         get_stylesheet_directory_uri() . '/assets/js/filter-products.js',
         [],
-        filemtime( get_stylesheet_directory() . '/assets/js/filter-products.js' ),
+        prs_get_asset_version( 'assets/js/filter-products.js' ),
         true
     );
 
     wp_localize_script('prs-filter-products', 'prsFilterProducts', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
-        'nonce'   => wp_create_nonce('prs_filter_nonce'),
     ]);
 }
 add_action('wp_enqueue_scripts', 'prs_enqueue_filter_script');

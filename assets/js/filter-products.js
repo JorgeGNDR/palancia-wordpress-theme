@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const { ajaxUrl, nonce } = prsFilterProducts;
+  const { ajaxUrl } = prsFilterProducts;
   let currentCategory = '';
   let currentSizes = new Set();
   let currentStock = 'show';
@@ -110,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const body = new URLSearchParams({
       action: 'prs_filter_products',
-      security: nonce,
       category_slug: currentCategory === 'todo' ? '' : currentCategory,
       size_slugs: [...currentSizes].join(','),
       stock_filter: currentStock,
