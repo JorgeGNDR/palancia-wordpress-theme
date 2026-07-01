@@ -65,13 +65,173 @@ function prs_setup_theme() {
     add_theme_support( 'woocommerce' );
     add_theme_support( 'title-tag' );
     add_theme_support( 'custom-logo', [
-        'height'      => 80,
-        'width'       => 80,
+        'height'      => 400,
+        'width'       => 400,
         'flex-height' => true,
         'flex-width'  => true,
     ] );
 }
 add_action( 'after_setup_theme', 'prs_setup_theme' );
+
+function prs_sanitize_css_size( $value ) {
+    $value = trim( (string) $value );
+
+    if ( preg_match( '/^\d+(\.\d+)?(px|rem|em|vw|vh|%)$/', $value ) ) {
+        return $value;
+    }
+
+    return '';
+}
+
+function prs_sanitize_positive_int( $value ) {
+    return max( 1, absint( $value ) );
+}
+
+function prs_customize_register( $wp_customize ) {
+    $wp_customize->add_section( 'prs_design_settings', [
+        'title'       => __( 'Palancia Design', 'palancia-shop' ),
+        'priority'    => 35,
+        'description' => __( 'Ajustes visuales del tema. Los valores por defecto mantienen el diseño actual.', 'palancia-shop' ),
+    ] );
+
+    $settings = [
+        'prs_primary_color' => [
+            'label'   => __( 'Color principal', 'palancia-shop' ),
+            'default' => '#233549',
+            'type'    => 'color',
+        ],
+        'prs_text_color' => [
+            'label'   => __( 'Color de texto', 'palancia-shop' ),
+            'default' => '#111111',
+            'type'    => 'color',
+        ],
+        'prs_button_bg' => [
+            'label'   => __( 'Fondo botones principales', 'palancia-shop' ),
+            'default' => '#000000',
+            'type'    => 'color',
+        ],
+        'prs_button_text' => [
+            'label'   => __( 'Texto botones principales', 'palancia-shop' ),
+            'default' => '#ffffff',
+            'type'    => 'color',
+        ],
+    ];
+
+    foreach ( $settings as $id => $setting ) {
+        $wp_customize->add_setting( $id, [
+            'default'           => $setting['default'],
+            'sanitize_callback' => 'sanitize_hex_color',
+            'transport'         => 'refresh',
+        ] );
+
+        $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, $id, [
+            'label'   => $setting['label'],
+            'section' => 'prs_design_settings',
+        ] ) );
+    }
+
+    $number_settings = [
+        'prs_logo_height_desktop' => [ __( 'Logo desktop alto (px)', 'palancia-shop' ), 100, 40, 160 ],
+        'prs_logo_height_mobile'  => [ __( 'Logo móvil alto (px)', 'palancia-shop' ), 72, 40, 120 ],
+        'prs_header_height'       => [ __( 'Header desktop alto (px)', 'palancia-shop' ), 100, 64, 180 ],
+        'prs_header_height_mobile'=> [ __( 'Header móvil alto (px)', 'palancia-shop' ), 96, 64, 150 ],
+        'prs_grid_desktop_cols'   => [ __( 'Columnas grid desktop', 'palancia-shop' ), 6, 3, 8 ],
+        'prs_grid_tablet_cols'    => [ __( 'Columnas grid tablet', 'palancia-shop' ), 5, 2, 6 ],
+        'prs_grid_mobile_cols'    => [ __( 'Columnas grid móvil', 'palancia-shop' ), 2, 1, 3 ],
+    ];
+
+    foreach ( $number_settings as $id => $args ) {
+        $wp_customize->add_setting( $id, [
+            'default'           => $args[1],
+            'sanitize_callback' => 'prs_sanitize_positive_int',
+            'transport'         => 'refresh',
+        ] );
+
+        $wp_customize->add_control( $id, [
+            'label'       => $args[0],
+            'section'     => 'prs_design_settings',
+            'type'        => 'number',
+            'input_attrs' => [
+                'min'  => $args[2],
+                'max'  => $args[3],
+                'step' => 1,
+            ],
+        ] );
+    }
+
+    $size_settings = [
+        'prs_nav_column_width' => [ __( 'Ancho columna navegación', 'palancia-shop' ), '12vw' ],
+        'prs_nav_column_width_tablet' => [ __( 'Ancho navegación tablet', 'palancia-shop' ), '132px' ],
+        'prs_side_padding'     => [ __( 'Padding lateral desktop', 'palancia-shop' ), '2.5rem' ],
+        'prs_side_padding_mobile' => [ __( 'Padding lateral móvil', 'palancia-shop' ), '0.75rem' ],
+        'prs_layout_gap'       => [ __( 'Separación layout', 'palancia-shop' ), '10px' ],
+        'prs_product_card_max' => [ __( 'Ancho máximo tarjeta producto', 'palancia-shop' ), '100%' ],
+        'prs_nav_font_size'    => [ __( 'Tamaño texto navegación', 'palancia-shop' ), '0.92rem' ],
+        'prs_button_font_size' => [ __( 'Tamaño texto botones', 'palancia-shop' ), '0.8rem' ],
+    ];
+
+    foreach ( $size_settings as $id => $args ) {
+        $wp_customize->add_setting( $id, [
+            'default'           => $args[1],
+            'sanitize_callback' => 'prs_sanitize_css_size',
+            'transport'         => 'refresh',
+        ] );
+
+        $wp_customize->add_control( $id, [
+            'label'   => $args[0],
+            'section' => 'prs_design_settings',
+            'type'    => 'text',
+        ] );
+    }
+}
+add_action( 'customize_register', 'prs_customize_register' );
+
+function prs_customizer_css() {
+    $primary     = get_theme_mod( 'prs_primary_color', '#233549' );
+    $text        = get_theme_mod( 'prs_text_color', '#111111' );
+    $button_bg   = get_theme_mod( 'prs_button_bg', '#000000' );
+    $button_text = get_theme_mod( 'prs_button_text', '#ffffff' );
+
+    $logo_desktop = absint( get_theme_mod( 'prs_logo_height_desktop', 100 ) );
+    $logo_mobile  = absint( get_theme_mod( 'prs_logo_height_mobile', 72 ) );
+    $header       = absint( get_theme_mod( 'prs_header_height', 100 ) );
+    $header_mob   = absint( get_theme_mod( 'prs_header_height_mobile', 96 ) );
+
+    $nav_width = prs_sanitize_css_size( get_theme_mod( 'prs_nav_column_width', '12vw' ) ) ?: '12vw';
+    $side_pad  = prs_sanitize_css_size( get_theme_mod( 'prs_side_padding', '2.5rem' ) ) ?: '2.5rem';
+    $side_pad_mobile = prs_sanitize_css_size( get_theme_mod( 'prs_side_padding_mobile', '0.75rem' ) ) ?: '0.75rem';
+    $gap       = prs_sanitize_css_size( get_theme_mod( 'prs_layout_gap', '10px' ) ) ?: '10px';
+    $card_max  = prs_sanitize_css_size( get_theme_mod( 'prs_product_card_max', '100%' ) ) ?: '100%';
+    $nav_width_tablet = prs_sanitize_css_size( get_theme_mod( 'prs_nav_column_width_tablet', '132px' ) ) ?: '132px';
+    ?>
+    <style id="prs-customizer-css">
+      :root {
+        --primary-color: <?php echo esc_html( $primary ); ?>;
+        --text-color: <?php echo esc_html( $text ); ?>;
+        --button-bg: <?php echo esc_html( $button_bg ); ?>;
+        --button-text: <?php echo esc_html( $button_text ); ?>;
+        --header-height: <?php echo esc_html( $header ); ?>px;
+        --logo-height-desktop: <?php echo esc_html( $logo_desktop ); ?>px;
+        --logo-height-mobile: <?php echo esc_html( $logo_mobile ); ?>px;
+        --nav-column-width: <?php echo esc_html( $nav_width ); ?>;
+        --nav-column-width-tablet: <?php echo esc_html( $nav_width_tablet ); ?>;
+        --side-padding: <?php echo esc_html( $side_pad ); ?>;
+        --side-padding-mobile: <?php echo esc_html( $side_pad_mobile ); ?>;
+        --layout-gap: <?php echo esc_html( $gap ); ?>;
+        --product-card-max-width: <?php echo esc_html( $card_max ); ?>;
+        --nav-font-size: <?php echo esc_html( prs_sanitize_css_size( get_theme_mod( 'prs_nav_font_size', '0.92rem' ) ) ?: '0.92rem' ); ?>;
+        --button-font-size: <?php echo esc_html( prs_sanitize_css_size( get_theme_mod( 'prs_button_font_size', '0.8rem' ) ) ?: '0.8rem' ); ?>;
+        --grid-desktop-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_desktop_cols', 6 ) ) ); ?>;
+        --grid-tablet-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_tablet_cols', 5 ) ) ); ?>;
+        --grid-mobile-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_mobile_cols', 2 ) ) ); ?>;
+      }
+      @media (max-width: 768px) {
+        :root { --header-height: <?php echo esc_html( $header_mob ); ?>px; }
+      }
+    </style>
+    <?php
+}
+add_action( 'wp_head', 'prs_customizer_css', 20 );
 
 
 // ------------ LIMPIEZA FICHA PRODUCTO ------------ //

@@ -80,7 +80,7 @@ body {
   flex-direction: column;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #ffffff;
-  color: #000000;
+  color: var(--text-color);
 }
 
 img {
@@ -120,7 +120,7 @@ a:focus {
 }
 
 .site-header .logo img {
-  max-height: 100px;
+  max-height: var(--logo-height-desktop);
   width: auto;
 }
 
@@ -146,7 +146,7 @@ a:focus {
   font-weight: 700;
   font-size: 1.05rem;
   line-height: 1;
-  color: #233549;
+  color: var(--primary-color);
 }
 
 
@@ -155,7 +155,7 @@ a:focus {
 .header-cart .cart-count {
   font-size: 14px; /* Tamaño del texto */
   color: white; /* Color blanco para el texto */
-  background-color: #233549; /* Fondo azul "palancia" */
+  background-color: var(--primary-color); /* Fondo azul "palancia" */
   border-radius: 50%; /* Forma circular */
   padding: 2px 6px; /* Espaciado interno */
   position: absolute;
@@ -166,7 +166,7 @@ a:focus {
 
 @media (max-width: 768px) {
   .site-header .logo img {
-    max-height: 72px;
+    max-height: var(--logo-height-mobile);
     width: auto;
     height: auto;
   }
@@ -215,8 +215,20 @@ a:focus {
   --side-padding: 2.5rem;
   --adminbar-height: 0px;
   --nav-column-width: 12vw;
+  --nav-column-width-tablet: 132px;
   --layout-gap: 10px;
   --product-card-max-width: 100%;
+  --primary-color: #233549;
+  --text-color: #111111;
+  --button-bg: #000000;
+  --button-text: #ffffff;
+  --logo-height-desktop: 100px;
+  --logo-height-mobile: 72px;
+  --grid-desktop-columns: 6;
+  --grid-tablet-columns: 5;
+  --grid-mobile-columns: 2;
+  --nav-font-size: 0.92rem;
+  --button-font-size: 0.8rem;
   --font-brand: "n Nande Regular", sans-serif;
   --font-body: "Object Sans", sans-serif;
   --font-nav: "Archivo Expanded", "Object Sans", sans-serif;
@@ -257,7 +269,7 @@ body.admin-bar {
 .product-filters a,
 .prs-product-left-nav a {
   text-decoration: none;
-  color: #111111;
+  color: var(--text-color);
   text-align: right;
   display: block;
   font-family: var(--font-nav);
@@ -266,7 +278,7 @@ body.admin-bar {
   transition: color 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
   font-style: normal;
   letter-spacing: 0.015em;
-  font-size: 0.92rem;
+  font-size: var(--nav-font-size);
   line-height: 1.32;
   opacity: 1;
   text-transform: uppercase;
@@ -274,7 +286,7 @@ body.admin-bar {
 
 .product-filters a:hover,
 .prs-product-left-nav a:hover {
-  color: #233549;
+  color: var(--primary-color);
   opacity: 1;
   transform: translateX(-2px);
 }
@@ -282,7 +294,7 @@ body.admin-bar {
 /* Estado activo para filtros */
 .product-filters a.is-active,
 .prs-product-left-nav a.is-active {
-  color: #233549;
+  color: var(--primary-color);
   font-weight: 700;
   opacity: 1;
   text-decoration: none;
@@ -290,7 +302,7 @@ body.admin-bar {
 
 .home-products-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr); /* 6 productos por fila */
+  grid-template-columns: repeat(var(--grid-desktop-columns), 1fr); /* 6 productos por fila */
   column-gap: 8px;
   row-gap: 34px;
   justify-items: stretch;
@@ -399,11 +411,11 @@ body.admin-bar {
 /* Responsive tablet */
 @media (min-width: 769px) and (max-width: 1100px) {
   :root {
-    --nav-column-width: 132px;
+    --nav-column-width: var(--nav-column-width-tablet);
   }
 
   .home-products-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(var(--grid-tablet-columns), 1fr);
     column-gap: 8px;
     row-gap: 30px;
   }
@@ -412,7 +424,7 @@ body.admin-bar {
 /* Responsive móvil */
 @media (max-width: 768px) {
   :root {
-    --side-padding: 0.75rem;
+    --side-padding: var(--side-padding-mobile);
     --product-card-max-width: none;
   }
 
@@ -427,7 +439,7 @@ body.admin-bar {
 
   .home-products-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(var(--grid-mobile-columns), 1fr);
     gap: 0.55rem;
     justify-items: stretch;
   }
@@ -537,7 +549,7 @@ body.admin-bar {
   cursor: pointer;
 }
 .prs-product-dot.is-active {
-  background: #233549;
+  background: var(--primary-color);
 }
 
 /* Botones de navegación: franja alta, dentro de la imagen */
@@ -575,7 +587,7 @@ body.admin-bar {
   text-align: left;
   justify-self: start;
   font-family: var(--font-body);
-  color: #111111;
+  color: var(--text-color);
 }
 
 /* Título */
@@ -596,14 +608,14 @@ body.admin-bar {
   font-weight: 600;
   margin: 0 0 0.75rem;
   text-align: left;
-  color: #233549;
+  color: var(--primary-color);
   font-family: var(--font-body);
 }
 
 .prs-product-info .price .woocommerce-Price-amount,
 .prs-product-info .price ins,
 .prs-product-info .price del {
-  color: #233549;
+  color: var(--primary-color);
 }
 
 .prs-product-size {
@@ -618,7 +630,7 @@ body.admin-bar {
 }
 
 .prs-product-size span {
-  color: #111111;
+  color: var(--text-color);
 }
 
 /* icon moved into the add-to-cart button */
@@ -657,9 +669,9 @@ body.admin-bar {
 }
 
 .prs-product-info .single_add_to_cart_button {
-  background: #000000 !important;
+  background: var(--button-bg) !important;
   background-image: none !important;
-  color: #ffffff !important;
+  color: var(--button-text) !important;
   width: 100%;
   height: 44px;
   min-width: 0;
@@ -667,7 +679,7 @@ body.admin-bar {
   border: none !important;
   border-radius: 0 !important;
   text-transform: uppercase;
-  font-size: 0.8rem !important;
+  font-size: var(--button-font-size) !important;
   line-height: 1;
   text-indent: 0;
   overflow: visible;
@@ -690,8 +702,8 @@ body.admin-bar {
 }
 
 .prs-product-info .single_add_to_cart_button.is-added {
-  background: #000000 !important;
-  color: #ffffff !important;
+  background: var(--button-bg) !important;
+  color: var(--button-text) !important;
 }
 
 .prs-product-info .single_add_to_cart_button:hover {
@@ -700,7 +712,7 @@ body.admin-bar {
 }
 
 .prs-product-info .single_add_to_cart_button.is-added:hover {
-  background: #000000 !important;
+  background: var(--button-bg) !important;
 }
 
 .prs-product-info .single_add_to_cart_button:active {
@@ -716,10 +728,10 @@ body.admin-bar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  background: #000000;
+  color: var(--button-text);
+  background: var(--button-bg);
   font-family: "Inria Sans", sans-serif;
-  font-size: 0.8rem;
+  font-size: var(--button-font-size);
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.08em;
@@ -938,12 +950,12 @@ body.prs-zoom-open {
 }
 
 .pal-cart-remove {
-  background: #000;
-  color: #fff;
+  background: var(--button-bg);
+  color: var(--button-text);
   text-transform: uppercase;
   font-family: "Inria Sans", sans-serif;
   letter-spacing: 0.08em;
-  font-size: 0.8rem;
+  font-size: var(--button-font-size);
   padding: 10px 14px;
   border: none;
   cursor: pointer;
@@ -952,7 +964,7 @@ body.prs-zoom-open {
 }
 
 .pal-cart-remove:hover {
-  color: #fff;
+  color: var(--button-text);
   opacity: 0.9;
 }
 
@@ -1142,7 +1154,7 @@ body.prs-zoom-open {
   height: 32px;
   display: inline-block;
   vertical-align: middle;
-  background-color: #233549;
+  background-color: var(--primary-color);
   -webkit-mask-image: url('assets/icons/carrito.png');
   mask-image: url('assets/icons/carrito.png');
   -webkit-mask-repeat: no-repeat;
@@ -1161,7 +1173,7 @@ body.prs-zoom-open {
   text-align: center;
   font-family: "Object Sans", sans-serif;
   font-size: 0.9rem;
-  color: #233549;
+  color: var(--primary-color);
 }
 .site-footer .footer-container {
   max-width: 1080px;
@@ -1337,7 +1349,7 @@ body.prs-zoom-open {
     font-size: 0.7rem;
     line-height: 1.35;
     text-transform: uppercase;
-    color: #233549;
+    color: var(--primary-color);
   }
 
   .prs-product-long-description {
@@ -1417,12 +1429,12 @@ body.admin-bar {
   }
 
   .site-header .logo img {
-    max-height: 88px;
+    max-height: var(--logo-height-mobile);
     width: auto;
   }
 
   .single-product .site-header .logo img {
-    max-height: 88px;
+    max-height: var(--logo-height-mobile);
   }
 
   .site-header .header-cart {
@@ -1440,7 +1452,7 @@ body.admin-bar {
     box-shadow: none;
     width: 52px;
     height: 52px;
-    color: #233549;
+    color: var(--primary-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1508,11 +1520,11 @@ body.admin-bar {
   .mobile-filter-menu a:hover {
     background: transparent;
     opacity: 1;
-    color: #233549;
+    color: var(--primary-color);
   }
   .mobile-filter-menu a.is-active {
     opacity: 1;
-    color: #233549;
+    color: var(--primary-color);
     text-decoration: none;
   }
   /* Ocultar aside de filtros en móvil */
