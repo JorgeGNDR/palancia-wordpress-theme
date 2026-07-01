@@ -27,8 +27,17 @@ Text Domain: palancia-shop
   --header-height: 4.875rem;
   --adminbar-height: 0px;
   --side-padding: clamp(0.8rem, 2vw, 2rem);
+  --side-padding-mobile: 0.65rem;
   --nav-column-width: clamp(8rem, 12vw, 11.125rem);
+  --nav-column-width-tablet: 8.25rem;
   --layout-gap: clamp(0.55rem, 1.2vw, 1rem);
+  --layout-gap-mobile: 0.65rem;
+  --logo-height-desktop: 4.375rem;
+  --logo-height-mobile: 3.875rem;
+  --grid-desktop-columns: 6;
+  --grid-tablet-columns: 5;
+  --grid-mid-columns: 4;
+  --grid-mobile-columns: 2;
   --font-brand: "n Nande Regular", serif;
   --font-body: "Object Sans", system-ui, sans-serif;
   --font-nav: "Archivo Expanded", "Object Sans", system-ui, sans-serif;
@@ -140,7 +149,7 @@ button { cursor: pointer; }
 
 .logo img {
   width: auto;
-  max-height: 4.375rem;
+  max-height: var(--logo-height-desktop);
   object-fit: contain;
 }
 
@@ -290,7 +299,7 @@ button { cursor: pointer; }
 .home-products-grid {
   grid-column: 2;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--grid-desktop-columns), minmax(0, 1fr));
   gap: clamp(0.45rem, 0.75vw, 0.8rem);
   align-items: start;
 }
@@ -1366,12 +1375,12 @@ button { cursor: pointer; }
 
 /* Responsive */
 @media (max-width: 1240px) {
-  .home-products-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  :root { --nav-column-width: 8.25rem; }
+  .home-products-grid { grid-template-columns: repeat(var(--grid-tablet-columns), minmax(0, 1fr)); }
+  :root { --nav-column-width: var(--nav-column-width-tablet); }
 }
 
 @media (max-width: 980px) {
-  .home-products-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .home-products-grid { grid-template-columns: repeat(var(--grid-mid-columns), minmax(0, 1fr)); }
 
   .prs-contact-layout {
     grid-template-columns: minmax(12rem, 0.65fr) minmax(0, 1.35fr);
@@ -1393,8 +1402,8 @@ button { cursor: pointer; }
 @media (max-width: 768px) {
   :root {
     --header-height: 4.5rem;
-    --side-padding: 0.65rem;
-    --layout-gap: 0.65rem;
+    --side-padding: var(--side-padding-mobile);
+    --layout-gap: var(--layout-gap-mobile);
   }
 
   .site-header {
@@ -1402,7 +1411,7 @@ button { cursor: pointer; }
     min-height: calc(var(--header-height) + var(--adminbar-height));
   }
 
-  .logo img { max-height: 3.875rem; }
+  .logo img { max-height: var(--logo-height-mobile); }
   .mobile-filter-btn { display: block; }
 
   body:not(.home):not(.archive) .mobile-filter-btn,
@@ -1488,7 +1497,7 @@ button { cursor: pointer; }
 
   .home-products-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--grid-mobile-columns), minmax(0, 1fr));
     gap: 0.55rem;
   }
 
