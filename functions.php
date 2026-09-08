@@ -327,7 +327,7 @@ function prs_customize_register( $wp_customize ) {
         'prs_header_height'       => [ __( 'Header desktop alto (px)', 'palancia-shop' ), 78, 64, 180 ],
         'prs_header_height_mobile'=> [ __( 'Header movil alto (px)', 'palancia-shop' ), 72, 56, 150 ],
         'prs_grid_desktop_cols'   => [ __( 'Columnas grid desktop', 'palancia-shop' ), 6, 3, 8 ],
-        'prs_grid_tablet_cols'    => [ __( 'Columnas grid tablet', 'palancia-shop' ), 5, 2, 6 ],
+        'prs_grid_tablet_cols'    => [ __( 'Columnas grid tablet', 'palancia-shop' ), 4, 2, 6 ],
         'prs_grid_mid_cols'       => [ __( 'Columnas grid intermedio', 'palancia-shop' ), 4, 2, 6 ],
         'prs_grid_mobile_cols'    => [ __( 'Columnas grid movil', 'palancia-shop' ), 2, 1, 3 ],
     ];
@@ -412,7 +412,7 @@ function prs_customizer_css() {
         --layout-gap: <?php echo esc_html( $gap ); ?>;
         --layout-gap-mobile: <?php echo esc_html( $gap_mobile ); ?>;
         --grid-desktop-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_desktop_cols', 6 ) ) ); ?>;
-        --grid-tablet-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_tablet_cols', 5 ) ) ); ?>;
+        --grid-tablet-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_tablet_cols', 4 ) ) ); ?>;
         --grid-mid-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_mid_cols', 4 ) ) ); ?>;
         --grid-mobile-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_mobile_cols', 2 ) ) ); ?>;
       }
