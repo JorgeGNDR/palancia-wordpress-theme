@@ -37,6 +37,8 @@ Text Domain: palancia-shop
 /* Talla entre el título y el precio; el orden también se aplica en móvil. */
 .prs-product-info .prs-product-size {
   order: 1;
+  width: 100%;
+  text-align: center;
   margin: 0 0 0.6rem;
   font-size: 0.78rem;
   line-height: 1.5;
