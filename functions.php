@@ -322,8 +322,8 @@ function prs_customize_register( $wp_customize ) {
     }
 
     $number_settings = [
-        'prs_logo_height_desktop' => [ __( 'Logo desktop alto (px)', 'palancia-shop' ), 70, 40, 180 ],
-        'prs_logo_height_mobile'  => [ __( 'Logo movil alto (px)', 'palancia-shop' ), 62, 36, 140 ],
+        'prs_logo_height_desktop' => [ __( 'Logo desktop alto (px)', 'palancia-shop' ), 70, 40, 180, 'range' ],
+        'prs_logo_height_mobile'  => [ __( 'Logo movil alto (px)', 'palancia-shop' ), 62, 36, 140, 'range' ],
         'prs_header_height'       => [ __( 'Header desktop alto (px)', 'palancia-shop' ), 78, 64, 180 ],
         'prs_header_height_mobile'=> [ __( 'Header movil alto (px)', 'palancia-shop' ), 72, 56, 150 ],
         'prs_grid_desktop_cols'   => [ __( 'Columnas grid desktop', 'palancia-shop' ), 6, 3, 8 ],
@@ -342,7 +342,7 @@ function prs_customize_register( $wp_customize ) {
         $wp_customize->add_control( $id, [
             'label'       => $args[0],
             'section'     => 'prs_design_settings',
-            'type'        => 'number',
+            'type'        => $args[4] ?? 'number',
             'input_attrs' => [
                 'min'  => $args[2],
                 'max'  => $args[3],
