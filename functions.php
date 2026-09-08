@@ -464,7 +464,7 @@ function prs_show_product_size() {
         echo '<div class="prs-product-size"><span>Talla:</span> ' . esc_html( $tallas ) . '</div>';
     }
 }
-add_action( 'woocommerce_single_product_summary', 'prs_show_product_size', 36 );
+add_action( 'woocommerce_single_product_summary', 'prs_show_product_size', 6 );
 
 // Descripción larga en el resumen, como texto simple
 function prs_product_long_description() {
