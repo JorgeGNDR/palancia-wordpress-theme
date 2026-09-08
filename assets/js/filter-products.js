@@ -4,15 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const sizeButtons = document.querySelectorAll('[data-size-slug]');
   const stockButtons = document.querySelectorAll('[data-stock-filter]');
   const clearButtons = document.querySelectorAll('.product-size-clear');
+  const applyButtons = document.querySelectorAll('.product-filter-apply');
   const filterTriggers = document.querySelectorAll('.product-filter-trigger');
   const filterModal = document.getElementById('product-size-filter-modal');
   const filterCloseControls = document.querySelectorAll('[data-filter-close]');
 
   const mobileBtn = document.getElementById('mobile-filter-toggle');
   const mobileMenu = document.getElementById('mobile-filter-menu');
+  let resetDraftFilters = () => {};
 
   const openFilterModal = () => {
     if (!filterModal) return;
+    resetDraftFilters();
     filterModal.classList.add('is-open');
     filterModal.setAttribute('aria-hidden', 'false');
     filterTriggers.forEach((trigger) => trigger.setAttribute('aria-expanded', 'true'));
@@ -72,10 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const { ajaxUrl, nonce } = prsFilterProducts;
+  const { ajaxUrl } = prsFilterProducts;
   let currentCategory = '';
-  let currentSizes = new Set();
-  let currentStock = 'show';
+  let appliedSizes = new Set();
+  let draftSizes = new Set();
+  let appliedStock = 'show';
+  let draftStock = 'show';
+  let activeRequest = null;
+
+  const revealGrid = () => {
+    closeFilterModal();
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      mobileMenu?.classList.remove('open');
+    }
+  };
 
   const updateActiveLinks = () => {
     filterLinks.forEach((link) => {
@@ -90,43 +103,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sizeButtons.forEach((button) => {
       const sizeSlug = button.getAttribute('data-size-slug');
-      button.classList.toggle('is-active', sizeSlug && currentSizes.has(sizeSlug));
+      button.classList.toggle('is-active', sizeSlug && draftSizes.has(sizeSlug));
     });
 
     stockButtons.forEach((button) => {
-      button.classList.toggle('is-active', button.getAttribute('data-stock-filter') === currentStock);
+      button.classList.toggle('is-active', button.getAttribute('data-stock-filter') === draftStock);
     });
   };
 
+  resetDraftFilters = () => {
+    draftSizes = new Set(appliedSizes);
+    draftStock = appliedStock;
+    updateActiveLinks();
+  };
+
   const loadProducts = () => {
+    if (activeRequest) {
+      activeRequest.abort();
+    }
+
+    const request = new AbortController();
+    activeRequest = request;
+    productsGrid.classList.add('is-loading');
+
     const body = new URLSearchParams({
       action: 'prs_filter_products',
-      security: nonce,
       category_slug: currentCategory === 'todo' ? '' : currentCategory,
-      size_slugs: [...currentSizes].join(','),
-      stock_filter: currentStock,
+      size_slugs: [...appliedSizes].join(','),
+      stock_filter: appliedStock,
     });
 
     fetch(ajaxUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body,
+      signal: request.signal,
     })
-      .then((res) => res.text())
-      .then((html) => {
-        productsGrid.innerHTML = html.trim();
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((response) => {
+        const html = response?.success ? response.data?.html : '';
+        if (!html) throw new Error('Respuesta de filtro no válida');
+        productsGrid.innerHTML = html;
       })
       .catch((err) => {
+        if (err.name === 'AbortError') return;
         console.error('Error filtrando productos:', err);
+        productsGrid.innerHTML = '<p class="prs-products-empty">No se han podido cargar los productos. Inténtalo de nuevo.</p>';
+      })
+      .finally(() => {
+        if (activeRequest === request) {
+          productsGrid.classList.remove('is-loading');
+          activeRequest = null;
+        }
       });
   };
 
   const updateUrl = () => {
     const params = new URLSearchParams();
-    if (currentSizes.size) {
-      params.set('size', [...currentSizes].join(','));
+    if (appliedSizes.size) {
+      params.set('size', [...appliedSizes].join(','));
     }
-    if (currentStock === 'hide') {
+    if (appliedStock === 'hide') {
       params.set('soldout', 'hide');
     }
 
@@ -137,8 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.history.pushState(
       {
         category: currentCategory,
-        size: [...currentSizes],
-        soldout: currentStock,
+        size: [...appliedSizes],
+        soldout: appliedStock,
       },
       '',
       query ? `${baseUrl}?${query}` : baseUrl
@@ -150,13 +190,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
 
   currentCategory = match ? decodeURIComponent(match[1]) : 'todo';
-  currentSizes = new Set(
+  appliedSizes = new Set(
     (params.get('size') || '')
       .split(',')
       .map((item) => item.trim())
       .filter(Boolean)
   );
-  currentStock = params.get('soldout') === 'hide' ? 'hide' : 'show';
+  appliedStock = params.get('soldout') === 'hide' ? 'hide' : 'show';
+  draftSizes = new Set(appliedSizes);
+  draftStock = appliedStock;
 
   updateActiveLinks();
 
@@ -180,32 +222,36 @@ document.addEventListener('DOMContentLoaded', () => {
       const sizeSlug = button.getAttribute('data-size-slug');
       if (!sizeSlug) return;
 
-      if (currentSizes.has(sizeSlug)) {
-        currentSizes.delete(sizeSlug);
+      if (draftSizes.has(sizeSlug)) {
+        draftSizes.delete(sizeSlug);
       } else {
-        currentSizes.add(sizeSlug);
+        draftSizes.add(sizeSlug);
       }
 
       updateActiveLinks();
-      loadProducts();
-      updateUrl();
     });
   });
 
   stockButtons.forEach((button) => {
     button.addEventListener('click', () => {
-      currentStock = button.getAttribute('data-stock-filter') === 'hide' ? 'hide' : 'show';
+      draftStock = button.getAttribute('data-stock-filter') === 'hide' ? 'hide' : 'show';
       updateActiveLinks();
-      loadProducts();
-      updateUrl();
     });
   });
 
   clearButtons.forEach((button) => {
     button.addEventListener('click', () => {
-      currentSizes.clear();
-      currentStock = 'show';
+      draftSizes.clear();
+      draftStock = 'show';
       updateActiveLinks();
+    });
+  });
+
+  applyButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      appliedSizes = new Set(draftSizes);
+      appliedStock = draftStock;
+      revealGrid();
       loadProducts();
       updateUrl();
     });

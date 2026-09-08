@@ -1,4 +1,46 @@
-﻿<?php
+<?php
+
+function prs_get_theme_version() {
+    static $version = null;
+
+    if ( null === $version ) {
+        $version = wp_get_theme()->get( 'Version' );
+        $version = $version ?: '0.0.0';
+    }
+
+    return $version;
+}
+
+function prs_get_asset_version( $relative_path ) {
+    $absolute_path = get_stylesheet_directory() . '/' . ltrim( $relative_path, '/' );
+    $modified      = file_exists( $absolute_path ) ? filemtime( $absolute_path ) : 0;
+
+    return prs_get_theme_version() . ( $modified ? '.' . $modified : '' );
+}
+
+function prs_output_theme_version_marker() {
+    $version = prs_get_theme_version();
+
+    echo '<meta name="palancia-theme-version" content="' . esc_attr( $version ) . '">' . "\n";
+    echo '<!-- Palancia Web Shop v' . esc_html( $version ) . ' -->' . "\n";
+}
+add_action( 'wp_head', 'prs_output_theme_version_marker', 1 );
+
+function prs_add_theme_version_to_admin_bar( $admin_bar ) {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
+    $admin_bar->add_node( [
+        'id'    => 'prs-theme-version',
+        'title' => 'PALANCIA v' . prs_get_theme_version(),
+        'href'  => admin_url( 'themes.php' ),
+        'meta'  => [
+            'title' => __( 'Version activa del tema Palancia', 'palancia-shop' ),
+        ],
+    ] );
+}
+add_action( 'admin_bar_menu', 'prs_add_theme_version_to_admin_bar', 100 );
 
 // Cargar CSS y JS del tema
 function prs_enqueue_assets() {
@@ -7,7 +49,7 @@ function prs_enqueue_assets() {
         'palancia-retro-shop-style',
         get_stylesheet_uri(),
         [],
-        filemtime( get_stylesheet_directory() . '/style.css' )
+        prs_get_asset_version( 'style.css' )
     );
 
     // Material Symbols (icons)
@@ -24,7 +66,7 @@ function prs_enqueue_assets() {
             'prs-product-gallery',
             get_stylesheet_directory_uri() . '/assets/js/product-gallery.js',
             [],
-            filemtime( get_stylesheet_directory() . '/assets/js/product-gallery.js' ),
+            prs_get_asset_version( 'assets/js/product-gallery.js' ),
             true
         );
 
@@ -32,7 +74,7 @@ function prs_enqueue_assets() {
             'prs-add-to-cart-feedback',
             get_stylesheet_directory_uri() . '/assets/js/add-to-cart-feedback.js',
             [],
-            filemtime( get_stylesheet_directory() . '/assets/js/add-to-cart-feedback.js' ),
+            prs_get_asset_version( 'assets/js/add-to-cart-feedback.js' ),
             true
         );
     }
@@ -49,13 +91,12 @@ function prs_enqueue_filter_script() {
         'prs-filter-products',
         get_stylesheet_directory_uri() . '/assets/js/filter-products.js',
         [],
-        filemtime( get_stylesheet_directory() . '/assets/js/filter-products.js' ),
+        prs_get_asset_version( 'assets/js/filter-products.js' ),
         true
     );
 
     wp_localize_script('prs-filter-products', 'prsFilterProducts', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
-        'nonce'   => wp_create_nonce('prs_filter_nonce'),
     ]);
 }
 add_action('wp_enqueue_scripts', 'prs_enqueue_filter_script');
@@ -80,6 +121,10 @@ function prs_sanitize_css_size( $value ) {
         return $value;
     }
 
+    if ( preg_match( '/^(clamp|min|max|calc)\([0-9a-zA-Z\s.,+\-*\/()%]+\)$/', $value ) ) {
+        return $value;
+    }
+
     return '';
 }
 
@@ -87,7 +132,7 @@ function prs_sanitize_positive_int( $value ) {
     return max( 1, absint( $value ) );
 }
 
-function prs_customize_register( $wp_customize ) {
+function prs_customize_register_legacy_disabled( $wp_customize ) {
     $wp_customize->add_section( 'prs_design_settings', [
         'title'       => __( 'Palancia Design', 'palancia-shop' ),
         'priority'    => 35,
@@ -186,7 +231,7 @@ function prs_customize_register( $wp_customize ) {
 }
 add_action( 'customize_register', 'prs_customize_register' );
 
-function prs_customizer_css() {
+function prs_customizer_css_legacy_disabled() {
     $primary     = get_theme_mod( 'prs_primary_color', '#233549' );
     $text        = get_theme_mod( 'prs_text_color', '#111111' );
     $button_bg   = get_theme_mod( 'prs_button_bg', '#000000' );
@@ -232,6 +277,151 @@ function prs_customizer_css() {
     <?php
 }
 add_action( 'wp_head', 'prs_customizer_css', 20 );
+
+function prs_customize_register( $wp_customize ) {
+    $wp_customize->add_section( 'prs_design_settings', [
+        'title'       => __( 'Palancia Design', 'palancia-shop' ),
+        'priority'    => 35,
+        'description' => __( 'Ajustes visuales del tema. Los valores por defecto mantienen el diseno brutalist actual.', 'palancia-shop' ),
+    ] );
+
+    $color_settings = [
+        'prs_bg_color' => [
+            'label'   => __( 'Fondo de pagina', 'palancia-shop' ),
+            'default' => '#ffffff',
+        ],
+        'prs_paper_color' => [
+            'label'   => __( 'Fondo de bloques', 'palancia-shop' ),
+            'default' => '#ffffff',
+        ],
+        'prs_ink_color' => [
+            'label'   => __( 'Color de texto y lineas', 'palancia-shop' ),
+            'default' => '#0a0a0a',
+        ],
+        'prs_muted_color' => [
+            'label'   => __( 'Color secundario', 'palancia-shop' ),
+            'default' => '#575757',
+        ],
+        'prs_accent_color' => [
+            'label'   => __( 'Color categoria activa', 'palancia-shop' ),
+            'default' => '#24364b',
+        ],
+    ];
+
+    foreach ( $color_settings as $id => $setting ) {
+        $wp_customize->add_setting( $id, [
+            'default'           => $setting['default'],
+            'sanitize_callback' => 'sanitize_hex_color',
+            'transport'         => 'refresh',
+        ] );
+
+        $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, $id, [
+            'label'   => $setting['label'],
+            'section' => 'prs_design_settings',
+        ] ) );
+    }
+
+    $number_settings = [
+        'prs_logo_height_desktop' => [ __( 'Logo desktop alto (px)', 'palancia-shop' ), 70, 40, 180 ],
+        'prs_logo_height_mobile'  => [ __( 'Logo movil alto (px)', 'palancia-shop' ), 62, 36, 140 ],
+        'prs_header_height'       => [ __( 'Header desktop alto (px)', 'palancia-shop' ), 78, 64, 180 ],
+        'prs_header_height_mobile'=> [ __( 'Header movil alto (px)', 'palancia-shop' ), 72, 56, 150 ],
+        'prs_grid_desktop_cols'   => [ __( 'Columnas grid desktop', 'palancia-shop' ), 6, 3, 8 ],
+        'prs_grid_tablet_cols'    => [ __( 'Columnas grid tablet', 'palancia-shop' ), 5, 2, 6 ],
+        'prs_grid_mid_cols'       => [ __( 'Columnas grid intermedio', 'palancia-shop' ), 4, 2, 6 ],
+        'prs_grid_mobile_cols'    => [ __( 'Columnas grid movil', 'palancia-shop' ), 2, 1, 3 ],
+    ];
+
+    foreach ( $number_settings as $id => $args ) {
+        $wp_customize->add_setting( $id, [
+            'default'           => $args[1],
+            'sanitize_callback' => 'prs_sanitize_positive_int',
+            'transport'         => 'refresh',
+        ] );
+
+        $wp_customize->add_control( $id, [
+            'label'       => $args[0],
+            'section'     => 'prs_design_settings',
+            'type'        => 'number',
+            'input_attrs' => [
+                'min'  => $args[2],
+                'max'  => $args[3],
+                'step' => 1,
+            ],
+        ] );
+    }
+
+    $size_settings = [
+        'prs_nav_column_width' => [ __( 'Ancho columna navegacion', 'palancia-shop' ), 'clamp(8rem, 12vw, 11.125rem)' ],
+        'prs_nav_column_width_tablet' => [ __( 'Ancho navegacion tablet', 'palancia-shop' ), '8.25rem' ],
+        'prs_side_padding'     => [ __( 'Padding lateral desktop', 'palancia-shop' ), 'clamp(0.8rem, 2vw, 2rem)' ],
+        'prs_side_padding_mobile' => [ __( 'Padding lateral movil', 'palancia-shop' ), '0.65rem' ],
+        'prs_layout_gap'       => [ __( 'Separacion layout', 'palancia-shop' ), 'clamp(0.55rem, 1.2vw, 1rem)' ],
+        'prs_layout_gap_mobile'=> [ __( 'Separacion layout movil', 'palancia-shop' ), '0.65rem' ],
+    ];
+
+    foreach ( $size_settings as $id => $args ) {
+        $wp_customize->add_setting( $id, [
+            'default'           => $args[1],
+            'sanitize_callback' => 'prs_sanitize_css_size',
+            'transport'         => 'refresh',
+        ] );
+
+        $wp_customize->add_control( $id, [
+            'label'   => $args[0],
+            'section' => 'prs_design_settings',
+            'type'    => 'text',
+        ] );
+    }
+}
+
+function prs_customizer_css() {
+    $bg     = get_theme_mod( 'prs_bg_color', '#ffffff' );
+    $paper  = get_theme_mod( 'prs_paper_color', '#ffffff' );
+    $ink    = get_theme_mod( 'prs_ink_color', '#0a0a0a' );
+    $muted  = get_theme_mod( 'prs_muted_color', '#575757' );
+    $accent = get_theme_mod( 'prs_accent_color', '#24364b' );
+
+    $logo_desktop = absint( get_theme_mod( 'prs_logo_height_desktop', 70 ) );
+    $logo_mobile  = absint( get_theme_mod( 'prs_logo_height_mobile', 62 ) );
+    $header       = absint( get_theme_mod( 'prs_header_height', 78 ) );
+    $header_mob   = absint( get_theme_mod( 'prs_header_height_mobile', 72 ) );
+
+    $nav_width = prs_sanitize_css_size( get_theme_mod( 'prs_nav_column_width', 'clamp(8rem, 12vw, 11.125rem)' ) ) ?: 'clamp(8rem, 12vw, 11.125rem)';
+    $nav_width_tablet = prs_sanitize_css_size( get_theme_mod( 'prs_nav_column_width_tablet', '8.25rem' ) ) ?: '8.25rem';
+    $side_pad  = prs_sanitize_css_size( get_theme_mod( 'prs_side_padding', 'clamp(0.8rem, 2vw, 2rem)' ) ) ?: 'clamp(0.8rem, 2vw, 2rem)';
+    $side_pad_mobile = prs_sanitize_css_size( get_theme_mod( 'prs_side_padding_mobile', '0.65rem' ) ) ?: '0.65rem';
+    $gap       = prs_sanitize_css_size( get_theme_mod( 'prs_layout_gap', 'clamp(0.55rem, 1.2vw, 1rem)' ) ) ?: 'clamp(0.55rem, 1.2vw, 1rem)';
+    $gap_mobile = prs_sanitize_css_size( get_theme_mod( 'prs_layout_gap_mobile', '0.65rem' ) ) ?: '0.65rem';
+    ?>
+    <style id="prs-customizer-css">
+      :root {
+        --bg: <?php echo esc_html( $bg ); ?>;
+        --paper: <?php echo esc_html( $paper ); ?>;
+        --ink: <?php echo esc_html( $ink ); ?>;
+        --line: <?php echo esc_html( $ink ); ?>;
+        --muted: <?php echo esc_html( $muted ); ?>;
+        --accent: <?php echo esc_html( $accent ); ?>;
+        --header-height: <?php echo esc_html( $header ); ?>px;
+        --logo-height-desktop: <?php echo esc_html( $logo_desktop ); ?>px;
+        --logo-height-mobile: <?php echo esc_html( $logo_mobile ); ?>px;
+        --nav-column-width: <?php echo esc_html( $nav_width ); ?>;
+        --nav-column-width-tablet: <?php echo esc_html( $nav_width_tablet ); ?>;
+        --side-padding: <?php echo esc_html( $side_pad ); ?>;
+        --side-padding-mobile: <?php echo esc_html( $side_pad_mobile ); ?>;
+        --layout-gap: <?php echo esc_html( $gap ); ?>;
+        --layout-gap-mobile: <?php echo esc_html( $gap_mobile ); ?>;
+        --grid-desktop-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_desktop_cols', 6 ) ) ); ?>;
+        --grid-tablet-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_tablet_cols', 5 ) ) ); ?>;
+        --grid-mid-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_mid_cols', 4 ) ) ); ?>;
+        --grid-mobile-columns: <?php echo esc_html( prs_sanitize_positive_int( get_theme_mod( 'prs_grid_mobile_cols', 2 ) ) ); ?>;
+      }
+      @media (max-width: 768px) {
+        :root { --header-height: <?php echo esc_html( $header_mob ); ?>px; }
+      }
+    </style>
+    <?php
+}
 
 
 // ------------ LIMPIEZA FICHA PRODUCTO ------------ //
@@ -510,11 +700,15 @@ function prs_render_product_card( $post_id ) {
     $title_attr = the_title_attribute( [ 'echo' => false, 'post' => $post_id ] );
     $product    = function_exists( 'wc_get_product' ) ? wc_get_product( $post_id ) : false;
     $price_html = $product ? $product->get_price_html() : '';
+    $stock_text = $product && ! $product->is_in_stock() ? __( 'Sold out', 'palancia-shop' ) : '';
 
     $html  = '<a href="' . esc_url( $url ) . '" class="product-item">';
     $html .= '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title_attr ) . '">';
     $html .= '<div class="product-overlay">';
     $html .= '<span class="product-title">' . esc_html( get_the_title( $post_id ) ) . '</span>';
+    if ( $stock_text ) {
+        $html .= '<span class="product-stock">' . esc_html( $stock_text ) . '</span>';
+    }
     if ( $price_html ) {
         $html .= '<span class="product-price">' . wp_kses_post( $price_html ) . '</span>';
     }
@@ -707,19 +901,71 @@ function prs_get_available_size_terms() {
         return [];
     }
 
+    $alpha_sizes = [
+        'XXXXS'    => 0,
+        '4XSMALL'  => 0,
+        'XXXS'     => 1,
+        '3XSMALL'  => 1,
+        'XXS'      => 2,
+        '2XSMALL'  => 2,
+        'XS'       => 3,
+        'XSMALL'   => 3,
+        'S'        => 4,
+        'SMALL'    => 4,
+        'M'        => 5,
+        'MEDIUM'   => 5,
+        'L'        => 6,
+        'LARGE'    => 6,
+        'XL'       => 7,
+        'XLARGE'   => 7,
+        'XXL'      => 8,
+        '2XL'      => 8,
+        'XXLARGE'  => 8,
+        '2XLARGE'  => 8,
+        'XXXL'     => 9,
+        '3XL'      => 9,
+        'XXXLARGE' => 9,
+        '3XLARGE'  => 9,
+        'XXXXL'    => 10,
+        '4XL'      => 10,
+        '4XLARGE'  => 10,
+    ];
+
+    usort(
+        $terms,
+        static function( $first, $second ) use ( $alpha_sizes ) {
+            $get_sort_key = static function( $term ) use ( $alpha_sizes ) {
+                $label = strtoupper( remove_accents( (string) $term->name ) );
+                $key   = preg_replace( '/[^A-Z0-9]/', '', $label );
+
+                if ( isset( $alpha_sizes[ $key ] ) ) {
+                    return [ 0, $alpha_sizes[ $key ], $key ];
+                }
+
+                if ( preg_match( '/^W(\d{2,3})(?:L(\d{2,3}))?$/', $key, $matches ) ) {
+                    return [ 1, (int) $matches[1], isset( $matches[2] ) ? (int) $matches[2] : 0 ];
+                }
+
+                if ( preg_match( '/^(\d+(?:\.\d+)?)$/', $key, $matches ) ) {
+                    return [ 2, (float) $matches[1], $key ];
+                }
+
+                return [ 3, 0, $key ];
+            };
+
+            $first_key  = $get_sort_key( $first );
+            $second_key = $get_sort_key( $second );
+            $comparison = $first_key <=> $second_key;
+
+            return 0 !== $comparison ? $comparison : (int) $first->term_id <=> (int) $second->term_id;
+        }
+    );
+
     return $terms;
 }
 
 // Manejar solicitudes AJAX para filtrar productos por categoría
 function prs_filter_products_by_category() {
-    // Verificar nonce y permisos
-    check_ajax_referer( 'prs_filter_nonce', 'security' );
-
-    // Limpiar TODOS los niveles de buffer para asegurar que no va ningún BOM o espacio
-    while ( ob_get_level() > 0 ) {
-        ob_end_clean();
-    }
-
     $category_slug = isset($_POST['category_slug'])
         ? sanitize_title( wp_unslash( $_POST['category_slug'] ) )
         : '';
@@ -739,13 +985,13 @@ function prs_filter_products_by_category() {
 
     $html = prs_render_products_grid( $category_slug, 0, $size_slug, $stock_filter );
 
-    if ( $html ) {
-        echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escapado dentro de los helpers
-    } else {
-        echo '<p>No hay productos en esta categoria.</p>';
+    if ( ! $html ) {
+        $html = '<p class="prs-products-empty">' . esc_html__( 'No hay productos con estos filtros.', 'palancia-shop' ) . '</p>';
     }
 
-    wp_die();
+    // Es una consulta publica de solo lectura. Una respuesta JSON evita que WordPress
+    // inserte "-1" en el grid cuando una pagina cacheada contiene un nonce caducado.
+    wp_send_json_success( [ 'html' => $html ] );
 }
 
 add_action( 'wp_ajax_prs_filter_products', 'prs_filter_products_by_category' );
@@ -792,16 +1038,13 @@ function prs_render_custom_cart() {
     $cart_items = WC()->cart->get_cart();
 
     if ( WC()->cart->is_empty() ) {
-        $zero_price = wc_price( 0 );
+        $shop_url = home_url( '/' );
 
         echo '<div class="pal-cart-empty">';
-        echo '<div class="pal-cart-empty-title">Order Summary</div>';
-        echo '<div class="pal-cart-empty-message">Your cart is empty</div>';
-        echo '<div class="pal-cart-summary-list">';
-        echo '<div class="pal-cart-summary-row"><span>Subtotal</span><span>' . $zero_price . '</span></div>';
-        echo '<div class="pal-cart-summary-row"><span>Taxes</span><span>' . $zero_price . '</span></div>';
-        echo '<div class="pal-cart-summary-row is-total"><span>Total</span><span>' . $zero_price . '</span></div>';
-        echo '</div>';
+        echo '<div class="pal-cart-empty-index" aria-hidden="true">00</div>';
+        echo '<div class="pal-cart-empty-title">' . esc_html__( 'Tu carrito está vacío', 'palancia-shop' ) . '</div>';
+        echo '<div class="pal-cart-empty-message">' . esc_html__( 'Todavía no has añadido ningún producto.', 'palancia-shop' ) . '</div>';
+        echo '<a class="pal-cart-empty-action" href="' . esc_url( $shop_url ) . '">' . esc_html__( 'Ver productos', 'palancia-shop' ) . '</a>';
         echo '</div>';
         return;
     }
@@ -964,21 +1207,38 @@ function prs_handle_contact_form() {
         wp_die( 'Invalid request.' );
     }
 
-    $name    = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
-    $email   = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
-    $message = isset( $_POST['message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) : '';
+    $name         = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+    $email        = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+    $subject_key  = isset( $_POST['subject'] ) ? sanitize_key( wp_unslash( $_POST['subject'] ) ) : 'other';
+    $order_number = isset( $_POST['order_number'] ) ? sanitize_text_field( wp_unslash( $_POST['order_number'] ) ) : '';
+    $message      = isset( $_POST['message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) : '';
+    $website      = isset( $_POST['website'] ) ? sanitize_text_field( wp_unslash( $_POST['website'] ) ) : '';
+
+    $subjects = [
+        'product'  => 'Producto',
+        'order'    => 'Pedido',
+        'shipping' => 'Envío',
+        'return'   => 'Devolución',
+        'other'    => 'Otro',
+    ];
 
     $referer = wp_get_referer();
-    $redirect_base = $referer ? $referer : home_url( '/contact' );
+    $redirect_base = remove_query_arg( 'contact', $referer ? $referer : home_url( '/contact' ) );
 
-    if ( empty( $name ) || empty( $message ) || ! is_email( $email ) ) {
+    if ( $website ) {
+        wp_safe_redirect( add_query_arg( 'contact', 'success', $redirect_base ) );
+        exit;
+    }
+
+    if ( empty( $name ) || empty( $message ) || ! is_email( $email ) || ! isset( $subjects[ $subject_key ] ) ) {
         wp_safe_redirect( add_query_arg( 'contact', 'error', $redirect_base ) );
         exit;
     }
 
-    $to      = get_option( 'admin_email' );
-    $subject = 'Contacto web: ' . $name;
-    $body    = "Nombre: {$name}\nEmail: {$email}\n\n{$message}";
+    $to            = get_option( 'admin_email' );
+    $subject_label = $subjects[ $subject_key ];
+    $subject       = '[PALANCIA] ' . $subject_label . ' / ' . $name;
+    $body          = "Nombre: {$name}\nEmail: {$email}\nAsunto: {$subject_label}\nPedido: " . ( $order_number ?: '-' ) . "\n\n{$message}";
     $headers = [ 'Reply-To: ' . $name . ' <' . $email . '>' ];
 
     $sent = wp_mail( $to, $subject, $body, $headers );
