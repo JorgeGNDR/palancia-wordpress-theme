@@ -34,6 +34,17 @@ Text Domain: palancia-shop
   font-weight: 400;
 }
 
+/* Talla entre el título y el precio; el orden también se aplica en móvil. */
+.prs-product-info .prs-product-size {
+  order: 1;
+  margin: 0 0 0.6rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--text-color);
+}
+
 /* Precio */
 .prs-product-info .price {
   font-family: var(--font-body);
