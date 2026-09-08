@@ -618,21 +618,6 @@ body.admin-bar {
   color: var(--primary-color);
 }
 
-.prs-product-size {
-  margin: 0.9rem 0 0;
-  font-size: 0.72rem;
-  line-height: 1.35;
-  color: #3f4d5e;
-  font-family: var(--font-body);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.prs-product-size span {
-  color: var(--text-color);
-}
-
 /* icon moved into the add-to-cart button */
 
 /* Descripcion */
@@ -1340,16 +1325,6 @@ body.prs-zoom-open {
     line-height: 1.12;
     margin: 0 0 0.5rem;
     order: 1;
-  }
-
-  .prs-product-size {
-    order: 5;
-    display: block;
-    margin: 0.6rem auto 0;
-    font-size: 0.7rem;
-    line-height: 1.35;
-    text-transform: uppercase;
-    color: var(--primary-color);
   }
 
   .prs-product-long-description {

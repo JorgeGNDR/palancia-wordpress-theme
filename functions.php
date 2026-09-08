@@ -259,32 +259,35 @@ function prs_cleanup_single_summary_hooks() {
 }
 add_action( 'init', 'prs_cleanup_single_summary_hooks' );
 
-// Mostrar talla debajo del título (atributo pa_talla)
-function prs_show_product_size() {
-    global $product;
-
-    if ( ! $product ) {
-        return;
-    }
-
-    $size_terms = wc_get_product_terms( $product->get_id(), 'pa_talla', [ 'fields' => 'names' ] );
-
-    if ( ! empty( $size_terms ) ) {
-        $tallas = implode( ', ', $size_terms );
-        echo '<div class="prs-product-size"><span>Talla:</span> ' . esc_html( $tallas ) . '</div>';
-    }
-}
-add_action( 'woocommerce_single_product_summary', 'prs_show_product_size', 36 );
-
-// Descripción larga en el resumen, como texto simple
+// Descripción larga con la talla del producto como primera línea.
 function prs_product_long_description() {
-    global $post;
+    global $post, $product;
 
     if ( ! $post ) {
         return;
     }
 
     $content = apply_filters( 'the_content', $post->post_content );
+    $size = $product ? $product->get_attribute( 'pa_talla' ) : '';
+
+    if ( '' !== trim( $size ) ) {
+        $size_line = '<p>Talla ' . esc_html( $size ) . '</p>';
+        // Conservar el encabezado Descripción que ya pueda incluir el contenido.
+        $heading_pattern = '~^(\s*(?:<!--.*?-->\s*)*<(h[1-6]|p)\b[^>]*>\s*(?:(?:<strong\b[^>]*>|<b\b[^>]*>)\s*)?Descripci(?:ó|&oacute;|&#243;|&#x[fF]3;)n\s*:?(?:\s*</(?:strong|b)>)?\s*</\2>)~isu';
+        $count = 0;
+        $content = preg_replace_callback(
+            $heading_pattern,
+            static function ( $matches ) use ( $size_line ) {
+                return $matches[1] . $size_line;
+            },
+            $content,
+            1,
+            $count
+        );
+        if ( 0 === $count ) {
+            $content = '<p><strong>' . esc_html__( 'Descripción', 'palancia-shop' ) . '</strong></p>' . $size_line . $content;
+        }
+    }
 
     if ( ! $content ) {
         return;
