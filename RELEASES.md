@@ -21,6 +21,14 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.11 - 2026-10-22
+
+- Tarjetas de escritorio con imagen desenfocada y título, precio, talla y acción de compra al pasar el ratón o acceder con teclado.
+- Información contenida dentro de la foto, títulos largos limitados visualmente y botones de 44 px de alto.
+- En móvil, tablet y pantallas sin hover los datos y acciones permanecen visibles debajo de la imagen.
+- Botones nativos de WooCommerce con AJAX, opciones de variantes, disponibilidad y contador del carrito actualizado mediante fragments.
+- Enlaces de compra válidos también en respuestas de filtros y sin enlaces interactivos anidados.
+
 ### 2.0.0-beta.10 - 2026-10-22
 
 - Portada y categorías comparten la presentación de solo fotos en escritorio, también al acceder desde una ficha de producto.

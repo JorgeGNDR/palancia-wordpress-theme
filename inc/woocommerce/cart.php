@@ -1,6 +1,14 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
+// Include the custom header counter in WooCommerce's native cart fragments.
+function prs_header_cart_fragment( $fragments ) {
+    $count = WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
+    $fragments['.cart-count-inline'] = '<span class="cart-count-inline">' . esc_html( $count ) . '</span>';
+    return $fragments;
+}
+add_filter( 'woocommerce_add_to_cart_fragments', 'prs_header_cart_fragment' );
+
 function prs_render_custom_cart() {
     if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
         return;

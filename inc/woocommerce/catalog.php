@@ -72,29 +72,56 @@ function prs_get_sorted_product_categories() {
     return $sorted;
 }
 
+/** Render WooCommerce's own loop action without leaking its global product context. */
+function prs_product_card_cart_action( $card_product ) {
+    $had_product = array_key_exists( 'product', $GLOBALS );
+    $previous_product = $GLOBALS['product'] ?? null;
+    $GLOBALS['product'] = $card_product;
+    // Cards also render inside admin-ajax requests: use a frontend URL as the
+    // native non-JavaScript fallback, then let extension filters customize it.
+    $action_url = static function ( $url, $action_product ) use ( $card_product ) {
+        if ( $action_product->get_id() === $card_product->get_id() && $action_product->is_type('simple') && $action_product->is_purchasable() && $action_product->is_in_stock() ) {
+            return add_query_arg( 'add-to-cart', $action_product->get_id(), $action_product->get_permalink() );
+        }
+        return $url;
+    };
+    add_filter( 'woocommerce_product_add_to_cart_url', $action_url, 0, 2 );
+    ob_start();
+    try {
+        woocommerce_template_loop_add_to_cart();
+        $html = ob_get_contents();
+    } finally {
+        ob_end_clean();
+        remove_filter( 'woocommerce_product_add_to_cart_url', $action_url, 0 );
+        if ( $had_product ) $GLOBALS['product'] = $previous_product;
+        else unset( $GLOBALS['product'] );
+    }
+    return $html;
+}
+
 function prs_render_product_card( $post_id ) {
-    $thumb_id   = get_post_thumbnail_id( $post_id );
-    $img        = wp_get_attachment_image_src( $thumb_id, 'large' );
-    $img_url    = $img ? $img[0] : wc_placeholder_img_src();
-    $url        = get_permalink( $post_id );
-    $title_attr = the_title_attribute( [ 'echo' => false, 'post' => $post_id ] );
-    $product    = function_exists( 'wc_get_product' ) ? wc_get_product( $post_id ) : false;
-    $price_html = $product ? $product->get_price_html() : '';
-    $stock_text = $product && ! $product->is_in_stock() ? __( 'Agotado', 'palancia-shop' ) : '';
+    $product = wc_get_product( $post_id );
+    if ( ! $product ) return '';
+    $img = wp_get_attachment_image_src( $product->get_image_id(), 'large' );
+    $img_url = $img ? $img[0] : wc_placeholder_img_src();
+    $url = $product->get_permalink();
+    $title = $product->get_name();
+    $size_terms = wc_get_product_terms( $post_id, 'pa_talla', [ 'fields' => 'names' ] );
+    $size = ! is_wp_error( $size_terms ) && $size_terms ? implode( ', ', $size_terms ) : $product->get_attribute( 'talla' );
+    $price_html = $product->get_price_html();
 
-    $html  = '<a href="' . esc_url( $url ) . '" class="product-item" data-product-id="' . esc_attr( $post_id ) . '">';
-    $html .= '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title_attr ) . '">';
+    // The photo, details link and cart action are siblings, never nested links.
+    $html = '<article class="product-item" data-product-id="' . esc_attr( $post_id ) . '">';
+    $html .= '<a class="product-image-link" href="' . esc_url( $url ) . '"><img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title ) . '"></a>';
     $html .= '<div class="product-overlay">';
-    $html .= '<span class="product-title">' . esc_html( get_the_title( $post_id ) ) . '</span>';
-    if ( $stock_text ) {
-        $html .= '<span class="product-stock">' . esc_html( $stock_text ) . '</span>';
-    }
-    if ( $price_html ) {
-        $html .= '<span class="product-price">' . wp_kses_post( $price_html ) . '</span>';
-    }
+    $html .= '<a class="product-title" href="' . esc_url( $url ) . '" title="' . esc_attr( $title ) . '">' . esc_html( $title ) . '</a>';
+    $html .= '<div class="product-card-meta">';
+    if ( $price_html ) $html .= '<span class="product-price">' . wp_kses_post( $price_html ) . '</span>';
+    if ( $size ) $html .= '<span class="product-size">' . esc_html__( 'Talla:', 'palancia-shop' ) . ' ' . esc_html( $size ) . '</span>';
+    if ( ! $product->is_in_stock() ) $html .= '<span class="product-stock">' . esc_html__( 'Agotado', 'palancia-shop' ) . '</span>';
     $html .= '</div>';
-    $html .= '</a>';
-
+    $html .= '<div class="product-card-action">' . prs_product_card_cart_action( $product ) . '</div>';
+    $html .= '</div></article>';
     return $html;
 }
 

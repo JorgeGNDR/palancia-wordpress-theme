@@ -23,6 +23,10 @@ La antigua excepción que forzaba Application Passwords se ha retirado: vuelve a
 
 `catalog.php` contiene categorías, tallas y presentación de tarjetas. El grid y la navegación de la ficha llaman al mismo servicio de IDs. Se conserva el comportamiento de navegación entre productos por el orden predeterminado de categorías.
 
+Cada tarjeta es un `article` con enlaces independientes para foto, título y acción de compra. El botón se obtiene de `woocommerce_template_loop_add_to_cart`, conservando tipos de producto, stock y filtros de extensiones. El contexto global de producto y el filtro temporal de URL se restauran al terminar; las prendas simples usan su permalink como base del enlace de compra para que este funcione también al renderizar desde `admin-ajax.php`. El catálogo carga `wc-add-to-cart` y `wc-cart-fragments`; el contador del encabezado participa en los fragments nativos. No se mantiene una segunda lógica de carrito en JavaScript.
+
+En escritorio con ratón, `hover` y `focus-within` muestran los datos dentro de la foto y desenfocan la imagen. Los textos siguen accesibles sin depender del hover. Móvil, tablet y pantallas táctiles mantienen información y acciones visibles bajo la foto. Cambiar resultados conserva el foco mediante el enlace de foto de la tarjeta.
+
 La portada sigue mostrando el catálogo completo: la refactorización reduce las consultas repetidas, pero no añade paginación ni garantiza un coste constante con catálogos grandes.
 
 PHP entrega el estado inicial y los enlaces reales. JavaScript no deduce la categoría desde `/collections/`: usa los enlaces de WordPress, incluso con subdirectorios y permalinks distintos. Al actualizar la URL conserva parámetros externos y excluye los parámetros de enrutamiento antiguos.
@@ -65,6 +69,7 @@ wp eval-file /ruta/al/tema/tests/wordpress-bootstrap.php --skip-plugins=woocomme
 wp eval-file /ruta/al/tema/tests/wordpress.php
 wp eval-file /ruta/al/tema/tests/wordpress-cart.php
 wp eval-file /ruta/al/tema/tests/wordpress-gallery.php
+wp eval-file /ruta/al/tema/tests/wordpress-cards.php
 PALANCIA_RENDERED_GRID=/tmp/palancia-wp-integration/rendered-grid.html npm test
 ```
 

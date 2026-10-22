@@ -63,7 +63,10 @@
       const next = this.cards();
       const after = new Map([...next].map(([id, node]) => [id, node.getBoundingClientRect()]));
       if (focusId) {
-        if (next.has(focusId)) next.get(focusId).focus({preventScroll: true});
+        if (next.has(focusId)) {
+          const card = next.get(focusId);
+          (card.querySelector('.product-image-link') || card).focus({preventScroll: true});
+        }
         else { this.grid.tabIndex = -1; this.grid.focus({preventScroll: true}); }
       }
       if (this.preference.matches || typeof this.grid.animate !== 'function') return;

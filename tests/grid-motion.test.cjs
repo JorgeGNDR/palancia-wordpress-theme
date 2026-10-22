@@ -55,3 +55,9 @@ test('changing motion preference cancels in-flight effects and preserves focus b
   s.motion.replace('<p>No hay productos.</p>');assert.equal(s.d.activeElement,s.grid);assert.equal(s.grid.textContent,'No hay productos.');
   s.dom.window.close();
 });
+test('article cards restore keyboard focus to their product link after a filter',()=>{
+  const s=setup();
+  const article='<article class="product-item" data-product-id="a"><a class="product-image-link" href="/a">Photo</a><button>Cart</button></article>';
+  s.grid.innerHTML=article;s.grid.querySelector('button').focus();s.motion.replace(article);
+  assert.equal(s.d.activeElement.className,'product-image-link');s.dom.window.close();
+});
