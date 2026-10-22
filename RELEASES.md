@@ -21,6 +21,12 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.8 - 2026-10-22
+
+- Contacto compacto: título reducido, introducción alineada junto al título y sin «PALANCIA / 01».
+- Espaciado y altura de campos ajustados para mostrar todo el formulario en escritorio, manteniendo su estilo.
+- Reglas responsive de contacto agrupadas con el componente; campos móviles con texto de 16 px.
+
 ### 2.0.0-beta.7 - 2026-10-22
 
 - Visor de producto a pantalla completa con una foto, flechas, contador y cierre con el estilo de filtros.

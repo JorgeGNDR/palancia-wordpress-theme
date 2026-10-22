@@ -1,6 +1,5 @@
 /* Pages / footer */
-.page-content,
-.prs-contact {
+.page-content {
   padding: clamp(1rem, 3vw, 3rem) var(--side-padding) clamp(3rem, 6vw, 6rem);
 }
 
@@ -10,8 +9,7 @@
 }
 
 .page-content h1,
-.page-content h2,
-.prs-contact-title {
+.page-content h2 {
   margin: 0 0 1rem;
   font: 800 clamp(1.8rem, 1.1rem + 4vw, 5rem)/0.82 var(--font-nav);
   letter-spacing: -0.08em;
@@ -19,7 +17,7 @@
 }
 
 .prs-contact {
-  padding-top: clamp(1.5rem, 4vw, 4rem);
+  padding: 1rem var(--side-padding) 1.5rem;
 }
 
 .prs-contact-inner {
@@ -29,31 +27,30 @@
 
 .prs-contact-hero {
   display: grid;
-  gap: clamp(0.8rem, 2vw, 1.5rem);
-  margin-bottom: clamp(2rem, 6vw, 5rem);
+  grid-template-columns: minmax(15rem, 0.75fr) minmax(0, 1.45fr);
+  gap: 0.6rem clamp(0.8rem, 2vw, 1.5rem);
+  align-items: end;
+  margin-bottom: 1.25rem;
 }
 
 .prs-contact-kicker {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  grid-column: 1 / -1;
   color: var(--accent);
   font: 800 var(--step-xs)/1 var(--font-nav);
   text-transform: uppercase;
 }
 
 .prs-contact-title {
-  max-width: none;
   margin: 0;
-  font-size: clamp(3.4rem, 12vw, 9.5rem);
-  line-height: 0.75;
-  letter-spacing: -0.095em;
+  font: 800 clamp(2rem, 3.5vw, 3.5rem)/1 var(--font-nav);
+  letter-spacing: -0.065em;
+  text-transform: uppercase;
 }
 
 .prs-contact-intro {
   max-width: 46rem;
   margin: 0;
-  font: 600 var(--step-lg)/1.25 var(--font-body);
+  font: 600 var(--step-sm)/1.45 var(--font-body);
 }
 
 .prs-contact-layout {
@@ -66,20 +63,20 @@
 .prs-contact-aside {
   display: flex;
   min-width: 0;
-  padding: clamp(1.1rem, 2.5vw, 2rem);
+  padding: 1.25rem;
   flex-direction: column;
   background: var(--ink);
   color: var(--paper);
 }
 
 .prs-contact-aside-index {
-  margin-bottom: clamp(3rem, 10vw, 8rem);
+  margin-bottom: 1.5rem;
   font: 800 var(--step-2xs)/1 var(--font-nav);
 }
 
 .prs-contact-details {
   display: grid;
-  gap: 1.4rem;
+  gap: 1rem;
   margin: auto 0 0;
 }
 
@@ -143,11 +140,11 @@
 
 .prs-contact-field {
   display: grid;
-  grid-template-columns: 2.25rem minmax(0, 1fr);
-  gap: 0.65rem;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  gap: 0.5rem;
   min-width: 0;
   margin: 0;
-  padding: clamp(0.9rem, 2vw, 1.35rem);
+  padding: 0.75rem;
   border-bottom: var(--rule);
 }
 
@@ -169,7 +166,7 @@
 
 .prs-contact-field-body {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.35rem;
   min-width: 0;
 }
 
@@ -188,7 +185,7 @@
 }
 
 .prs-contact-form textarea {
-  min-height: 9rem;
+  min-height: 6rem;
   resize: vertical;
 }
 
@@ -204,8 +201,8 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  min-height: 4rem;
-  padding: 1rem 1.35rem;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
   border: 0 !important;
   background: var(--ink) !important;
   color: var(--paper) !important;
@@ -221,6 +218,23 @@
   position: absolute;
   left: -9999px;
   visibility: hidden;
+}
+
+@media (max-width: 980px) {
+  .prs-contact-hero,
+  .prs-contact-layout { grid-template-columns: minmax(12rem, 0.65fr) minmax(0, 1.35fr); }
+}
+
+@media (max-width: 768px) {
+  .prs-contact-hero,
+  .prs-contact-layout,
+  .prs-contact-form { grid-template-columns: minmax(0, 1fr); }
+  .prs-contact-title { font-size: clamp(2rem, 7vw, 3rem); }
+  .prs-contact-field,
+  .prs-contact-field:nth-of-type(odd) { grid-column: 1; border-right: 0; }
+  .prs-contact-form input,
+  .prs-contact-form select { min-height: 2.75rem; font-size: 1rem; }
+  .prs-contact-form textarea { font-size: 1rem; }
 }
 
 .site-footer {

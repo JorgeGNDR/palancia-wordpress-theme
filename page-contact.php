@@ -17,7 +17,6 @@ $contact_email  = sanitize_email( get_option( 'admin_email' ) );
   <div class="prs-contact-inner">
     <header class="prs-contact-hero">
       <div class="prs-contact-kicker">
-        <span>PALANCIA / 01</span>
         <span><?php echo esc_html__( 'Atención al cliente', 'palancia-shop' ); ?></span>
       </div>
       <h1 class="prs-contact-title"><?php echo esc_html__( 'Hablemos.', 'palancia-shop' ); ?></h1>
@@ -112,7 +111,7 @@ $contact_email  = sanitize_email( get_option( 'admin_email' ) );
             <span class="prs-contact-field-index">05</span>
             <span class="prs-contact-field-body">
               <span class="prs-contact-label"><?php echo esc_html__( 'Mensaje', 'palancia-shop' ); ?></span>
-              <textarea id="prs-contact-message" name="message" rows="7" required></textarea>
+              <textarea id="prs-contact-message" name="message" rows="4" required></textarea>
             </span>
           </label>
 
