@@ -1439,6 +1439,17 @@ body.product-sort-open { overflow: hidden; }
   list-style: none;
 }
 
+.footer-language summary {
+  cursor: pointer;
+  font: inherit;
+}
+.footer-language details > p {
+  max-width: 28rem;
+  margin: 0.75rem 0 0 auto;
+  font: 400 0.875rem/1.5 var(--font-body);
+  text-transform: none;
+}
+
 /* Responsive */
 @media (max-width: 1240px) {
   .home-products-grid { grid-template-columns: repeat(var(--grid-tablet-columns), minmax(0, 1fr)); }

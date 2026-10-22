@@ -26,7 +26,7 @@ $contact_email  = sanitize_email( get_option( 'admin_email' ) );
 
     <div class="prs-contact-layout">
       <aside class="prs-contact-aside">
-        <div class="prs-contact-aside-index" aria-hidden="true">CONTACT / SUPPORT</div>
+        <div class="prs-contact-aside-index" aria-hidden="true">CONTACTO / AYUDA</div>
 
         <dl class="prs-contact-details">
           <div>
@@ -39,7 +39,7 @@ $contact_email  = sanitize_email( get_option( 'admin_email' ) );
           </div>
           <?php if ( $contact_email ) : ?>
             <div>
-              <dt>Email</dt>
+              <dt><?php esc_html_e( 'Correo electrónico', 'palancia-shop' ); ?></dt>
               <dd><a href="mailto:<?php echo esc_attr( $contact_email ); ?>"><?php echo esc_html( $contact_email ); ?></a></dd>
             </div>
           <?php endif; ?>
@@ -81,7 +81,7 @@ $contact_email  = sanitize_email( get_option( 'admin_email' ) );
           <label class="prs-contact-field" for="prs-contact-email">
             <span class="prs-contact-field-index">02</span>
             <span class="prs-contact-field-body">
-              <span class="prs-contact-label">Email</span>
+              <span class="prs-contact-label"><?php esc_html_e( 'Correo electrónico', 'palancia-shop' ); ?></span>
               <input id="prs-contact-email" type="email" name="email" autocomplete="email" inputmode="email" required>
             </span>
           </label>

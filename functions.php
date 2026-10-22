@@ -700,7 +700,7 @@ function prs_render_product_card( $post_id ) {
     $title_attr = the_title_attribute( [ 'echo' => false, 'post' => $post_id ] );
     $product    = function_exists( 'wc_get_product' ) ? wc_get_product( $post_id ) : false;
     $price_html = $product ? $product->get_price_html() : '';
-    $stock_text = $product && ! $product->is_in_stock() ? __( 'Sold out', 'palancia-shop' ) : '';
+    $stock_text = $product && ! $product->is_in_stock() ? __( 'Agotado', 'palancia-shop' ) : '';
 
     $html  = '<a href="' . esc_url( $url ) . '" class="product-item">';
     $html .= '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title_attr ) . '">';
@@ -1086,10 +1086,10 @@ function prs_render_custom_cart() {
 			sprintf(
 				'<a href="%s" class="pal-cart-remove button" aria-label="%s" data-product_id="%s" data-product_sku="%s">%s</a>',
 				esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
-				esc_attr( sprintf( __( 'Remove %s from cart', 'woocommerce' ), wp_strip_all_tags( $product_name ) ) ),
+				esc_attr( sprintf( __( 'Eliminar %s del carrito', 'palancia-shop' ), wp_strip_all_tags( $product_name ) ) ),
 				esc_attr( $product_id ),
 				esc_attr( $product->get_sku() ),
-				esc_html__( 'Remove', 'woocommerce' )
+				esc_html__( 'Eliminar', 'palancia-shop' )
 			),
 			$cart_item_key
 		);
@@ -1137,14 +1137,14 @@ function prs_render_custom_cart() {
 	if ( $requires_terms ) {
 		echo '<label class="pal-cart-terms">';
 		echo '<input type="checkbox" id="pal-cart-terms">';
-		echo '<span>' . esc_html__( 'I agree to the', 'woocommerce' ) . ' <a href="' . esc_url( $terms_url ) . '" target="_blank" rel="noopener">' . esc_html__( 'terms and conditions', 'woocommerce' ) . '</a></span>';
+		echo '<span>' . esc_html__( 'Acepto los', 'palancia-shop' ) . ' <a href="' . esc_url( $terms_url ) . '" target="_blank" rel="noopener">' . esc_html__( 'términos y condiciones', 'palancia-shop' ) . '</a></span>';
 		echo '</label>';
 	}
 
 	$checkout_classes = 'button pal-cart-checkout' . ( $requires_terms ? ' is-disabled' : '' );
 	$checkout_aria    = $requires_terms ? 'true' : 'false';
-	echo '<a href="' . esc_url( wc_get_checkout_url() ) . '" class="' . esc_attr( $checkout_classes ) . '" aria-disabled="' . esc_attr( $checkout_aria ) . '">' . esc_html__( 'Checkout', 'woocommerce' ) . '</a>';
-	echo '<div class="pal-cart-note"><span>' . esc_html__( 'Limited to 1 per size / item', 'woocommerce' ) . '</span><span class="note-secondary">' . esc_html__( '* Some exceptions apply', 'woocommerce' ) . '</span></div>';
+	echo '<a href="' . esc_url( wc_get_checkout_url() ) . '" class="' . esc_attr( $checkout_classes ) . '" aria-disabled="' . esc_attr( $checkout_aria ) . '">' . esc_html__( 'Finalizar compra', 'palancia-shop' ) . '</a>';
+	echo '<div class="pal-cart-note"><span>' . esc_html__( 'Máximo 1 unidad por talla o artículo.', 'palancia-shop' ) . '</span> <span class="note-secondary">' . esc_html__( 'Pueden aplicarse excepciones.', 'palancia-shop' ) . '</span></div>';
 	echo '</div>'; // pal-cart-summary
 
 	wc_enqueue_js(
