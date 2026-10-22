@@ -1740,7 +1740,7 @@ body.product-sort-open { overflow: hidden; }
 }
 
 @media (max-width: 420px) {
-  .home-products-grid { gap: 0.42rem; }
+  .home-products-grid { row-gap: 0.42rem; }
   .header-cart a { grid-template-columns: auto 1.2rem; min-height: 2rem; padding: 0 0.38rem; }
   .cart-icon { width: 1.15rem; height: 1.15rem; }
 }
