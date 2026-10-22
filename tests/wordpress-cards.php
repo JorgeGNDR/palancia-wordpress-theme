@@ -25,7 +25,7 @@ if ($xpath->query('//a[contains(@class,"ajax_add_to_cart") and @data-product_id=
 $action=$xpath->query('//a[contains(@class,"ajax_add_to_cart")]')->item(0)->getAttribute('href');
 if ($action !== add_query_arg('add-to-cart',$a,get_permalink($a))) WP_CLI::error('Cart fallback must use a frontend URL, including in AJAX responses');
 $size_text=$xpath->query('//span[contains(@class,"product-size")]')->item(0)?->textContent ?? '';
-if (!str_contains(strtoupper($size_text),'XL')) WP_CLI::error('Size must come from product attribute');
+if (strtoupper(trim($size_text)) !== 'XL') WP_CLI::error('Show the product size value without a label');
 if (str_contains(prs_render_product_card($b),'ajax_add_to_cart')) WP_CLI::error('Sold-out product cannot add directly');
 $existing=wc_get_product_id_by_sku('palancia-test-variable');
 $variable=$existing ? wc_get_product($existing) : new WC_Product_Variable();

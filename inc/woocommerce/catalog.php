@@ -110,16 +110,17 @@ function prs_render_product_card( $post_id ) {
     $size = ! is_wp_error( $size_terms ) && $size_terms ? implode( ', ', $size_terms ) : $product->get_attribute( 'talla' );
     $price_html = $product->get_price_html();
 
-    // The photo, details link and cart action are siblings, never nested links.
+    // Photo, details and cart are independent links, with no interactive nesting.
     $html = '<article class="product-item" data-product-id="' . esc_attr( $post_id ) . '">';
     $html .= '<a class="product-image-link" href="' . esc_url( $url ) . '"><img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title ) . '"></a>';
     $html .= '<div class="product-overlay">';
+    $html .= '<div class="product-card-info">';
     $html .= '<a class="product-title" href="' . esc_url( $url ) . '" title="' . esc_attr( $title ) . '">' . esc_html( $title ) . '</a>';
     $html .= '<div class="product-card-meta">';
     if ( $price_html ) $html .= '<span class="product-price">' . wp_kses_post( $price_html ) . '</span>';
-    if ( $size ) $html .= '<span class="product-size">' . esc_html__( 'Talla:', 'palancia-shop' ) . ' ' . esc_html( $size ) . '</span>';
+    if ( $size ) $html .= '<span class="product-size">' . esc_html( $size ) . '</span>';
     if ( ! $product->is_in_stock() ) $html .= '<span class="product-stock">' . esc_html__( 'Agotado', 'palancia-shop' ) . '</span>';
-    $html .= '</div>';
+    $html .= '</div></div>';
     $html .= '<div class="product-card-action">' . prs_product_card_cart_action( $product ) . '</div>';
     $html .= '</div></article>';
     return $html;

@@ -21,6 +21,12 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.12 - 2026-10-22
+
+- Tarjetas con textos centrados y datos separados de la acción de compra, situada abajo.
+- Compra como texto, sin caja ni fondo negro, conservando la zona de interacción de 44 px.
+- Fondo más ligero para apreciar la foto desenfocada y talla mostrada solo como valor, sin «TALLA:».
+
 ### 2.0.0-beta.11 - 2026-10-22
 
 - Tarjetas de escritorio con imagen desenfocada y título, precio, talla y acción de compra al pasar el ratón o acceder con teclado.
