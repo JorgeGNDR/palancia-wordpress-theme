@@ -90,10 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('click', (e) => {
       if (
-        !mobileMenu.contains(e.target)
+        mobileMenu.classList.contains('open')
+        && !mobileMenu.contains(e.target)
         && !mobileBtn.contains(e.target)
         && !filterModal?.contains(e.target)
         && !sortModal?.contains(e.target)
+        && !e.target.closest('.product-sort-trigger')
       ) {
         setMobileMenuOpen(false);
       }
