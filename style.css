@@ -352,6 +352,7 @@ body.product-sort-open { overflow: hidden; }
   color: var(--ink);
   font: 600 var(--step-xs)/1.3 var(--font-body);
   text-align: left;
+  text-transform: uppercase;
   cursor: pointer;
 }
 .product-sort-option:hover,
