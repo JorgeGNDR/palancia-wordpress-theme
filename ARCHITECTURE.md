@@ -35,7 +35,7 @@ PHP entrega el estado inicial y los enlaces reales. JavaScript no deduce la cate
 
 `shop-panels.js` declara menú, filtros y ordenación. Escucha `catalog:committed` para cerrar la interfaz tras una aplicación válida. En un cambio entre móvil y escritorio limpia los paneles. Mide el encabezado mediante `ResizeObserver` para reservar su altura real.
 
-`product-gallery.js` conserva sus gestos y renderizado de imágenes, pero delega el ciclo de vida del visor en el controlador compartido. Las imágenes se abren también con teclado.
+`product-gallery.js` usa un único visor para móvil y escritorio, registrado una sola vez en el controlador compartido. PHP entrega la URL de la imagen original; el visor la solicita al abrir la foto. Flechas, teclado y deslizamiento cambian de foto y reinician el zoom. Un clic activa/desactiva la ampliación; el ratón o el arrastre táctil desplazan el detalle con límites calculados a partir de las dimensiones reales de la imagen y el área disponible. Las diapositivas ocultas no reciben clics ni foco. Al cerrar se devuelve el foco a la foto seleccionada.
 
 ## Estilos
 
@@ -60,9 +60,12 @@ wp eval-file /ruta/al/tema/tests/wordpress-bootstrap.php
 wp eval-file /ruta/al/tema/tests/wordpress-bootstrap.php --skip-plugins=woocommerce
 wp eval-file /ruta/al/tema/tests/wordpress.php
 wp eval-file /ruta/al/tema/tests/wordpress-cart.php
+wp eval-file /ruta/al/tema/tests/wordpress-gallery.php
 PALANCIA_RENDERED_GRID=/tmp/palancia-wp-integration/rendered-grid.html npm test
 ```
 
 Se ha utilizado PHP 8.5.12, WordPress 7.1.3, WooCommerce 11.2.1 y SQLite Database Integration para comprobar carga, personalizador, renderizado y consultas. También se ha probado la carga con un tema hijo y sin WooCommerce. La prueba de carrito usa productos ficticios y genera `cart-preview.html` para revisión visual local en el puerto 8765; se ha comprobado a 1280 y 375 px, incluyendo el control de términos. Las pruebas CSS verifican que los recursos locales existen en sus rutas relativas. Falta verificar el layout y los métodos de pago concretos en el entorno de staging de la tienda, con su base de datos y plugins; las pruebas no crean pedidos ni realizan pagos.
+
+La prueba de galería añade dos imágenes de muestra a un producto ficticio y genera `gallery-preview.html` para el mismo servidor local. Se ha comprobado el visor a 1280 y 375 px, la carga del original, la navegación, el zoom y el cierre. Las pruebas de DOM cubren además el seguimiento del puntero, sus límites y los gestos táctiles.
 
 Referencias de diseño de la integración: [carga de funciones del tema](https://developer.wordpress.org/themes/classic-themes/basics/theme-functions/), [rutas de archivos del tema](https://developer.wordpress.org/themes/classic-themes/basics/linking-theme-files-directories/), [consulta de productos WooCommerce](https://github.com/woocommerce/woocommerce/wiki/wc_get_products-and-WC_Product_Query).

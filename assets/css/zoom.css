@@ -1,138 +1,71 @@
-/* Zoom */
+/* Product viewer: same dialog and controls on desktop and mobile. */
 .prs-zoom-overlay {
   position: fixed;
   inset: 0;
   z-index: calc(var(--layer-overlay) + var(--panel-depth, 0));
-  display: block;
-  padding: 0;
+  display: none;
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding: max(3.5rem, env(safe-area-inset-top)) 0 max(0.75rem, env(safe-area-inset-bottom));
   overflow: hidden;
   background: var(--paper);
-  cursor: zoom-out;
 }
-
-.prs-zoom-inner {
-  display: grid;
-  place-items: center;
+.prs-zoom-overlay.is-open { display: grid; }
+.prs-zoom-stage {
+  display: block;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  touch-action: none;
-}
-
-.prs-zoom-overlay.is-strip {
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-
-.prs-zoom-overlay.is-single {
-  display: grid;
-  place-items: center;
-  touch-action: none;
-}
-
-.prs-zoom-single-frame {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100svh;
-  overflow: hidden;
+  min-height: 0;
   padding: 0;
-  touch-action: none;
-}
-
-.prs-zoom-single-frame img {
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  mix-blend-mode: multiply;
-  transform-origin: center;
-  will-change: transform;
-  touch-action: none;
-}
-
-.prs-zoom-single-frame.is-entering-next {
-  animation: prs-zoom-next 180ms ease-out;
-}
-
-.prs-zoom-single-frame.is-entering-previous {
-  animation: prs-zoom-previous 180ms ease-out;
-}
-
-@keyframes prs-zoom-next {
-  from { opacity: 0; transform: translateX(1.5rem); }
-}
-
-@keyframes prs-zoom-previous {
-  from { opacity: 0; transform: translateX(-1.5rem); }
-}
-
-.prs-zoom-counter {
-  position: fixed;
-  right: 0;
-  bottom: max(0.8rem, env(safe-area-inset-bottom));
-  left: 0;
-  z-index: 1;
-  width: max-content;
-  margin: auto;
-  padding: 0.35rem 0.5rem;
-  background: var(--paper);
-  color: var(--ink);
-  font: 800 var(--step-2xs)/1 var(--font-nav);
-}
-
-.prs-zoom-strip {
-  display: grid;
-  gap: clamp(1.5rem, 3vw, 3rem);
-  width: min(100%, 73.75rem);
-  min-height: 100%;
-  margin: 0 auto;
-  padding: clamp(1rem, 2vw, 2rem) var(--side-padding);
-  align-content: start;
-}
-
-.prs-zoom-strip-item {
-  display: grid;
-  place-items: center;
-  min-height: 100svh;
+  border: 0;
+  border-radius: 0;
   overflow: hidden;
-  touch-action: pan-y;
+  background: var(--paper);
+  cursor: zoom-in;
+  touch-action: none;
 }
-
-.prs-zoom-strip-item img {
+.prs-zoom-stage img {
+  display: block;
   width: 100%;
-  max-height: none;
+  height: 100%;
+  max-width: none;
   object-fit: contain;
   mix-blend-mode: multiply;
+  transform: scale(1);
   transform-origin: center;
-  will-change: transform;
-  touch-action: none;
+  pointer-events: none;
+  user-select: none;
 }
-
-.prs-zoom-inner img {
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
-  margin: 0;
-  object-fit: contain;
-  transform-origin: center;
-  will-change: transform;
-  touch-action: none;
+.prs-zoom-stage.is-zoomed { cursor: zoom-out; }
+.prs-zoom-stage.is-zoomed img {
+  transform: translate(var(--zoom-x, 0px), var(--zoom-y, 0px)) scale(var(--zoom-scale));
 }
-
-.prs-zoom-close {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  min-width: 2.625rem;
-  min-height: 2.625rem;
+.prs-zoom-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding-top: 0.75rem;
+  color: var(--ink);
+  font: 800 var(--step-xs)/1 var(--font-nav);
+}
+.prs-zoom-navigation button {
+  width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
   border: var(--rule);
   border-radius: 0;
-  background: var(--ink);
-  color: var(--paper);
-  font-size: 1.5rem;
-  line-height: 1;
-  z-index: 1;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.prs-zoom-navigation button:hover { background: var(--ink); color: var(--paper); }
+.prs-zoom-navigation button[hidden] { display: none; }
+.prs-zoom-counter { min-width: 3rem; text-align: center; }
+.product-filter-close.prs-zoom-close {
+  top: env(safe-area-inset-top, 0px);
+  right: env(safe-area-inset-right, 0px);
+  min-height: 2.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
 }

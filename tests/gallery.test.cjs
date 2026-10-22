@@ -2,25 +2,96 @@ const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const {JSDOM} = require('jsdom');
-for (const mobile of [false,true]) test(`gallery lifecycle and focus on ${mobile?'mobile':'desktop'}`,()=>{
-  const dom=new JSDOM('<!doctype html><html><body><header>Header</header><main><div><div class="prs-product-gallery"><div class="prs-product-slide is-active"><img src="jacket.png" alt="Chaqueta"></div></div></div></main></body></html>',{runScripts:'outside-only'});
+function createGallery(count = 3) {
+  const slides = Array.from({length:count}, (_,i)=>`<div class="prs-product-slide"><img src="jacket-${i}.png" data-full-src="full-${i}.png" alt="Chaqueta ${i+1}"></div>`).join('');
+  const dom=new JSDOM(`<!doctype html><html><body><header>Header</header><main><div><div class="prs-product-gallery">${slides}</div>${Array.from({length:count},()=>'<button class="prs-product-dot">Foto</button>').join('')}</div></main></body></html>`,{runScripts:'outside-only'});
   const w=dom.window,d=w.document;
-  w.matchMedia=()=>({matches:mobile});
-  w.HTMLElement.prototype.getClientRects=()=>[{}];
+  w.HTMLElement.prototype.getClientRects=function(){return this.hidden || this.closest('[aria-hidden="true"]') ? [] : [{}]};
   Object.defineProperty(w.HTMLElement.prototype,'inert',{get(){return this.hasAttribute('inert')},set(v){this.toggleAttribute('inert',v)}});
   for(const script of ['panels','product-gallery'])w.eval(fs.readFileSync(`assets/js/${script}.js`,'utf8'));
   d.dispatchEvent(new w.Event('DOMContentLoaded'));
-  const image=d.querySelector('.prs-product-gallery img');image.focus();
-  image.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
-  assert(d.querySelector('[role="dialog"]'));assert(d.querySelector('main').inert);
+  return {dom,w,d};
+}
+test('gallery opens the selected photo, navigates, resets zoom and restores focus',()=>{
+  const {dom,w,d}=createGallery();
+  d.querySelectorAll('.prs-product-dot')[1].click();
+  const source=d.querySelectorAll('.prs-product-gallery img')[1];source.focus();
+  assert.equal(source.tabIndex,0);assert.equal(d.querySelector('.prs-product-gallery img').tabIndex,-1);
+  source.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
+  const dialog=d.querySelector('[role="dialog"]'),stage=dialog.querySelector('.prs-zoom-stage');
+  assert(dialog.classList.contains('is-open'));assert(d.querySelector('main').inert);
   assert(d.body.classList.contains('prs-panel-open'));
   assert(d.activeElement.classList.contains('prs-zoom-close'));
+  assert.equal(stage.querySelector('img').getAttribute('src'),'full-1.png');
+  assert.equal(dialog.querySelector('.prs-zoom-counter').textContent,'2 / 3');
+  stage.click();assert.equal(stage.getAttribute('aria-pressed'),'true');
+  dialog.querySelector('.prs-zoom-next').click();
+  assert.equal(stage.getAttribute('aria-pressed'),'false');
+  assert.equal(stage.querySelector('img').getAttribute('src'),'full-2.png');
+  dialog.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));
+  assert.equal(dialog.querySelector('.prs-zoom-counter').textContent,'1 / 3');
+  dialog.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowLeft',bubbles:true}));
+  assert.equal(dialog.querySelector('.prs-zoom-counter').textContent,'3 / 3');
   d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
-  assert(!d.querySelector('[role="dialog"]'));assert(!d.querySelector('main').inert);
-  assert.equal(d.activeElement,image);
-  image.click();d.querySelector('.prs-zoom-close').click();
+  assert.equal(dialog.getAttribute('aria-hidden'),'true');assert(!d.querySelector('main').inert);
+  const selected=d.querySelector('.prs-product-slide.is-active img');
+  assert.equal(d.activeElement,selected);
+  selected.click();dialog.querySelector('.prs-zoom-close').click();
+  selected.click();dialog.querySelector('.prs-zoom-close').click();
+  assert.equal(d.querySelectorAll('[role="dialog"]').length,1);
   assert(!d.body.classList.contains('prs-zoom-open'));assert(!d.body.classList.contains('prs-panel-open'));
   dom.window.close();
+});
+function pointer(w,node,type,x,y,pointerType='mouse') {
+  const event=new w.Event(type,{bubbles:true});
+  Object.assign(event,{pointerId:1,isPrimary:true,button:0,pointerType,clientX:x,clientY:y});
+  node.dispatchEvent(event);
+}
+test('zoom follows the pointer, stays bounded, toggles off and resets on resize',()=>{
+  const {dom,w,d}=createGallery();d.querySelector('.prs-product-gallery img').click();
+  const stage=d.querySelector('.prs-zoom-stage'),image=stage.querySelector('img');
+  stage.getBoundingClientRect=()=>({left:10,top:20,width:200,height:400});
+  Object.defineProperties(image,{naturalWidth:{value:400},naturalHeight:{value:800}});
+  stage.dispatchEvent(new w.MouseEvent('click',{bubbles:true,detail:1,clientX:60,clientY:120}));
+  assert.equal(stage.getAttribute('aria-pressed'),'true');assert.equal(image.style.getPropertyValue('--zoom-x'),'75px');assert.equal(image.style.getPropertyValue('--zoom-y'),'150px');
+  pointer(w,stage,'pointermove',160,320);
+  assert.equal(image.style.getPropertyValue('--zoom-x'),'-75px');assert.equal(image.style.getPropertyValue('--zoom-y'),'-150px');
+  pointer(w,stage,'pointermove',400,-10);assert.equal(image.style.getPropertyValue('--zoom-x'),'-150px');assert.equal(image.style.getPropertyValue('--zoom-y'),'300px');
+  stage.click();assert.equal(stage.getAttribute('aria-pressed'),'false');assert.equal(image.style.getPropertyValue('--zoom-x'),'');
+  stage.click();w.dispatchEvent(new w.Event('resize'));assert.equal(stage.getAttribute('aria-pressed'),'false');
+  dom.window.close();
+});
+test('portrait photo panning excludes letterboxing and never invents horizontal overflow',()=>{
+  const {dom,w,d}=createGallery();d.querySelector('.prs-product-gallery img').click();
+  const stage=d.querySelector('.prs-zoom-stage'),image=stage.querySelector('img');
+  stage.getBoundingClientRect=()=>({left:0,top:0,width:1200,height:600});
+  Object.defineProperties(image,{naturalWidth:{value:400},naturalHeight:{value:800}});
+  stage.click();pointer(w,stage,'pointermove',1200,600);
+  assert.equal(image.style.getPropertyValue('--zoom-x'),'0px');
+  assert.equal(image.style.getPropertyValue('--zoom-y'),'-450px');dom.window.close();
+});
+test('touch swipe changes photos without toggling zoom; zoomed drag keeps the photo',()=>{
+  const {dom,w,d}=createGallery();d.querySelector('.prs-product-gallery img').click();
+  const stage=d.querySelector('.prs-zoom-stage'),counter=d.querySelector('.prs-zoom-counter');
+  stage.setPointerCapture=()=>{};
+  stage.getBoundingClientRect=()=>({left:0,top:0,width:300,height:400});
+  pointer(w,stage,'pointerdown',250,150,'touch');pointer(w,stage,'pointermove',80,150,'touch');pointer(w,stage,'pointerup',80,150,'touch');
+  stage.dispatchEvent(new w.MouseEvent('click',{bubbles:true,detail:1}));
+  assert.equal(counter.textContent,'2 / 3');assert.equal(stage.getAttribute('aria-pressed'),'false');
+  pointer(w,stage,'pointerdown',100,100,'touch');pointer(w,stage,'pointerup',100,100,'touch');
+  stage.dispatchEvent(new w.MouseEvent('click',{bubbles:true,detail:1,clientX:100,clientY:100}));
+  assert.equal(stage.getAttribute('aria-pressed'),'true');
+  pointer(w,stage,'pointerdown',250,150,'touch');pointer(w,stage,'pointermove',80,150,'touch');pointer(w,stage,'pointerup',80,150,'touch');
+  stage.dispatchEvent(new w.MouseEvent('click',{bubbles:true,detail:1}));
+  assert.equal(counter.textContent,'2 / 3');assert.equal(stage.getAttribute('aria-pressed'),'true');
+  dom.window.close();
+});
+test('single-image viewer hides navigation and closes with the shared menu control',()=>{
+  const {dom,d}=createGallery(1);d.querySelector('.prs-product-gallery img').click();
+  assert(d.querySelector('.prs-zoom-prev').hidden);assert(d.querySelector('.prs-zoom-next').hidden);
+  const close=d.querySelector('.prs-zoom-close');assert(close.classList.contains('product-filter-close'));
+  assert.equal(close.textContent,'Cerrar');close.click();
+  assert.equal(d.querySelector('[role="dialog"]').getAttribute('aria-hidden'),'true');dom.window.close();
 });
 test('real WordPress template supports both desktop and mobile panel triggers',{skip:!process.env.PALANCIA_RENDERED_GRID},()=>{
   const html=fs.readFileSync(process.env.PALANCIA_RENDERED_GRID,'utf8');

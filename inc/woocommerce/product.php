@@ -114,13 +114,13 @@ function prs_custom_product_gallery() {
 
     foreach ($image_ids as $i => $id) {
         echo '<div class="prs-product-slide '.($i === 0 ? 'is-active' : '').'" data-index="'.$i.'">';
-        echo wp_get_attachment_image($id, 'large');
+        echo wp_get_attachment_image($id, 'large', false, [ 'data-full-src' => wp_get_attachment_image_url($id, 'full') ]);
         echo '</div>';
     }
 
     if (count($image_ids) > 1) {
-        echo '<button class="prs-product-nav prs-prev" type="button">&lsaquo;</button>';
-        echo '<button class="prs-product-nav prs-next" type="button">&rsaquo;</button>';
+        echo '<button class="prs-product-nav prs-prev" type="button" aria-label="' . esc_attr__('Imagen anterior', 'palancia-shop') . '">&lsaquo;</button>';
+        echo '<button class="prs-product-nav prs-next" type="button" aria-label="' . esc_attr__('Imagen siguiente', 'palancia-shop') . '">&rsaquo;</button>';
     }
 
     echo '</div>';

@@ -22,12 +22,12 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.22s ease, transform 0.18s ease;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
 }
 
-.prs-product-slide.is-active { opacity: 1; }
-.prs-product-slide.is-swipe-left { transform: translateX(-1.125rem); opacity: 0; }
-.prs-product-slide.is-swipe-right { transform: translateX(1.125rem); opacity: 0; }
+.prs-product-slide.is-active { opacity: 1; visibility: visible; pointer-events: auto; }
 
 .prs-product-slide img {
   width: 100%;

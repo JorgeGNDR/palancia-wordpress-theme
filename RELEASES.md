@@ -21,6 +21,14 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.7 - 2026-10-22
+
+- Visor de producto a pantalla completa con una foto, flechas, contador y cierre con el estilo de filtros.
+- Zoom por clic que sigue al ratón, con desplazamiento limitado al tamaño real de la foto; otro clic lo desactiva.
+- Navegación con teclado y deslizamiento táctil, arrastre de detalle en móvil y reinicio del zoom al cambiar de foto.
+- Imágenes originales para ampliación y diapositivas inactivas excluidas del clic y del teclado.
+- Pruebas de navegación, zoom, gestos, límites y retorno del foco, más integración de galería en WordPress.
+
 ### 2.0.0-beta.6 - 2026-10-22
 
 - Rutas de los iconos de carrito y menú corregidas tras separar los estilos en módulos.
