@@ -8,7 +8,7 @@
 get_header();
 ?>
 
-<section id="primary" class="page-content">
+<section id="primary" class="page-content<?php echo function_exists( 'is_checkout' ) && is_checkout() ? ' prs-checkout-page' : ''; ?>">
   <div class="container">
     <?php
     if ( have_posts() ) {

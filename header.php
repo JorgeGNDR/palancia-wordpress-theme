@@ -13,7 +13,7 @@
 <?php wp_body_open(); ?>
 <header class="site-header">
   <?php if ( is_front_page() || is_tax( 'product_cat' ) ) : ?>
-    <button id="mobile-filter-toggle" class="mobile-filter-btn" aria-label="Filtrar categorías">
+    <button id="mobile-filter-toggle" class="mobile-filter-btn" type="button" aria-label="Abrir menú de categorías" aria-expanded="false" aria-controls="mobile-filter-menu">
       <span class="mobile-filter-icon" aria-hidden="true"></span>
     </button>
   <?php endif; ?>
