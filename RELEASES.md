@@ -21,6 +21,11 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.13 - 2026-10-22
+
+- Tipografía de las tarjetas de escritorio ligeramente más pequeña.
+- Título, precio y talla centrados respecto a la foto completa; compra situada a 2 px del borde inferior manteniendo su zona de clic de 44 px.
+
 ### 2.0.0-beta.12 - 2026-10-22
 
 - Tarjetas con textos centrados y datos separados de la acción de compra, situada abajo.
