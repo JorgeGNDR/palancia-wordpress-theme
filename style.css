@@ -372,7 +372,8 @@ body.product-sort-open { overflow: hidden; }
   grid-column: 2;
   display: grid;
   grid-template-columns: repeat(var(--grid-desktop-columns), minmax(0, 1fr));
-  gap: 1.5rem clamp(0.65rem, 1vw, 1rem);
+  row-gap: 1.5rem;
+  column-gap: 0;
   align-items: start;
 }
 
@@ -1614,7 +1615,8 @@ body.product-sort-open { overflow: hidden; }
   .home-products-grid {
     display: grid;
     grid-template-columns: repeat(var(--grid-mobile-columns), minmax(0, 1fr));
-    gap: 1.25rem 0.75rem;
+    row-gap: 1.25rem;
+    column-gap: 0;
   }
 
   .product-overlay {
