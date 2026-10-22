@@ -338,10 +338,11 @@ body.product-sort-open { overflow: hidden; }
 .product-sort-option[aria-pressed="true"] { color: var(--paper); background: var(--ink); }
 @media (max-width: 768px) {
   .mobile-filter-menu .product-sort-trigger {
-    text-align: left;
-    padding: 0.65rem 0;
-    font-size: clamp(1rem, 1rem + 4.5vw, 2.2rem);
-    line-height: 0.92;
+    text-align: center;
+    margin-top: 0.4rem;
+    padding: 0.45rem 0;
+    font-size: clamp(0.85rem, 2.5dvh, 1.15rem);
+    line-height: 1.1;
   }
 }
 
@@ -1508,13 +1509,14 @@ body.product-sort-open { overflow: hidden; }
 
   .mobile-filter-menu {
     position: fixed;
-    inset: 0;
+    inset: calc(var(--adminbar-height) + var(--header-height)) 0 0;
+    height: calc(100dvh - var(--adminbar-height) - var(--header-height));
     z-index: 1500;
     display: none;
     align-items: stretch;
     justify-content: flex-start;
     overflow-y: auto;
-    padding: calc(var(--adminbar-height) + 5.2rem) 1rem 2rem;
+    padding: 0.5rem 1rem max(0.5rem, env(safe-area-inset-bottom));
     background: var(--paper);
   }
 
@@ -1525,26 +1527,38 @@ body.product-sort-open { overflow: hidden; }
 
   .mobile-filter-menu ul {
     display: grid;
+    grid-auto-rows: minmax(0, 1fr);
+    flex: 1;
+    min-height: 0;
     gap: 0;
     width: 100%;
   }
 
   .mobile-filter-menu a {
-    padding: 0.65rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0;
     border-bottom: var(--rule);
-    font-size: clamp(1rem, 1rem + 4.5vw, 2.2rem);
-    line-height: 0.92;
-    text-align: left;
+    font-size: clamp(0.85rem, 2.5dvh, 1.15rem);
+    line-height: 1.1;
+    text-align: center;
   }
 
+  .mobile-filter-menu a.is-active,
+  .mobile-filter-menu a:hover { transform: none; }
+
+  .mobile-filter-menu > button { flex-shrink: 0; }
+
   .mobile-filter-menu .product-filter-trigger {
-    margin: 1.4rem 0 0;
-    padding: 0.65rem 0;
+    margin: 0.5rem 0 0;
+    padding: 0.45rem 0;
     border-top: var(--rule);
     border-bottom: var(--rule);
-    font-size: clamp(1rem, 1rem + 4.5vw, 2.2rem);
-    line-height: 0.92;
-    text-align: left;
+    font-size: clamp(0.85rem, 2.5dvh, 1.15rem);
+    line-height: 1.1;
+    text-align: center;
   }
 
   .home-products-grid {
