@@ -1514,6 +1514,9 @@ button { cursor: pointer; }
 
   .mobile-filter-menu.open { display: flex; flex-direction: column; }
 
+  /* El encabezado permanece accesible por encima del menú desplegado. */
+  .mobile-shop-menu-open .site-header { z-index: 1600; }
+
   .mobile-filter-menu ul {
     display: grid;
     gap: 0;

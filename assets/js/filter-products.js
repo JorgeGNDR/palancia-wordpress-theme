@@ -27,6 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const mobileBtn = document.getElementById('mobile-filter-toggle');
   const mobileMenu = document.getElementById('mobile-filter-menu');
+  const setMobileMenuOpen = (open) => {
+    if (!mobileMenu || !mobileBtn) return;
+    mobileMenu.classList.toggle('open', open);
+    document.body.classList.toggle('mobile-shop-menu-open', open);
+    mobileBtn.setAttribute('aria-expanded', String(open));
+    mobileBtn.setAttribute('aria-label', open ? 'Cerrar menú de categorías' : 'Abrir menú de categorías');
+    if (!open) closeSortMenus();
+  };
   let resetDraftFilters = () => {};
 
   const openFilterModal = () => {
@@ -49,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (mobileBtn && mobileMenu) {
     mobileBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      mobileMenu.classList.toggle('open');
+      setMobileMenuOpen(!mobileMenu.classList.contains('open'));
     });
 
     document.addEventListener('click', (e) => {
@@ -58,14 +66,22 @@ document.addEventListener('DOMContentLoaded', () => {
         && !mobileBtn.contains(e.target)
         && !filterModal?.contains(e.target)
       ) {
-        mobileMenu.classList.remove('open');
+        setMobileMenuOpen(false);
       }
     });
 
     mobileMenu.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => {
-        mobileMenu.classList.remove('open');
+        setMobileMenuOpen(false);
       });
+    });
+    mobileMenu.addEventListener('click', (event) => {
+      if (!event.target.closest('a, button, summary, .product-sort')) setMobileMenuOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !filterModal?.classList.contains('is-open')) {
+        setMobileMenuOpen(false);
+      }
     });
   }
 
@@ -102,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const revealGrid = () => {
     closeFilterModal();
     if (window.matchMedia('(max-width: 768px)').matches) {
-      mobileMenu?.classList.remove('open');
+      setMobileMenuOpen(false);
     }
   };
 
