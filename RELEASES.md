@@ -21,6 +21,11 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.10 - 2026-10-22
+
+- Portada y categorías comparten la presentación de solo fotos en escritorio, también al acceder desde una ficha de producto.
+- Nombres y precios siguen disponibles para lectores de pantalla y visibles en móvil y tablet.
+
 ### 2.0.0-beta.9 - 2026-10-22
 
 - Desenfoque suave durante las peticiones de filtros y ordenación, sin esperas artificiales.
