@@ -19,11 +19,11 @@ function shop() {
   w.HTMLElement.prototype.getClientRects=function(){return this.closest('[aria-hidden="true"]')?[]:[{}]};
   w.structuredClone=structuredClone;
   let viewport;
-  w.matchMedia=()=>({addEventListener(type,callback){viewport=callback}});
+  w.matchMedia=(query)=>({matches:false,addEventListener(type,callback){if(query.includes('max-width'))viewport=callback}});
   const requests=[];
   w.fetch=(url,options)=>new Promise((resolve,reject)=>requests.push({url,options,resolve,reject}));
   w.prsFilterProducts={ajaxUrl:'/wp-admin/admin-ajax.php'};
-  for(const file of ['panels','shop-panels','filter-products'])w.eval(fs.readFileSync(`assets/js/${file}.js`,'utf8'));
+  for(const file of ['panels','shop-panels','grid-motion','filter-products'])w.eval(fs.readFileSync(`assets/js/${file}.js`,'utf8'));
   d.dispatchEvent(new w.Event('DOMContentLoaded'));
   const click=(s)=>d.querySelector(s).click();
   const escape=()=>d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));

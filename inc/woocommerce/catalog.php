@@ -82,7 +82,7 @@ function prs_render_product_card( $post_id ) {
     $price_html = $product ? $product->get_price_html() : '';
     $stock_text = $product && ! $product->is_in_stock() ? __( 'Agotado', 'palancia-shop' ) : '';
 
-    $html  = '<a href="' . esc_url( $url ) . '" class="product-item">';
+    $html  = '<a href="' . esc_url( $url ) . '" class="product-item" data-product-id="' . esc_attr( $post_id ) . '">';
     $html .= '<img src="' . esc_url( $img_url ) . '" alt="' . esc_attr( $title_attr ) . '">';
     $html .= '<div class="product-overlay">';
     $html .= '<span class="product-title">' . esc_html( get_the_title( $post_id ) ) . '</span>';

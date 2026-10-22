@@ -2,10 +2,11 @@ const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const {JSDOM} = require('jsdom');
-function createGallery(count = 3) {
+function createGallery(count = 3, reduced = false) {
   const slides = Array.from({length:count}, (_,i)=>`<div class="prs-product-slide"><img src="jacket-${i}.png" data-full-src="full-${i}.png" alt="Chaqueta ${i+1}"></div>`).join('');
   const dom=new JSDOM(`<!doctype html><html><body><header>Header</header><main><div><div class="prs-product-gallery">${slides}</div>${Array.from({length:count},()=>'<button class="prs-product-dot">Foto</button>').join('')}</div></main></body></html>`,{runScripts:'outside-only'});
   const w=dom.window,d=w.document;
+  w.matchMedia=()=>({matches:reduced,addEventListener(){}});
   w.HTMLElement.prototype.getClientRects=function(){return this.hidden || this.closest('[aria-hidden="true"]') ? [] : [{}]};
   Object.defineProperty(w.HTMLElement.prototype,'inert',{get(){return this.hasAttribute('inert')},set(v){this.toggleAttribute('inert',v)}});
   for(const script of ['panels','product-gallery'])w.eval(fs.readFileSync(`assets/js/${script}.js`,'utf8'));
@@ -93,13 +94,41 @@ test('single-image viewer hides navigation and closes with the shared menu contr
   assert.equal(close.textContent,'Cerrar');close.click();
   assert.equal(d.querySelector('[role="dialog"]').getAttribute('aria-hidden'),'true');dom.window.close();
 });
+test('gallery transitions follow direction, wait for the full image and yield immediately to zoom',()=>{
+  const {dom,d,w}=createGallery();
+  d.querySelectorAll('.prs-product-dot')[1].click();
+  assert(d.querySelector('.prs-product-slide.is-active').classList.contains('is-entering-next'));
+  d.querySelectorAll('.prs-product-dot')[0].click();
+  assert(d.querySelector('.prs-product-slide.is-active').classList.contains('is-entering-previous'));
+  d.querySelector('.prs-product-slide.is-active img').click();
+  const image=d.querySelector('.prs-zoom-stage img'),runs=[];
+  let complete=false;
+  Object.defineProperties(image,{complete:{get:()=>complete},naturalWidth:{value:800},naturalHeight:{value:800}});
+  image.animate=(frames,options)=>{const animation={cancelled:false,cancel(){this.cancelled=true}};runs.push({frames,options,animation});return animation};
+  d.querySelector('.prs-zoom-next').click();assert.equal(runs.length,0);
+  complete=true;image.dispatchEvent(new w.Event('load'));assert.equal(runs.length,1);
+  assert.equal(runs[0].frames[0].transform,'translateX(10px)');
+  image.dispatchEvent(new w.Event('load'));assert.equal(runs.length,1);
+  d.querySelector('.prs-zoom-stage').click();assert(runs[0].animation.cancelled);
+  assert.equal(d.querySelector('.prs-zoom-stage').getAttribute('aria-pressed'),'true');dom.window.close();
+});
+test('gallery respects reduced motion when changing photos',()=>{
+  const {dom,d,w}=createGallery(3,true);d.querySelectorAll('.prs-product-dot')[1].click();
+  assert(!d.querySelector('.prs-product-slide.is-active').classList.contains('is-entering-next'));
+  d.querySelector('.prs-product-slide.is-active img').click();
+  const image=d.querySelector('.prs-zoom-stage img');
+  Object.defineProperties(image,{complete:{value:true},naturalWidth:{value:800}});
+  image.animate=()=>{throw new Error('Motion must be disabled')};
+  d.querySelector('.prs-zoom-next').click();image.dispatchEvent(new w.Event('load'));
+  assert.equal(d.querySelector('.prs-zoom-counter').textContent,'3 / 3');dom.window.close();
+});
 test('real WordPress template supports both desktop and mobile panel triggers',{skip:!process.env.PALANCIA_RENDERED_GRID},()=>{
   const html=fs.readFileSync(process.env.PALANCIA_RENDERED_GRID,'utf8');
   const dom=new JSDOM(`<!doctype html><body><header class="site-header"><button id="mobile-filter-toggle">Menu</button></header><main>${html}</main></body>`,{url:'http://palancia.test/',runScripts:'outside-only'});
   const w=dom.window,d=w.document;
   w.structuredClone=structuredClone;w.prsFilterProducts={ajaxUrl:'/ajax'};
   w.matchMedia=()=>({addEventListener(){}});w.HTMLElement.prototype.getClientRects=function(){return this.closest('[aria-hidden="true"]')?[]:[{}]};
-  for(const file of ['panels','shop-panels','filter-products'])w.eval(fs.readFileSync(`assets/js/${file}.js`,'utf8'));
+  for(const file of ['panels','shop-panels','grid-motion','filter-products'])w.eval(fs.readFileSync(`assets/js/${file}.js`,'utf8'));
   d.dispatchEvent(new w.Event('DOMContentLoaded'));
   d.querySelector('.product-filters .product-sort-trigger').click();
   assert(d.querySelector('#product-sort-modal').classList.contains('is-open'));

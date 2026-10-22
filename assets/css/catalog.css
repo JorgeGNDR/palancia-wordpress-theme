@@ -138,6 +138,7 @@
   row-gap: 1.5rem;
   column-gap: 0;
   align-items: start;
+  transition: opacity 140ms ease, filter 140ms ease;
 }
 
 .home-products-grid > p {
@@ -152,8 +153,27 @@
 }
 
 .home-products-grid.is-loading {
-  opacity: 0.42;
+  opacity: 0.65;
+  filter: blur(1.5px);
   pointer-events: none;
+}
+
+/* Exit snapshots keep the grid's card styling without affecting its layout. */
+.prs-grid-motion-layer {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--layer-header) - 1);
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-products-grid { transition: none; }
+  .home-products-grid.is-loading { filter: none; }
+  .home-products-grid .product-item img { transition: none; }
+  .home-products-grid .product-item:hover img { transform: none; }
 }
 
 .home-products-spacer { grid-column: 3; }

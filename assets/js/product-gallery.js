@@ -5,14 +5,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!slides.length) return;
   const panels = new window.PalanciaPanels();
   const dots = [...gallery.parentElement.querySelectorAll('.prs-product-dot')];
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
   let current = 0;
   let galleryTouch = null;
   let skipGalleryClick = false;
 
   const show = (index) => {
+    const previous = current;
+    const direction = Math.sign(index - current);
     current = (index + slides.length) % slides.length;
     slides.forEach((slide, i) => {
+      slide.classList.remove('is-entering-next', 'is-entering-previous');
       slide.classList.toggle('is-active', i === current);
+      if (i === current && previous !== current && !motionPreference.matches) slide.classList.add(direction > 0 ? 'is-entering-next' : 'is-entering-previous');
       slide.setAttribute('aria-hidden', String(i !== current));
       const source = slide.querySelector('img');
       if (source) source.tabIndex = i === current ? 0 : -1;
@@ -48,6 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let zoomed = false;
   let gesture = null;
   let lastPoint = null;
+  let photoAnimation = null;
+  let imageRevision = 0;
+  let animatedRevision = -1;
+  let imageDirection = 0;
+  const cancelPhotoAnimation = () => { photoAnimation?.cancel(); photoAnimation = null; };
+  motionPreference.addEventListener?.('change', () => { if (motionPreference.matches) cancelPhotoAnimation(); });
   const zoomScale = 2.5;
   stage.style.setProperty('--zoom-scale', String(zoomScale));
 
@@ -64,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     image.style.setProperty('--zoom-y', `${(0.5 - clamp((y - rect.top) / rect.height)) * 2 * maxY}px`);
   };
   const setZoom = (value) => {
+    cancelPhotoAnimation();
     zoomed = value;
     stage.classList.toggle('is-zoomed', value);
     stage.setAttribute('aria-pressed', String(value));
@@ -74,8 +86,22 @@ document.addEventListener('DOMContentLoaded', () => {
       image.style.removeProperty('--zoom-y');
     }
   };
-  image.addEventListener('load', () => { if (zoomed && lastPoint) pointZoom(lastPoint.x, lastPoint.y); });
+  const imageReady = () => {
+    if (!image.complete || !image.naturalWidth || animatedRevision === imageRevision) return;
+    animatedRevision = imageRevision;
+    if (zoomed && lastPoint) pointZoom(lastPoint.x, lastPoint.y);
+    if (zoomed || motionPreference.matches || typeof image.animate !== 'function') return;
+    photoAnimation = image.animate([
+      {opacity: 0, transform: `translateX(${imageDirection * 10}px)`},
+      {opacity: 1, transform: 'translateX(0)'},
+    ], {duration: 220, easing: 'ease-out'});
+    const running = photoAnimation;
+    running.onfinish = () => { if (photoAnimation === running) photoAnimation = null; };
+  };
+  image.addEventListener('load', imageReady);
   const render = (index) => {
+    imageDirection = Math.sign(index - current);
+    imageRevision++;
     show(index);
     setZoom(false);
     gesture = null;
@@ -83,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     image.src = source.dataset.fullSrc || source.currentSrc || source.src;
     image.alt = source.alt;
     counter.textContent = `${current + 1} / ${slides.length}`;
+    imageReady();
   };
   panels.register('gallery', overlay, [], {
     bodyClass: 'prs-zoom-open',

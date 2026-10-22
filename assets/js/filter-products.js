@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!root || typeof prsFilterProducts === 'undefined') return;
   const config = JSON.parse(root.dataset.catalog);
   const grid = root.querySelector('.home-products-grid');
+  const motion = new window.PalanciaGridMotion(grid);
   const links = [...root.querySelectorAll('a[data-category-slug]')];
   const sizes = [...document.querySelectorAll('[data-size-slug]')];
   const stocks = [...document.querySelectorAll('[data-stock-filter]')];
@@ -55,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!result.success || typeof result.data?.html !== 'string') throw new Error('Invalid catalog response');
       state = result.data.state || snapshot; committed = structuredClone(state);
       draft = {size: [...state.size], soldout: state.soldout};
-      grid.innerHTML = result.data.html; updateUrl(); render();
+      motion.replace(result.data.html); updateUrl(); render();
       document.dispatchEvent(new CustomEvent('catalog:committed'));
     } catch (failure) {
       if (failure.name === 'AbortError' || request !== current) return;

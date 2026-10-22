@@ -73,10 +73,11 @@ function prs_enqueue_filter_script() {
     }
 
     wp_enqueue_script( 'prs-shop-panels', get_theme_file_uri( 'assets/js/shop-panels.js' ), [ 'prs-panels' ], prs_get_asset_version( 'assets/js/shop-panels.js' ), true );
+    wp_enqueue_script( 'prs-grid-motion', get_theme_file_uri( 'assets/js/grid-motion.js' ), [], prs_get_asset_version( 'assets/js/grid-motion.js' ), true );
     wp_enqueue_script(
         'prs-filter-products',
         get_theme_file_uri( 'assets/js/filter-products.js' ),
-        [ 'prs-shop-panels' ],
+        [ 'prs-shop-panels', 'prs-grid-motion' ],
         prs_get_asset_version( 'assets/js/filter-products.js' ),
         true
     );

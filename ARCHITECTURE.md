@@ -29,6 +29,8 @@ PHP entrega el estado inicial y los enlaces reales. JavaScript no deduce la cate
 
 `filter-products.js` solo gestiona selección, borrador de filtros, petición y confirmación. Una respuesta obsoleta no modifica el grid; un fallo conserva el último grid y URL válidos y permite reintentar. Abrir/cancelar filtros no confirma el borrador. La URL se actualiza tras una respuesta válida.
 
+`grid-motion.js` recibe el HTML confirmado y gestiona únicamente su transición visual. Las tarjetas llevan `data-product-id` generado por PHP. El controlador mide posiciones antes/después y usa Web Animations para desplazar productos conservados, introducir los nuevos y retirar copias visuales de los que salen. Estas copias son inertes, no accesibles y no ocupan espacio en el grid. Solo se animan zonas visibles; desplazamiento, redimensionado y cambio de preferencia cancelan efectos. Sin soporte de animación o con movimiento reducido, el resultado se reemplaza de inmediato. El desenfoque depende del estado de carga de la petición, sin temporizadores que retrasen la confirmación.
+
 ## Paneles y galería
 
 `panels.js` es el único propietario de apertura, cierre, pila de paneles, Escape, Tab, foco, fondo inerte y bloqueo del desplazamiento. El clic exterior se evalúa en captura, antes de que el botón de cierre cambie la pila. Un mismo clic no cierra también el panel que quedaba debajo.
@@ -36,6 +38,8 @@ PHP entrega el estado inicial y los enlaces reales. JavaScript no deduce la cate
 `shop-panels.js` declara menú, filtros y ordenación. Escucha `catalog:committed` para cerrar la interfaz tras una aplicación válida. En un cambio entre móvil y escritorio limpia los paneles. Mide el encabezado mediante `ResizeObserver` para reservar su altura real.
 
 `product-gallery.js` usa un único visor para móvil y escritorio, registrado una sola vez en el controlador compartido. PHP entrega la URL de la imagen original; el visor la solicita al abrir la foto. Flechas, teclado y deslizamiento cambian de foto y reinician el zoom. Un clic activa/desactiva la ampliación; el ratón o el arrastre táctil desplazan el detalle con límites calculados a partir de las dimensiones reales de la imagen y el área disponible. Las diapositivas ocultas no reciben clics ni foco. Al cerrar se devuelve el foco a la foto seleccionada.
+
+El cambio de foto aplica un fundido y desplazamiento breve según la dirección. En el visor, la animación comienza cuando la imagen termina de cargar y se cancela al activar el zoom, para que no compita con su transformación. La ficha y el visor respetan movimiento reducido.
 
 ## Estilos
 

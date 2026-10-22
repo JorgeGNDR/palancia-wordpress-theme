@@ -24,10 +24,18 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.22s ease;
+  transition: opacity 0.22s ease, visibility 0s linear 0.22s;
 }
 
-.prs-product-slide.is-active { opacity: 1; visibility: visible; pointer-events: auto; }
+.prs-product-slide.is-active { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
+.prs-product-slide.is-active.is-entering-next { animation: prs-photo-next 220ms ease-out; }
+.prs-product-slide.is-active.is-entering-previous { animation: prs-photo-previous 220ms ease-out; }
+@keyframes prs-photo-next { from { opacity: 0; transform: translateX(10px); } }
+@keyframes prs-photo-previous { from { opacity: 0; transform: translateX(-10px); } }
+@media (prefers-reduced-motion: reduce) {
+  .prs-product-slide { transition: none; }
+  .prs-product-slide.is-active { animation: none; }
+}
 
 .prs-product-slide img {
   width: 100%;

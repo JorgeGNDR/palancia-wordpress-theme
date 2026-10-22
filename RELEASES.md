@@ -21,6 +21,14 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.9 - 2026-10-22
+
+- Desenfoque suave durante las peticiones de filtros y ordenación, sin esperas artificiales.
+- Movimiento de prendas conservadas mediante ID de producto y posiciones antes/después; fundido de entradas y salidas visibles.
+- Efectos cancelables al interrumpir, desplazar o redimensionar la página; foco conservado y respeto a movimiento reducido.
+- Transiciones direccionales al cambiar fotos en la ficha y el visor, esperando a que la imagen original esté lista y cediendo al zoom.
+- Pruebas de posiciones, cancelación, foco, compatibilidad y transiciones de galería.
+
 ### 2.0.0-beta.8 - 2026-10-22
 
 - Contacto compacto: título reducido, introducción alineada junto al título y sin «PALANCIA / 01».
