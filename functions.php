@@ -81,6 +81,18 @@ function prs_enqueue_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'prs_enqueue_assets' );
 
+function prs_enqueue_checkout_styles() {
+    if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+        wp_enqueue_style(
+            'prs-checkout',
+            get_stylesheet_directory_uri() . '/assets/css/checkout.css',
+            [ 'palancia-retro-shop-style' ],
+            prs_get_asset_version( 'assets/css/checkout.css' )
+        );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'prs_enqueue_checkout_styles', 30 );
+
 // Encolar el script de filtrado de productos con AJAX
 function prs_enqueue_filter_script() {
     if ( ! is_front_page() && ! is_tax( 'product_cat' ) ) {
