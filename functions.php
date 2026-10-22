@@ -1156,7 +1156,6 @@ function prs_render_custom_cart() {
 	$checkout_classes = 'button pal-cart-checkout' . ( $requires_terms ? ' is-disabled' : '' );
 	$checkout_aria    = $requires_terms ? 'true' : 'false';
 	echo '<a href="' . esc_url( wc_get_checkout_url() ) . '" class="' . esc_attr( $checkout_classes ) . '" aria-disabled="' . esc_attr( $checkout_aria ) . '">' . esc_html__( 'Finalizar compra', 'palancia-shop' ) . '</a>';
-	echo '<div class="pal-cart-note"><span>' . esc_html__( 'Máximo 1 unidad por talla o artículo.', 'palancia-shop' ) . '</span> <span class="note-secondary">' . esc_html__( 'Pueden aplicarse excepciones.', 'palancia-shop' ) . '</span></div>';
 	echo '</div>'; // pal-cart-summary
 
 	wc_enqueue_js(
