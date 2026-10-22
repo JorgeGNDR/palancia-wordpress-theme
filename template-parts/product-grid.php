@@ -19,22 +19,26 @@ $current_sort          = prs_sanitize_product_sort( isset( $_GET['sort'] ) ? wp_
   <div class="prs-shop-layout home-products-container">
     <nav id="mobile-filter-menu" class="mobile-filter-menu" aria-label="<?php echo esc_attr__( 'Filtros de producto', 'palancia-shop' ); ?>">
       <?php include locate_template( 'template-parts/shop-nav.php' ); ?>
+      <div class="product-menu-actions">
       <?php if ( $has_size_filter ) : ?>
         <button class="product-filter-trigger" type="button" aria-expanded="false" aria-controls="product-size-filter-modal">
-          <?php echo esc_html__( 'Filtro', 'palancia-shop' ); ?>
+          <?php echo esc_html__( 'Filtrar', 'palancia-shop' ); ?>
         </button>
       <?php endif; ?>
       <?php include locate_template( 'template-parts/product-sort.php' ); ?>
+      </div>
     </nav>
 
     <aside class="product-filters" aria-label="<?php echo esc_attr__( 'Filtros de producto', 'palancia-shop' ); ?>">
       <?php include locate_template( 'template-parts/shop-nav.php' ); ?>
+      <div class="product-menu-actions">
       <?php if ( $has_size_filter ) : ?>
         <button class="product-filter-trigger" type="button" aria-expanded="false" aria-controls="product-size-filter-modal">
-          <?php echo esc_html__( 'Filtro', 'palancia-shop' ); ?>
+          <?php echo esc_html__( 'Filtrar', 'palancia-shop' ); ?>
         </button>
       <?php endif; ?>
       <?php include locate_template( 'template-parts/product-sort.php' ); ?>
+      </div>
     </aside>
 
     <div class="home-products-grid">
