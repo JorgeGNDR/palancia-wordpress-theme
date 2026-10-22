@@ -1,7 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
   const filterLinks = document.querySelectorAll('.product-filters a, .mobile-filter-menu a');
-  const sortSelects = document.querySelectorAll('.product-sort-select');
-  let currentSort = sortSelects[0]?.value || 'categories';
+  const sortOptions = document.querySelectorAll('.product-sort-option');
+  let currentSort = document.querySelector('.product-sort-option[aria-pressed="true"]')?.dataset.sort || 'categories';
+  const closeSortMenus = () => {
+    document.querySelectorAll('.product-sort[open]').forEach((menu) => {
+      menu.open = false;
+    });
+  };
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.product-sort')) closeSortMenus();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    const menu = document.activeElement?.closest('.product-sort[open]');
+    closeSortMenus();
+    menu?.querySelector('summary').focus();
+  });
   const productsGrid = document.querySelector('.home-products-grid');
   const sizeButtons = document.querySelectorAll('[data-size-slug]');
   const stockButtons = document.querySelectorAll('[data-stock-filter]');
@@ -206,11 +220,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateActiveLinks();
 
-  sortSelects.forEach((select) => {
-    select.addEventListener('change', () => {
-      currentSort = select.value;
-      sortSelects.forEach((other) => { other.value = currentSort; });
-      document.querySelectorAll('.product-sort').forEach((menu) => { menu.open = false; });
+  sortOptions.forEach((option) => {
+    option.addEventListener('click', () => {
+      currentSort = option.dataset.sort;
+      sortOptions.forEach((other) => {
+        other.setAttribute('aria-pressed', String(other.dataset.sort === currentSort));
+      });
+      closeSortMenus();
+      option.closest('.product-sort')?.querySelector('summary').focus();
       revealGrid();
       loadProducts();
       updateUrl();

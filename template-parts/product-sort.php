@@ -1,14 +1,14 @@
 <?php defined( 'ABSPATH' ) || exit; ?>
 <details class="product-sort">
   <summary><?php esc_html_e( 'Ordenar por', 'palancia-shop' ); ?></summary>
-  <select class="product-sort-select" aria-label="<?php esc_attr_e( 'Ordenar productos por', 'palancia-shop' ); ?>">
+  <div class="product-sort-options" role="group" aria-label="<?php esc_attr_e( 'Ordenar productos por', 'palancia-shop' ); ?>">
     <?php foreach ( [
         'categories' => __( 'Categorías', 'palancia-shop' ),
         'latest' => __( 'Últimas subidas', 'palancia-shop' ),
         'price-asc' => __( 'Precio: de menor a mayor', 'palancia-shop' ),
         'price-desc' => __( 'Precio: de mayor a menor', 'palancia-shop' ),
     ] as $value => $label ) : ?>
-      <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $current_sort, $value ); ?>><?php echo esc_html( $label ); ?></option>
+      <button type="button" class="product-sort-option" data-sort="<?php echo esc_attr( $value ); ?>" aria-pressed="<?php echo $current_sort === $value ? 'true' : 'false'; ?>"><?php echo esc_html( $label ); ?></button>
     <?php endforeach; ?>
-  </select>
+  </div>
 </details>
