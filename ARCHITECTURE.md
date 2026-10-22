@@ -27,6 +27,8 @@ Cada tarjeta es un `article` con enlaces independientes para foto, título y acc
 
 En escritorio con ratón, `hover` y `focus-within` muestran los datos dentro de la foto y desenfocan la imagen. Los textos siguen accesibles sin depender del hover. Móvil, tablet y pantallas táctiles mantienen información y acciones visibles bajo la foto. Cambiar resultados conserva el foco mediante el enlace de foto de la tarjeta.
 
+`catalog-cart.js` escucha `wc_cart_button_updated` de WooCommerce y, cuando existe el resultado `.added` y el enlace «Ver carrito», oculta la acción completada. Transfiere el foco de teclado antes de ocultarla. El listener compartido también atiende las tarjetas que entran por filtros, sin gestionar peticiones ni duplicar el estado del carrito.
+
 La portada sigue mostrando el catálogo completo: la refactorización reduce las consultas repetidas, pero no añade paginación ni garantiza un coste constante con catálogos grandes.
 
 PHP entrega el estado inicial y los enlaces reales. JavaScript no deduce la categoría desde `/collections/`: usa los enlaces de WordPress, incluso con subdirectorios y permalinks distintos. Al actualizar la URL conserva parámetros externos y excluye los parámetros de enrutamiento antiguos.

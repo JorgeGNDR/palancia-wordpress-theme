@@ -21,6 +21,10 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.15 - 2026-10-22
+
+- Tras añadir una prenda desde el catálogo, queda solo «Ver carrito»; la acción completada se oculta al confirmar WooCommerce el resultado, conservando el foco de teclado.
+
 ### 2.0.0-beta.14 - 2026-10-22
 
 - Margen inferior de la compra en las tarjetas de escritorio ajustado a 5 px, conservando el bloque de información centrado.

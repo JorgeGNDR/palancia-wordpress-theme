@@ -243,6 +243,7 @@
   text-underline-offset: 0.2em;
 }
 .product-card-action .loading { opacity: 0.5; pointer-events: none; }
+.home-products-grid .product-card-action a[hidden] { display: none; }
 
 /* Hover is enhancement: touch screens keep visible details and native actions. */
 @media (min-width: 1241px) and (hover: hover) and (pointer: fine) {

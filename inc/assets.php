@@ -76,6 +76,7 @@ function prs_enqueue_filter_script() {
     wp_enqueue_script( 'prs-grid-motion', get_theme_file_uri( 'assets/js/grid-motion.js' ), [], prs_get_asset_version( 'assets/js/grid-motion.js' ), true );
     wp_enqueue_script( 'wc-add-to-cart' );
     wp_enqueue_script( 'wc-cart-fragments' );
+    wp_enqueue_script( 'prs-catalog-cart', get_theme_file_uri( 'assets/js/catalog-cart.js' ), [ 'jquery', 'wc-add-to-cart' ], prs_get_asset_version( 'assets/js/catalog-cart.js' ), true );
     wp_enqueue_script(
         'prs-filter-products',
         get_theme_file_uri( 'assets/js/filter-products.js' ),
