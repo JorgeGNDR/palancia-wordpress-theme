@@ -2,19 +2,47 @@ document.addEventListener('DOMContentLoaded', () => {
   const filterLinks = document.querySelectorAll('.product-filters a, .mobile-filter-menu a');
   const sortOptions = document.querySelectorAll('.product-sort-option');
   let currentSort = document.querySelector('.product-sort-option[aria-pressed="true"]')?.dataset.sort || 'categories';
+  const sortModal = document.getElementById('product-sort-modal');
+  const sortTriggers = document.querySelectorAll('.product-sort-trigger');
+  let sortOpener = null;
   const closeSortMenus = () => {
-    document.querySelectorAll('.product-sort[open]').forEach((menu) => {
-      menu.open = false;
-    });
+    if (!sortModal?.classList.contains('is-open')) return;
+    sortModal.classList.remove('is-open');
+    sortModal.setAttribute('aria-hidden', 'true');
+    sortTriggers.forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
+    document.body.classList.remove('product-sort-open');
+    sortOpener?.focus();
   };
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('.product-sort')) closeSortMenus();
+  sortTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      if (!sortModal) return;
+      closeFilterModal();
+      sortOpener = trigger;
+      sortModal.classList.add('is-open');
+      sortModal.setAttribute('aria-hidden', 'false');
+      sortTriggers.forEach((item) => item.setAttribute('aria-expanded', 'true'));
+      document.body.classList.add('product-sort-open');
+      sortModal.querySelector('[aria-pressed="true"]')?.focus();
+    });
+  });
+  document.querySelectorAll('[data-sort-close]').forEach((control) => {
+    control.addEventListener('click', closeSortMenus);
   });
   document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape') return;
-    const menu = document.activeElement?.closest('.product-sort[open]');
-    closeSortMenus();
-    menu?.querySelector('summary').focus();
+    if (!sortModal?.classList.contains('is-open')) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      closeSortMenus();
+    } else if (event.key === 'Tab') {
+      const controls = [...sortModal.querySelectorAll('button')];
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault(); first.focus();
+      }
+    }
   });
   const productsGrid = document.querySelector('.home-products-grid');
   const sizeButtons = document.querySelectorAll('[data-size-slug]');
@@ -65,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         !mobileMenu.contains(e.target)
         && !mobileBtn.contains(e.target)
         && !filterModal?.contains(e.target)
+        && !sortModal?.contains(e.target)
       ) {
         setMobileMenuOpen(false);
       }
@@ -243,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
         other.setAttribute('aria-pressed', String(other.dataset.sort === currentSort));
       });
       closeSortMenus();
-      option.closest('.product-sort')?.querySelector('summary').focus();
       revealGrid();
       loadProducts();
       updateUrl();

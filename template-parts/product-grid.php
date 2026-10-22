@@ -51,4 +51,5 @@ $current_sort          = prs_sanitize_product_sort( isset( $_GET['sort'] ) ? wp_
   </div>
 
   <?php include locate_template( 'template-parts/size-filter-modal.php' ); ?>
+  <?php include locate_template( 'template-parts/product-sort-modal.php' ); ?>
 </section>
