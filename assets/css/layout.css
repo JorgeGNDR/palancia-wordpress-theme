@@ -48,8 +48,8 @@
   width: 100%;
   height: 100%;
   background: var(--ink);
-  -webkit-mask: url('assets/icons/menu_icon.svg') center / 60% no-repeat;
-  mask: url('assets/icons/menu_icon.svg') center / 60% no-repeat;
+  -webkit-mask: url('../icons/menu_icon.svg') center / 60% no-repeat;
+  mask: url('../icons/menu_icon.svg') center / 60% no-repeat;
 }
 
 .mobile-filter-btn[aria-expanded="true"] .mobile-filter-icon {
@@ -103,8 +103,8 @@
   height: 1.28rem;
   display: block;
   background: currentColor;
-  -webkit-mask: url('assets/icons/carrito.png') center / contain no-repeat;
-  mask: url('assets/icons/carrito.png') center / contain no-repeat;
+  -webkit-mask: url('../icons/carrito.png') center / contain no-repeat;
+  mask: url('../icons/carrito.png') center / contain no-repeat;
 }
 
 .site-main {

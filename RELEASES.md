@@ -21,6 +21,13 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.6 - 2026-10-22
+
+- Rutas de los iconos de carrito y menú corregidas tras separar los estilos en módulos.
+- Carrito compacto con títulos pequeños, eliminar junto al producto y resumen lateral en escritorio.
+- Resumen bajo los productos en móvil y un único precio por fila.
+- Comprobación automática de recursos locales CSS y prueba de marcado del carrito en WooCommerce.
+
 ### 2.0.0-beta.5 - 2026-10-22
 
 - Bootstrap y módulos separados para configuración, recursos, personalizador, contacto y WooCommerce.

@@ -24,7 +24,7 @@ function prs_render_custom_cart() {
 	$terms_url      = $terms_page_id > 0 ? get_permalink( $terms_page_id ) : '';
 	$requires_terms = ! empty( $terms_url );
 
-	echo '<div class="pal-cart-wrapper">';
+	echo '<div class="pal-cart-layout"><div class="pal-cart-wrapper">';
 	foreach ( $cart_items as $cart_item_key => $cart_item ) {
 		$product = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
 		if ( ! $product || ! $product->exists() || $cart_item['quantity'] <= 0 || ! apply_filters( 'woocommerce_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
@@ -40,7 +40,7 @@ function prs_render_custom_cart() {
 		$remove_link       = apply_filters(
 			'woocommerce_cart_item_remove_link',
 			sprintf(
-				'<a href="%s" class="pal-cart-remove button" aria-label="%s" data-product_id="%s" data-product_sku="%s">%s</a>',
+				'<a href="%s" class="pal-cart-remove" aria-label="%s" data-product_id="%s" data-product_sku="%s">%s</a>',
 				esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
 				esc_attr( sprintf( __( 'Eliminar %s del carrito', 'palancia-shop' ), wp_strip_all_tags( $product_name ) ) ),
 				esc_attr( $product_id ),
@@ -73,11 +73,10 @@ function prs_render_custom_cart() {
 			echo '<div class="pal-cart-meta">' . $item_data . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
-		echo '<div class="pal-cart-price pal-cart-price--mobile">' . $price_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '<div class="pal-cart-remove-wrap">' . $remove_link . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '</div>'; // pal-cart-main
 
 		echo '<div class="pal-cart-right">';
-		echo '<div class="pal-cart-remove-wrap">' . $remove_link . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '<div class="pal-cart-price">' . $price_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '</div>'; // pal-cart-right
 
@@ -101,6 +100,7 @@ function prs_render_custom_cart() {
 	$checkout_aria    = $requires_terms ? 'true' : 'false';
 	echo '<a href="' . esc_url( wc_get_checkout_url() ) . '" class="' . esc_attr( $checkout_classes ) . '" aria-disabled="' . esc_attr( $checkout_aria ) . '">' . esc_html__( 'Finalizar compra', 'palancia-shop' ) . '</a>';
 	echo '</div>'; // pal-cart-summary
+	echo '</div>'; // pal-cart-layout
 
 	wc_enqueue_js(
 		"

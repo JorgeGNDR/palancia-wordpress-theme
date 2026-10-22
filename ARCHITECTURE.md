@@ -59,9 +59,10 @@ Para integración, usar una instalación **desechable** de WordPress con URL `ht
 wp eval-file /ruta/al/tema/tests/wordpress-bootstrap.php
 wp eval-file /ruta/al/tema/tests/wordpress-bootstrap.php --skip-plugins=woocommerce
 wp eval-file /ruta/al/tema/tests/wordpress.php
+wp eval-file /ruta/al/tema/tests/wordpress-cart.php
 PALANCIA_RENDERED_GRID=/tmp/palancia-wp-integration/rendered-grid.html npm test
 ```
 
-Se ha utilizado PHP 8.5.12, WordPress 7.1.3, WooCommerce 11.2.1 y SQLite Database Integration para comprobar carga, personalizador, renderizado y consultas. También se ha probado la carga con un tema hijo y sin WooCommerce. Falta verificar el layout y los métodos de pago concretos en el entorno de staging de la tienda, con su base de datos y plugins; las pruebas no crean pedidos ni realizan pagos.
+Se ha utilizado PHP 8.5.12, WordPress 7.1.3, WooCommerce 11.2.1 y SQLite Database Integration para comprobar carga, personalizador, renderizado y consultas. También se ha probado la carga con un tema hijo y sin WooCommerce. La prueba de carrito usa productos ficticios y genera `cart-preview.html` para revisión visual local en el puerto 8765; se ha comprobado a 1280 y 375 px, incluyendo el control de términos. Las pruebas CSS verifican que los recursos locales existen en sus rutas relativas. Falta verificar el layout y los métodos de pago concretos en el entorno de staging de la tienda, con su base de datos y plugins; las pruebas no crean pedidos ni realizan pagos.
 
 Referencias de diseño de la integración: [carga de funciones del tema](https://developer.wordpress.org/themes/classic-themes/basics/theme-functions/), [rutas de archivos del tema](https://developer.wordpress.org/themes/classic-themes/basics/linking-theme-files-directories/), [consulta de productos WooCommerce](https://github.com/woocommerce/woocommerce/wiki/wc_get_products-and-WC_Product_Query).
