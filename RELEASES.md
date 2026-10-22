@@ -21,6 +21,10 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.14 - 2026-10-22
+
+- Margen inferior de la compra en las tarjetas de escritorio ajustado a 5 px, conservando el bloque de información centrado.
+
 ### 2.0.0-beta.13 - 2026-10-22
 
 - Tipografía de las tarjetas de escritorio ligeramente más pequeña.
