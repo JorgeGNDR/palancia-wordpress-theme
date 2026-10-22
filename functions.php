@@ -718,7 +718,12 @@ function prs_render_product_card( $post_id ) {
     return $html;
 }
 
-function prs_render_products_grid( $category_slug = '', $max_products = 0, $size_slug = '', $stock_filter = 'show' ) {
+function prs_sanitize_product_sort( $value ) {
+    return is_string( $value ) && in_array( $value, [ 'categories', 'latest', 'price-asc', 'price-desc' ], true ) ? $value : 'categories';
+}
+
+function prs_render_products_grid( $category_slug = '', $max_products = 0, $size_slug = '', $stock_filter = 'show', $sort = 'categories' ) {
+    $sort = prs_sanitize_product_sort( $sort );
     $category_slug = strtolower( $category_slug );
     $size_slugs    = is_array( $size_slug )
         ? array_filter( array_map( 'sanitize_title', $size_slug ) )
@@ -738,6 +743,13 @@ function prs_render_products_grid( $category_slug = '', $max_products = 0, $size
         'orderby'        => 'meta_value_num',
         'order'          => 'DESC',
     ];
+
+    if ( 'latest' === $sort ) {
+        unset( $base_args['meta_key'] );
+        $base_args['orderby'] = [ 'date' => 'DESC', 'ID' => 'DESC' ];
+    } elseif ( 'price-asc' === $sort || 'price-desc' === $sort ) {
+        $base_args['orderby'] = [ 'meta_value_num' => 'price-asc' === $sort ? 'ASC' : 'DESC', 'ID' => 'DESC' ];
+    }
 
     // Helper para aplicar filtro de talla a los argumentos
     $apply_size_filter = function( $args ) use ( $size_slugs, $stock_filter ) {
@@ -767,16 +779,18 @@ function prs_render_products_grid( $category_slug = '', $max_products = 0, $size
         return $args;
     };
 
-    // Cuando hay categoria concreta (diferente a TODO), solo ese bloque ordenado por precio
-    if ( $category_slug && $category_slug !== 'todo' ) {
+    // Una categoría o un orden global se resuelven con una sola consulta.
+    if ( ( $category_slug && $category_slug !== 'todo' ) || 'categories' !== $sort ) {
         $args              = $base_args;
-        $args['tax_query'] = [
-            [
-                'taxonomy' => 'product_cat',
-                'field'    => 'slug',
-                'terms'    => $category_slug,
-            ],
-        ];
+        if ( $category_slug && 'todo' !== $category_slug ) {
+            $args['tax_query'] = [
+                [
+                    'taxonomy' => 'product_cat',
+                    'field'    => 'slug',
+                    'terms'    => $category_slug,
+                ],
+            ];
+        }
         $args = $apply_size_filter( $args );
 
         $loop = new WP_Query( $args );
@@ -983,7 +997,8 @@ function prs_filter_products_by_category() {
         $category_slug = '';
     }
 
-    $html = prs_render_products_grid( $category_slug, 0, $size_slug, $stock_filter );
+    $sort = prs_sanitize_product_sort( isset( $_POST['sort'] ) ? wp_unslash( $_POST['sort'] ) : '' );
+    $html = prs_render_products_grid( $category_slug, 0, $size_slug, $stock_filter, $sort );
 
     if ( ! $html ) {
         $html = '<p class="prs-products-empty">' . esc_html__( 'No hay productos con estos filtros.', 'palancia-shop' ) . '</p>';

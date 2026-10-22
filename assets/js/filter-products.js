@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const filterLinks = document.querySelectorAll('.product-filters a, .mobile-filter-menu a');
+  const sortSelects = document.querySelectorAll('.product-sort-select');
+  let currentSort = sortSelects[0]?.value || 'categories';
   const productsGrid = document.querySelector('.home-products-grid');
   const sizeButtons = document.querySelectorAll('[data-size-slug]');
   const stockButtons = document.querySelectorAll('[data-stock-filter]');
@@ -131,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
       category_slug: currentCategory === 'todo' ? '' : currentCategory,
       size_slugs: [...appliedSizes].join(','),
       stock_filter: appliedStock,
+      sort: currentSort,
     });
 
     fetch(ajaxUrl, {
@@ -169,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (appliedStock === 'hide') {
       params.set('soldout', 'hide');
     }
+    if (currentSort !== 'categories') params.set('sort', currentSort);
 
     const baseUrl = !currentCategory || currentCategory === 'todo'
       ? '/'
@@ -201,6 +205,17 @@ document.addEventListener('DOMContentLoaded', () => {
   draftStock = appliedStock;
 
   updateActiveLinks();
+
+  sortSelects.forEach((select) => {
+    select.addEventListener('change', () => {
+      currentSort = select.value;
+      sortSelects.forEach((other) => { other.value = currentSort; });
+      document.querySelectorAll('.product-sort').forEach((menu) => { menu.open = false; });
+      revealGrid();
+      loadProducts();
+      updateUrl();
+    });
+  });
 
   filterLinks.forEach((link) => {
     link.addEventListener('click', (e) => {

@@ -12,6 +12,7 @@ $current_size_slug     = isset( $current_size_slug ) ? (string) $current_size_sl
 $current_stock_filter  = isset( $_GET['soldout'] ) && 'hide' === sanitize_title( wp_unslash( $_GET['soldout'] ) ) ? 'hide' : 'show';
 $size_terms            = function_exists( 'prs_get_available_size_terms' ) ? prs_get_available_size_terms() : [];
 $has_size_filter       = ! empty( $size_terms );
+$current_sort          = prs_sanitize_product_sort( isset( $_GET['sort'] ) ? wp_unslash( $_GET['sort'] ) : '' );
 ?>
 
 <section class="home-products">
@@ -23,6 +24,7 @@ $has_size_filter       = ! empty( $size_terms );
           <?php echo esc_html__( 'Filtro', 'palancia-shop' ); ?>
         </button>
       <?php endif; ?>
+      <?php include locate_template( 'template-parts/product-sort.php' ); ?>
     </nav>
 
     <aside class="product-filters" aria-label="<?php echo esc_attr__( 'Filtros de producto', 'palancia-shop' ); ?>">
@@ -32,12 +34,13 @@ $has_size_filter       = ! empty( $size_terms );
           <?php echo esc_html__( 'Filtro', 'palancia-shop' ); ?>
         </button>
       <?php endif; ?>
+      <?php include locate_template( 'template-parts/product-sort.php' ); ?>
     </aside>
 
     <div class="home-products-grid">
       <?php
       $grid_html = function_exists( 'prs_render_products_grid' )
-        ? prs_render_products_grid( $current_category_slug, 0, $current_size_slug, $current_stock_filter )
+        ? prs_render_products_grid( $current_category_slug, 0, $current_size_slug, $current_stock_filter, $current_sort )
         : '';
 
       echo $grid_html ? $grid_html : '<p>' . esc_html__( 'No hay productos en esta categoria.', 'palancia-shop' ) . '</p>';

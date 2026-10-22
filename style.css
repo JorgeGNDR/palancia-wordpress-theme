@@ -296,6 +296,38 @@ button { cursor: pointer; }
 .product-filter-trigger:hover,
 .product-filter-trigger[aria-expanded="true"] { color: var(--accent); }
 
+.product-sort { margin-top: 0.8rem; text-align: right; }
+.product-sort summary {
+  cursor: pointer;
+  color: var(--ink);
+  font: 700 var(--step-sm)/1.1 var(--font-nav);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  list-style: none;
+}
+.product-sort summary::-webkit-details-marker { display: none; }
+.product-sort summary::after { content: ' +'; }
+.product-sort[open] summary::after { content: ' −'; }
+.product-sort summary:hover { color: var(--accent); }
+.product-sort-select {
+  width: 100%;
+  margin-top: 0.65rem;
+  padding: 0.5rem;
+  border: var(--rule);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 var(--step-xs)/1.3 var(--font-body);
+}
+@media (max-width: 768px) {
+  .mobile-filter-menu .product-sort { text-align: left; }
+  .mobile-filter-menu .product-sort summary {
+    padding: 0.65rem 0;
+    font-size: clamp(1rem, 1rem + 4.5vw, 2.2rem);
+    line-height: 0.92;
+  }
+}
+
 .home-products-grid {
   grid-column: 2;
   display: grid;
