@@ -21,6 +21,16 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.5 - 2026-10-22
+
+- Bootstrap y módulos separados para configuración, recursos, personalizador, contacto y WooCommerce.
+- Controlador común de paneles y visor: foco, teclado, cierre, pila y desplazamiento.
+- Estado, consultas y presentación del catálogo separados; visibilidad del catálogo y categorías hijas respetadas.
+- URLs generadas por WordPress y confirmación de resultados solo tras respuestas válidas.
+- Estilos por componentes, niveles de superposición declarados y altura real del encabezado.
+- Pruebas automatizadas de DOM, CSS, PHP e integración en WordPress/WooCommerce aislados.
+- Se restaura la política nativa de WordPress para Application Passwords.
+
 ### 2.0.0-beta.4 - 2026-06-19
 
 - Nueva pagina de contacto editorial y responsive con estetica Palancia.

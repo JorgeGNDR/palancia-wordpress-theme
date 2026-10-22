@@ -8,14 +8,16 @@
  */
 
 $current_category_slug = isset( $current_category_slug ) ? (string) $current_category_slug : '';
-$current_size_slug     = isset( $current_size_slug ) ? (string) $current_size_slug : ( isset( $_GET['size'] ) ? sanitize_text_field( wp_unslash( $_GET['size'] ) ) : '' );
-$current_stock_filter  = isset( $_GET['soldout'] ) && 'hide' === sanitize_title( wp_unslash( $_GET['soldout'] ) ) ? 'hide' : 'show';
+$catalog_state        = prs_catalog_page_state( $current_category_slug );
+$current_size_slug    = $catalog_state['size'];
+$current_stock_filter = $catalog_state['soldout'];
 $size_terms            = function_exists( 'prs_get_available_size_terms' ) ? prs_get_available_size_terms() : [];
 $has_size_filter       = ! empty( $size_terms );
-$current_sort          = prs_sanitize_product_sort( isset( $_GET['sort'] ) ? wp_unslash( $_GET['sort'] ) : '' );
+$current_sort          = $catalog_state['sort'];
 ?>
 
-<section class="home-products">
+<section class="home-products" data-catalog="<?php echo esc_attr( wp_json_encode( [ 'state' => $catalog_state, 'homeUrl' => home_url( '/' ), 'routeKeys' => [ 'product_cat', 'post_type', 'page_id', 'p', 'pagename', 'taxonomy', 'term', 'paged' ] ] ) ); ?>">
+  <p class="prs-catalog-error" data-catalog-error role="alert" hidden><?php esc_html_e( 'No se han podido cargar los productos. Vuelve a intentarlo.', 'palancia-shop' ); ?></p>
   <div class="prs-shop-layout home-products-container">
     <nav id="mobile-filter-menu" class="mobile-filter-menu" aria-label="<?php echo esc_attr__( 'Filtros de producto', 'palancia-shop' ); ?>">
       <?php include locate_template( 'template-parts/shop-nav.php' ); ?>

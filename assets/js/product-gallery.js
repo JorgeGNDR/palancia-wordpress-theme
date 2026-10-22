@@ -4,10 +4,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const slides = [...gallery.querySelectorAll('.prs-product-slide')];
   if (!slides.length) return;
+  const panels = new window.PalanciaPanels();
 
   const wrapper = gallery.parentElement;
   const dots = [...wrapper.querySelectorAll('.prs-product-dot')];
   const mobileViewport = window.matchMedia('(max-width: 768px)');
+  slides.forEach((slide) => {
+    const image = slide.querySelector('img');
+    if (!image) return;
+    image.tabIndex = 0;
+    image.setAttribute('role', 'button');
+    image.setAttribute('aria-label', `Ampliar imagen: ${image.alt || 'producto'}`);
+    image.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault(); image.click();
+      }
+    });
+  });
   let current = 0;
   let suppressClickUntil = 0;
 
@@ -54,6 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
     clone.removeAttribute('srcset');
     clone.removeAttribute('sizes');
     clone.removeAttribute('loading');
+    clone.removeAttribute('tabindex');
+    clone.removeAttribute('role');
+    clone.removeAttribute('aria-label');
     return clone;
   };
 
@@ -199,12 +215,12 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.appendChild(closeBtn);
     overlay.appendChild(strip);
     document.body.appendChild(overlay);
-    document.body.classList.add('prs-zoom-open');
-
-    const close = () => {
-      document.body.classList.remove('prs-zoom-open');
-      overlay.remove();
-    };
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Galería del producto');
+    panels.register('gallery', overlay, [], {bodyClass: 'prs-zoom-open', onClose: () => overlay.remove()});
+    panels.open('gallery');
+    const close = () => panels.close('gallery');
 
     overlay.addEventListener('click', () => {
       if (Date.now() < ignoreCloseUntil) return;
@@ -242,12 +258,12 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.appendChild(closeBtn);
     overlay.appendChild(counter);
     document.body.appendChild(overlay);
-    document.body.classList.add('prs-zoom-open');
-
-    const close = () => {
-      document.body.classList.remove('prs-zoom-open');
-      overlay.remove();
-    };
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Imagen del producto');
+    panels.register('gallery', overlay, [], {bodyClass: 'prs-zoom-open', onClose: () => overlay.remove()});
+    panels.open('gallery');
+    const close = () => panels.close('gallery');
 
     const renderImage = (nextIndex, direction = '') => {
       displayedIndex = (nextIndex + slides.length) % slides.length;

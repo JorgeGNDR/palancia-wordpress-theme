@@ -14,7 +14,6 @@ if ( ! class_exists('WooCommerce') ) {
 // Usar la función centralizada
 $product_categories     = prs_get_sorted_product_categories();
 $current_category_slug  = '';
-$current_size_slug      = isset( $_GET['size'] ) ? sanitize_text_field( $_GET['size'] ) : '';
 
 include locate_template( 'template-parts/product-grid.php' );
 

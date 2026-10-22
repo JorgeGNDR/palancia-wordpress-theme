@@ -18,7 +18,6 @@
     </button>
   <?php endif; ?>
   <div class="logo">
-    <a href="<?php echo esc_url(home_url('/')); ?>">
       <?php
       if ( function_exists( 'the_custom_logo' ) && has_custom_logo() ) {
           the_custom_logo();
@@ -26,11 +25,12 @@
           // Fallback si no hay logo en el personalizador
           $fallback_logo = get_stylesheet_directory_uri() . '/assets/icons/NEO P VALERIAN BLUE.png';
           ?>
+          <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
           <img src="<?php echo esc_url( $fallback_logo ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="site-logo-fallback">
+          </a>
           <?php
       }
       ?>
-    </a>
   </div>
 
   <?php if ( function_exists( 'WC' ) && function_exists( 'wc_get_cart_url' ) ) : ?>

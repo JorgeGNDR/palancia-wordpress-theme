@@ -1,0 +1,89 @@
+/* Checkout / Woo defaults */
+.woocommerce {
+  font-family: var(--font-body);
+}
+
+.woocommerce form.checkout,
+.woocommerce form.woocommerce-checkout,
+.woocommerce form.woocommerce-form,
+.woocommerce form.checkout_coupon {
+  display: grid;
+  gap: 1rem;
+}
+
+.woocommerce form .form-row {
+  margin: 0 0 0.8rem;
+  padding: 0;
+}
+
+.woocommerce label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font: 800 var(--step-2xs)/1 var(--font-nav);
+  text-transform: uppercase;
+}
+
+.woocommerce input.input-text,
+.woocommerce textarea,
+.woocommerce select,
+.prs-contact-form input,
+.prs-contact-form textarea {
+  width: 100%;
+  min-height: 2.625rem;
+  padding: 0.7rem 0.8rem;
+  border: var(--rule);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 var(--step-md)/1.25 var(--font-body);
+}
+
+.woocommerce input.input-text:focus,
+.woocommerce textarea:focus,
+.woocommerce select:focus,
+.prs-contact-form input:focus,
+.prs-contact-form textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.woocommerce table.shop_table:not(.woocommerce-checkout-review-order-table) {
+  border: var(--rule) !important;
+  border-radius: 0 !important;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+}
+
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+  width: min(calc(100% - (var(--side-padding) * 2)), 70rem);
+  margin: 0.85rem auto 1.1rem !important;
+  padding: 0.85rem 1rem !important;
+  border: var(--rule) !important;
+  border-radius: 0 !important;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  box-shadow: 4px 4px 0 var(--ink);
+  font: 800 var(--step-xs)/1.35 var(--font-nav);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.woocommerce-message::before,
+.woocommerce-info::before,
+.woocommerce-error::before { display: none !important; }
+
+.woocommerce-message a,
+.woocommerce-info a,
+.woocommerce-error a {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.prs-checkout-hp {
+  position: absolute;
+  left: -9999px;
+  visibility: hidden;
+}

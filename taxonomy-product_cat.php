@@ -19,12 +19,6 @@ if ( ! class_exists( 'WooCommerce' ) ) {
 // Categoria actual.
 $current_term = get_queried_object();
 
-// Si la categoria es TODO, redirigimos a la home.
-if ( isset( $current_term->slug ) && $current_term->slug === 'todo' ) {
-    wp_safe_redirect( home_url( '/' ), 301 );
-    exit;
-}
-
 // Usar la función centralizada
 $product_categories     = prs_get_sorted_product_categories();
 $current_category_slug  = isset( $current_term->slug ) ? $current_term->slug : '';

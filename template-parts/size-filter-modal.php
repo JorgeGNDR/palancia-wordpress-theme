@@ -4,15 +4,16 @@
  */
 
 $size_terms     = function_exists( 'prs_get_available_size_terms' ) ? prs_get_available_size_terms() : [];
-$selected_sizes = isset( $_GET['size'] ) ? array_filter( array_map( 'sanitize_title', explode( ',', sanitize_text_field( wp_unslash( $_GET['size'] ) ) ) ) ) : [];
-$stock_filter   = isset( $_GET['soldout'] ) && 'hide' === sanitize_title( wp_unslash( $_GET['soldout'] ) ) ? 'hide' : 'show';
+$filter_state   = $catalog_state ?? prs_catalog_page_state();
+$selected_sizes = $filter_state['size'];
+$stock_filter   = $filter_state['soldout'];
 ?>
 
 <?php if ( ! empty( $size_terms ) ) : ?>
   <div id="product-size-filter-modal" class="product-size-filter-modal" aria-hidden="true">
-    <div class="product-size-filter-backdrop" data-filter-close></div>
+    <div class="product-size-filter-backdrop" data-panel-close></div>
     <div class="product-size-filter" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr__( 'Filtro por talla', 'palancia-shop' ); ?>">
-      <button class="product-filter-close" type="button" data-filter-close><?php echo esc_html__( 'Cerrar', 'palancia-shop' ); ?></button>
+      <button class="product-filter-close" type="button" data-panel-close><?php echo esc_html__( 'Cerrar', 'palancia-shop' ); ?></button>
 
       <div class="product-stock-filter">
         <span><?php echo esc_html__( 'Productos agotados', 'palancia-shop' ); ?></span>

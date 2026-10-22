@@ -1,341 +1,88 @@
+/* Catalog state and transport. Panels live in shop-panels.js. */
 document.addEventListener('DOMContentLoaded', () => {
-  const filterLinks = document.querySelectorAll('.product-filters a, .mobile-filter-menu a');
-  const sortOptions = document.querySelectorAll('.product-sort-option');
-  let currentSort = document.querySelector('.product-sort-option[aria-pressed="true"]')?.dataset.sort || 'categories';
-  const sortModal = document.getElementById('product-sort-modal');
-  const sortTriggers = document.querySelectorAll('.product-sort-trigger');
-  let sortOpener = null;
-  const closeSortMenus = () => {
-    if (!sortModal?.classList.contains('is-open')) return;
-    sortModal.classList.remove('is-open');
-    sortModal.setAttribute('aria-hidden', 'true');
-    sortTriggers.forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
-    document.body.classList.remove('product-sort-open');
-    sortOpener?.focus();
+  const root = document.querySelector('[data-catalog]');
+  if (!root || typeof prsFilterProducts === 'undefined') return;
+  const config = JSON.parse(root.dataset.catalog);
+  const grid = root.querySelector('.home-products-grid');
+  const links = [...root.querySelectorAll('a[data-category-slug]')];
+  const sizes = [...document.querySelectorAll('[data-size-slug]')];
+  const stocks = [...document.querySelectorAll('[data-stock-filter]')];
+  const sorts = [...document.querySelectorAll('[data-sort]')];
+  const error = root.querySelector('[data-catalog-error]');
+  let state = structuredClone(config.state), committed = structuredClone(state);
+  let draft = {size: [...state.size], soldout: state.soldout};
+  let request = null;
+  const categoryUrl = (category) => links.find((link) => link.dataset.categorySlug === (category || 'todo'))?.href || config.homeUrl;
+  const render = () => {
+    links.forEach((link) => link.classList.toggle('is-active', link.dataset.categorySlug === (state.category || 'todo')));
+    sizes.forEach((button) => {
+      const active = draft.size.includes(button.dataset.sizeSlug);
+      button.classList.toggle('is-active', active); button.setAttribute('aria-pressed', String(active));
+    });
+    stocks.forEach((button) => {
+      const active = button.dataset.stockFilter === draft.soldout;
+      button.classList.toggle('is-active', active); button.setAttribute('aria-pressed', String(active));
+    });
+    sorts.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.sort === state.sort)));
   };
-  sortTriggers.forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      if (!sortModal) return;
-      closeFilterModal();
-      sortOpener = trigger;
-      sortModal.classList.add('is-open');
-      sortModal.setAttribute('aria-hidden', 'false');
-      sortTriggers.forEach((item) => item.setAttribute('aria-expanded', 'true'));
-      document.body.classList.add('product-sort-open');
-      sortModal.querySelector('[aria-pressed="true"]')?.focus();
-    });
-  });
-  document.querySelectorAll('[data-sort-close]').forEach((control) => {
-    control.addEventListener('click', closeSortMenus);
-  });
-  document.addEventListener('keydown', (event) => {
-    if (!sortModal?.classList.contains('is-open')) return;
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      closeSortMenus();
-    } else if (event.key === 'Tab') {
-      const controls = [...sortModal.querySelectorAll('button')];
-      const first = controls[0], last = controls[controls.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault(); last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault(); first.focus();
-      }
-    }
-  });
-  const productsGrid = document.querySelector('.home-products-grid');
-  const sizeButtons = document.querySelectorAll('[data-size-slug]');
-  const stockButtons = document.querySelectorAll('[data-stock-filter]');
-  const clearButtons = document.querySelectorAll('.product-size-clear');
-  const applyButtons = document.querySelectorAll('.product-filter-apply');
-  const filterTriggers = document.querySelectorAll('.product-filter-trigger');
-  const filterModal = document.getElementById('product-size-filter-modal');
-  const filterCloseControls = document.querySelectorAll('[data-filter-close]');
-
-  const mobileBtn = document.getElementById('mobile-filter-toggle');
-  const mobileMenu = document.getElementById('mobile-filter-menu');
-  const setMobileMenuOpen = (open) => {
-    if (!mobileMenu || !mobileBtn) return;
-    mobileMenu.classList.toggle('open', open);
-    document.body.classList.toggle('mobile-shop-menu-open', open);
-    mobileBtn.setAttribute('aria-expanded', String(open));
-    mobileBtn.setAttribute('aria-label', open ? 'Cerrar menú de categorías' : 'Abrir menú de categorías');
-    if (!open) closeSortMenus();
-  };
-  let resetDraftFilters = () => {};
-
-  const openFilterModal = () => {
-    if (!filterModal) return;
-    resetDraftFilters();
-    filterModal.classList.add('is-open');
-    filterModal.setAttribute('aria-hidden', 'false');
-    filterTriggers.forEach((trigger) => trigger.setAttribute('aria-expanded', 'true'));
-    document.body.classList.add('product-filter-open');
-  };
-
-  const closeFilterModal = () => {
-    if (!filterModal) return;
-    filterModal.classList.remove('is-open');
-    filterModal.setAttribute('aria-hidden', 'true');
-    filterTriggers.forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
-    document.body.classList.remove('product-filter-open');
-  };
-
-  if (mobileBtn && mobileMenu) {
-    mobileBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      setMobileMenuOpen(!mobileMenu.classList.contains('open'));
-    });
-
-    document.addEventListener('click', (e) => {
-      if (
-        mobileMenu.classList.contains('open')
-        && !mobileMenu.contains(e.target)
-        && !mobileBtn.contains(e.target)
-        && !filterModal?.contains(e.target)
-        && !sortModal?.contains(e.target)
-        && !e.target.closest('.product-sort-trigger')
-      ) {
-        setMobileMenuOpen(false);
-      }
-    });
-
-    mobileMenu.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', () => {
-        setMobileMenuOpen(false);
-      });
-    });
-    mobileMenu.addEventListener('click', (event) => {
-      if (!event.target.closest('a, button, summary, .product-sort')) setMobileMenuOpen(false);
-    });
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !filterModal?.classList.contains('is-open')) {
-        setMobileMenuOpen(false);
-      }
-    });
-  }
-
-  filterTriggers.forEach((trigger) => {
-    trigger.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      openFilterModal();
-    });
-  });
-
-  filterCloseControls.forEach((control) => {
-    control.addEventListener('click', closeFilterModal);
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeFilterModal();
-    }
-  });
-
-  if (!filterLinks.length || !productsGrid || typeof prsFilterProducts === 'undefined') {
-    return;
-  }
-
-  const { ajaxUrl } = prsFilterProducts;
-  let currentCategory = '';
-  let appliedSizes = new Set();
-  let draftSizes = new Set();
-  let appliedStock = 'show';
-  let draftStock = 'show';
-  let activeRequest = null;
-
-  const revealGrid = () => {
-    closeFilterModal();
-    if (window.matchMedia('(max-width: 768px)').matches) {
-      setMobileMenuOpen(false);
-    }
-  };
-
-  const updateActiveLinks = () => {
-    filterLinks.forEach((link) => {
-      const catSlug = link.getAttribute('data-category-slug');
-
-      link.classList.remove('is-active');
-
-      if (catSlug && catSlug === currentCategory) {
-        link.classList.add('is-active');
-      }
-    });
-
-    sizeButtons.forEach((button) => {
-      const sizeSlug = button.getAttribute('data-size-slug');
-      button.classList.toggle('is-active', sizeSlug && draftSizes.has(sizeSlug));
-    });
-
-    stockButtons.forEach((button) => {
-      button.classList.toggle('is-active', button.getAttribute('data-stock-filter') === draftStock);
-    });
-  };
-
-  resetDraftFilters = () => {
-    draftSizes = new Set(appliedSizes);
-    draftStock = appliedStock;
-    updateActiveLinks();
-  };
-
-  const loadProducts = () => {
-    if (activeRequest) {
-      activeRequest.abort();
-    }
-
-    const request = new AbortController();
-    activeRequest = request;
-    productsGrid.classList.add('is-loading');
-
-    const body = new URLSearchParams({
-      action: 'prs_filter_products',
-      category_slug: currentCategory === 'todo' ? '' : currentCategory,
-      size_slugs: [...appliedSizes].join(','),
-      stock_filter: appliedStock,
-      sort: currentSort,
-    });
-
-    fetch(ajaxUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body,
-      signal: request.signal,
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((response) => {
-        const html = response?.success ? response.data?.html : '';
-        if (!html) throw new Error('Respuesta de filtro no válida');
-        productsGrid.innerHTML = html;
-      })
-      .catch((err) => {
-        if (err.name === 'AbortError') return;
-        console.error('Error filtrando productos:', err);
-        productsGrid.innerHTML = '<p class="prs-products-empty">No se han podido cargar los productos. Inténtalo de nuevo.</p>';
-      })
-      .finally(() => {
-        if (activeRequest === request) {
-          productsGrid.classList.remove('is-loading');
-          activeRequest = null;
-        }
-      });
-  };
-
   const updateUrl = () => {
-    const params = new URLSearchParams();
-    if (appliedSizes.size) {
-      params.set('size', [...appliedSizes].join(','));
+    const url = new URL(categoryUrl(state.category), window.location.href);
+    const currentParams = new URL(window.location.href).searchParams;
+    for (const key of new Set(currentParams.keys())) {
+      if (url.searchParams.has(key) || (config.routeKeys || []).includes(key)) continue;
+      currentParams.getAll(key).forEach((value) => url.searchParams.append(key, value));
     }
-    if (appliedStock === 'hide') {
-      params.set('soldout', 'hide');
-    }
-    if (currentSort !== 'categories') params.set('sort', currentSort);
-
-    const baseUrl = !currentCategory || currentCategory === 'todo'
-      ? '/'
-      : `/collections/${encodeURIComponent(currentCategory)}/`;
-    const query = params.toString();
-    window.history.pushState(
-      {
-        category: currentCategory,
-        size: [...appliedSizes],
-        soldout: appliedStock,
-      },
-      '',
-      query ? `${baseUrl}?${query}` : baseUrl
-    );
+    ['size', 'soldout', 'sort'].forEach((key) => url.searchParams.delete(key));
+    if (state.size.length) url.searchParams.set('size', state.size.join(','));
+    if (state.soldout === 'hide') url.searchParams.set('soldout', 'hide');
+    if (state.sort !== 'categories') url.searchParams.set('sort', state.sort);
+    window.history.pushState({}, '', url);
   };
-
-  const path = window.location.pathname;
-  const match = path.match(/\/collections\/([^/]+)\/?/);
-  const params = new URLSearchParams(window.location.search);
-
-  currentCategory = match ? decodeURIComponent(match[1]) : 'todo';
-  appliedSizes = new Set(
-    (params.get('size') || '')
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean)
-  );
-  appliedStock = params.get('soldout') === 'hide' ? 'hide' : 'show';
-  draftSizes = new Set(appliedSizes);
-  draftStock = appliedStock;
-
-  updateActiveLinks();
-
-  sortOptions.forEach((option) => {
-    option.addEventListener('click', () => {
-      currentSort = option.dataset.sort;
-      sortOptions.forEach((other) => {
-        other.setAttribute('aria-pressed', String(other.dataset.sort === currentSort));
+  const load = async () => {
+    request?.abort();
+    const current = new AbortController(); request = current;
+    const snapshot = structuredClone(state);
+    grid.classList.add('is-loading'); grid.setAttribute('aria-busy', 'true'); error.hidden = true;
+    try {
+      const response = await fetch(prsFilterProducts.ajaxUrl, {
+        method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, signal: current.signal,
+        body: new URLSearchParams({action: 'prs_filter_products', category_slug: snapshot.category,
+          size_slugs: snapshot.size.join(','), stock_filter: snapshot.soldout, sort: snapshot.sort}),
       });
-      closeSortMenus();
-      revealGrid();
-      loadProducts();
-      updateUrl();
-    });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const result = await response.json();
+      if (request !== current) return;
+      if (!result.success || typeof result.data?.html !== 'string') throw new Error('Invalid catalog response');
+      state = result.data.state || snapshot; committed = structuredClone(state);
+      draft = {size: [...state.size], soldout: state.soldout};
+      grid.innerHTML = result.data.html; updateUrl(); render();
+      document.dispatchEvent(new CustomEvent('catalog:committed'));
+    } catch (failure) {
+      if (failure.name === 'AbortError' || request !== current) return;
+      state = structuredClone(committed); draft = {size: [...state.size], soldout: state.soldout}; render();
+      error.hidden = false;
+    } finally {
+      if (request === current) { request = null; grid.classList.remove('is-loading'); grid.setAttribute('aria-busy', 'false'); }
+    }
+  };
+  document.getElementById('product-size-filter-modal')?.addEventListener('panel:beforeopen', () => {
+    draft = {size: [...state.size], soldout: state.soldout}; render();
   });
-
-  filterLinks.forEach((link) => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-
-      const catSlug = link.getAttribute('data-category-slug');
-
-      if (!catSlug || catSlug === currentCategory) return;
-      currentCategory = catSlug;
-
-      updateActiveLinks();
-      loadProducts();
-      updateUrl();
-    });
-  });
-
-  sizeButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const sizeSlug = button.getAttribute('data-size-slug');
-      if (!sizeSlug) return;
-
-      if (draftSizes.has(sizeSlug)) {
-        draftSizes.delete(sizeSlug);
-      } else {
-        draftSizes.add(sizeSlug);
-      }
-
-      updateActiveLinks();
-    });
-  });
-
-  stockButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      draftStock = button.getAttribute('data-stock-filter') === 'hide' ? 'hide' : 'show';
-      updateActiveLinks();
-    });
-  });
-
-  clearButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      draftSizes.clear();
-      draftStock = 'show';
-      updateActiveLinks();
-    });
-  });
-
-  applyButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      appliedSizes = new Set(draftSizes);
-      appliedStock = draftStock;
-      revealGrid();
-      loadProducts();
-      updateUrl();
-    });
-  });
-
-  window.addEventListener('popstate', () => {
-    window.location.reload();
-  });
-});
+  links.forEach((link) => link.addEventListener('click', (event) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault(); state.category = link.dataset.categorySlug === 'todo' ? '' : link.dataset.categorySlug; render(); load();
+  }));
+  sizes.forEach((button) => button.addEventListener('click', () => {
+    const slug = button.dataset.sizeSlug;
+    draft.size = draft.size.includes(slug) ? draft.size.filter((item) => item !== slug) : [...draft.size, slug]; render();
+  }));
+  stocks.forEach((button) => button.addEventListener('click', () => { draft.soldout = button.dataset.stockFilter; render(); }));
+  document.querySelectorAll('.product-size-clear').forEach((button) => button.addEventListener('click', () => {
+    draft = {size: [], soldout: 'show'}; render();
+  }));
+  document.querySelectorAll('.product-filter-apply').forEach((button) => button.addEventListener('click', () => {
+    state = {...state, size: [...draft.size], soldout: draft.soldout}; load();
+  }));
+  sorts.forEach((button) => button.addEventListener('click', () => { state.sort = button.dataset.sort; render(); load(); }));
+  window.addEventListener('popstate', () => window.location.reload()); render();
+}, {once: true});
