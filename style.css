@@ -419,6 +419,21 @@ body.product-sort-open { overflow: hidden; }
 
 .product-item:hover img { transform: scale(1.025); }
 
+/* En escritorio la portada muestra solo las prendas. El texto sigue disponible
+   para lectores de pantalla y se conserva en tablet, móvil y categorías. */
+@media (min-width: 1241px) {
+  .home .home-products-grid .product-overlay {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 .product-overlay > span {
   display: block;
   color: var(--ink);
