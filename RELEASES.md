@@ -21,6 +21,10 @@ cabecera de `style.css`.
 
 ## Historial
 
+### 2.0.0-beta.16 - 2026-10-23
+
+- Visor de producto con foto en toda la pantalla, sin franjas reservadas arriba o abajo. Cerrar, flechas y contador flotan sobre la imagen, respetando las zonas seguras del móvil.
+
 ### 2.0.0-beta.15 - 2026-10-22
 
 - Tras añadir una prenda desde el catálogo, queda solo «Ver carrito»; la acción completada se oculta al confirmar WooCommerce el resultado, conservando el foco de teclado.
